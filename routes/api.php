@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\RequestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/get_user/{id}',[RequestController::class,'getUser'])->name('getUser');
 
 /*
 Route::middleware('auth:api')->get('/user', function (Request $request) {

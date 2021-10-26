@@ -18,7 +18,7 @@ class UserController extends Controller
 
     public function index(Request $request){
         $data=[];
-        $data['allUsers']=User::where('id','!=',Auth::user()->id)->paginate(1);
+        $data['allUsers']=User::where('id','!=',Auth::user()->id)->paginate(10);
         $data['permissionChoose']=$this->permission;
      
         $data['name']="";
@@ -30,7 +30,7 @@ class UserController extends Controller
             $name=$request->input('name');
             $email=$request->input('email');
             $permission=$request->input('permission'); 
-            echo $permission;
+            
             if($name != ""){
                 $userQuery->where('name','LIKE','%'.$name.'%');
             }
@@ -43,7 +43,7 @@ class UserController extends Controller
                 $userQuery->where('permission',$permission);
             }
 
-            $data['allUsers']=$userQuery->where('id','!=',Auth::user()->id)->paginate(1);
+            $data['allUsers']=$userQuery->where('id','!=',Auth::user()->id)->paginate(10);
             $data['name']=$name;
             $data['email']=$email;
             $data['permission']=$permission;

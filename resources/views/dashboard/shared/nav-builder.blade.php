@@ -28,6 +28,15 @@
         </li>
 
         <li class="c-sidebar-nav-item">
+            <a class="c-sidebar-nav-link" href="{{route('allClients')}}">
+                <i class="c-sidebar-nav-icon h-100">
+                    <img width="16" src="{{asset('storage/general_icons/users.png')}}">
+                </i>
+                <span class="c-sidebar-nav-icon"></span>Clientes
+            </a>
+        </li>
+
+        <li class="c-sidebar-nav-item">
             <a class="c-sidebar-nav-link" href="{{route('allUsers')}}">
                 <i class="c-sidebar-nav-icon h-100">
                     <img width="16" src="{{asset('storage/general_icons/users.png')}}">

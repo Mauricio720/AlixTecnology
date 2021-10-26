@@ -43,7 +43,7 @@ function validationUser(){
 }
 
 async function fillUserInfoMyProfile(id,form) {
-    const r= await fetch(BASE_URL+"/api/get_user/"+id);
+    const r= await fetch(BASE_URL+"/get_user/"+id);
     const json=await r.json();
     ONE_ELEMENT('#idUser').value=json.user.id;
     ONE_ELEMENT('#name').value=json.user.name;

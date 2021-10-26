@@ -15,8 +15,8 @@
                     </div>
                 </div>
             </div>
-            
         </div>
+        
         <div class="card-header bg-white">
             <div class="row">
                 <div class="col-4">
@@ -77,13 +77,13 @@
                             </td>
                             <td>{{$user->updated_at->format('d/m/Y H:i:s')}}</td>
                             <td class="d-flex">
-                                <div class="btnDefault btnDefault--sm btnEdit" title="Deletar Usuário" id="{{$user->id}}" 
+                                <div class="btnDefault btnDefault--sm btnEdit" title="Editar Usuário" id="{{$user->id}}" 
                                     data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
                                     <img src="{{asset('storage/general_icons/pencil.png')}}" width="16" height="16">
                                 </div>
 
                                 <a href="{{route('deleteUser',['id'=>$user->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
-                                    msg="Tem certeza que deseja excluir esse usuário!">
+                                    msg="Tem certeza que deseja excluir esse usuário?">
                                     <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
                                 </a>
                             </td>
@@ -96,10 +96,7 @@
             {{$allUsers->links()}}
         </div>
     </div>
-   
 @endsection
-
-
 
 @section('javascript')
     <script>

@@ -71,6 +71,18 @@
     background-color: rgb(185, 1, 1);
 }
 
+.btnBack{
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: black;
+}
+
+.btnBack:hover{
+    background-color: rgb(51, 50, 50);
+}
+
 .loadingSystem{
     position: fixed;
     top: 0;
