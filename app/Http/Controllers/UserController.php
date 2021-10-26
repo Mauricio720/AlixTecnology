@@ -18,8 +18,37 @@ class UserController extends Controller
 
     public function index(Request $request){
         $data=[];
-        $data['allUsers']=User::paginate(10)->except(Auth::user()->id);
-        $data['permission']=$this->permission;
+        $data['allUsers']=User::where('id','!=',Auth::user()->id)->paginate(1);
+        $data['permissionChoose']=$this->permission;
+     
+        $data['name']="";
+        $data['email']="";
+        $data['permission']="";
+
+        if($request->filled('name') || $request->filled('email') || $request->input('permission') != 0){
+            $userQuery=User::query();
+            $name=$request->input('name');
+            $email=$request->input('email');
+            $permission=$request->input('permission'); 
+            echo $permission;
+            if($name != ""){
+                $userQuery->where('name','LIKE','%'.$name.'%');
+            }
+
+            if($email != ""){
+                $userQuery->where('email','LIKE','%'.$email.'%');
+            }
+
+            if($permission != 0){
+                $userQuery->where('permission',$permission);
+            }
+
+            $data['allUsers']=$userQuery->where('id','!=',Auth::user()->id)->paginate(1);
+            $data['name']=$name;
+            $data['email']=$email;
+            $data['permission']=$permission;
+        
+        }
 
         return view('dashboard.users.allUsers',$data);
     }

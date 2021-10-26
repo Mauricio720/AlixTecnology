@@ -1,3 +1,14 @@
+::-webkit-scrollbar-track {
+    background-color: #858585;
+  }
+::-webkit-scrollbar {
+    width: 6px;
+    background: #858585;
+}
+::-webkit-scrollbar-thumb {
+    background: #858585;
+}
+
 .swal2-title{
     font-size: 1.500em !important;
 }
@@ -22,9 +33,12 @@
 .btnAdd{
     font-size: 19px;
     font-weight: bold;
-    background-color: rgb(0, 184, 0);
+    background-color: #00b800;
     color: white;
-    border: 1px solid rgb(0, 184, 0);
+    border: 1px solid #00b800;
+    width: 35px;
+    height: 35px;
+    line-height: 25px;
 }
 
 .btnAdd:hover{

@@ -9,16 +9,44 @@
                     <h4>Todos usuários</h4>
                 </div>
                 <div class="col-6 d-flex justify-content-end">
-                    <div class="btnDefault btnAdd" id="btnAddUser" title="Adicionar Usuário" data-toggle="modal" 
-                        data-target="#modalActions" data-toggle="tooltip">
+                    <div class="btnDefault btnAdd" id="btnAddUser" title="Adicionar Usuário" 
+                        data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
                         +
                     </div>
                 </div>
             </div>
+            
+        </div>
+        <div class="card-header bg-white">
+            <div class="row">
+                <div class="col-4">
+                    <form method="get">
+                        <div class="form-group">
+                            <input class="form-control" type="text" name="name" 
+                                placeholder="Nome do usuário" value="{{$name!=""?$name:''}}">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" type="email" name="email" 
+                                placeholder="Email do usuário" value="{{$email!=""?$email:''}}">
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" name="permission">
+                                <option value="0">Selecione a permissão</option>
+                                <option {{$permission=="1" ? 'selected':''}} value="1">Adm</option>
+                                <option {{$permission=="2" ? 'selected':''}} value="2">Limitado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input class="btn btn-success w-50" type="submit" value="Filtrar">
+                        </div>
+                    </form>
+                </div>
+                <div class="col-8"></div>
+            </div>
         </div>
 
         @if($errors->any())
-            <div class="card-header  bg-white">
+            <div class="card-header bg-white">
                 <div class="alert alert-danger alert-dismissible fade show text-center">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -39,11 +67,11 @@
                     <th>Ações</th>
                 </thead>
                 <tbody>
-                    @forelse($allUsers as $user)
+                    @foreach($allUsers as $user)
                         <tr>
                             <td>{{$user->name}}</td>
                             <td>{{$user->email}}</td>
-                            <td>{{$permission[$user->permission]}}</td>
+                            <td>{{$permissionChoose[$user->permission]}}</td>
                             <td>
                                 {{$user->created_at->format('d/m/Y H:i:s')}}
                             </td>
@@ -60,14 +88,17 @@
                                 </a>
                             </td>
                         </tr>
-                    @empty
-                        
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
+        <div class="card-footer">
+            {{$allUsers->links()}}
+        </div>
     </div>
+   
 @endsection
+
 
 
 @section('javascript')

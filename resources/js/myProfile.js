@@ -20,8 +20,26 @@ function openModalMyProfile(title,id){
     fillUserInfoMyProfile(id,form);
 
     ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
-        form.submit();
+        if(validationUser()){
+            form.submit();
+        }
     });
+}
+
+function validationUser(){
+    let name=ONE_ELEMENT('#name').value;
+    let email=ONE_ELEMENT('#email').value;
+    let permission=ONE_ELEMENT('#permission').value;   
+    let password=ONE_ELEMENT('#password').value; 
+
+    if(name==="" || email==="" || permission===0 || password===""){
+        ONE_ELEMENT('#modalActions').querySelector(".modal-error-header").style.display='block';
+        ONE_ELEMENT('#modalActions').querySelector(".modal-error-content").innerHTML="Preencha os campos em branco!";
+        return false;
+    }else{
+        return true;
+    }
+
 }
 
 async function fillUserInfoMyProfile(id,form) {

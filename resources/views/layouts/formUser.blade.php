@@ -14,7 +14,7 @@
         <select class="form-control" name="permission" id="permission">
             <option value="">Selecione a permissão</option>
             <option value="1">Adm</option>
-            <option value="2">Secundário</option>
+            <option value="2">Limitado</option>
         </select>
     </div>
 

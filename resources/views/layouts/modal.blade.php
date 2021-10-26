@@ -6,9 +6,18 @@
             <h4 class="modal-title"></h4>
             <button type="button" id="close" class="close" data-dismiss="modal">&times;</button>
           </div>
+          
+          <div class="modal-header modal-error-header" style="display: none">
+            <div class="alert alert-danger alert-dismissible fade show text-center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-error-content"></div>
+            </div>
+          </div>
 
           <div class="modal-body">
-            
+           
           </div>
 
           <div class="modal-footer">

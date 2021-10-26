@@ -79,14 +79,13 @@
       @include('dashboard.shared.header')
 
       <div class="c-body">
-
         <main class="c-main">
-
-          @yield('content') 
-
+            @yield('content') 
         </main>
         @include('dashboard.shared.footer')
+       
       </div>
+     
     </div>
 
 
