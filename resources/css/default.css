@@ -1,0 +1,84 @@
+.swal2-title{
+    font-size: 1.500em !important;
+}
+
+.btnDefault{
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #636f83;
+    transition: all ease .4s;
+    margin: 5px;
+}
+
+.btnDefault--sm{
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+}
+
+.btnAdd{
+    font-size: 19px;
+    font-weight: bold;
+    background-color: rgb(0, 184, 0);
+    color: white;
+    border: 1px solid rgb(0, 184, 0);
+}
+
+.btnAdd:hover{
+    background-color: white;
+    color: rgb(0, 184, 0);
+}
+
+.btnEdit{
+    background-color: rgb(0, 194, 253);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: rgb(0, 194, 253);
+}
+
+.btnEdit:hover{
+    background-color: rgb(17, 0, 253);;
+    color: rgb(0, 194, 253);
+}
+
+.btnDelete{
+    background-color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: red;
+}
+
+.btnDelete:hover{
+    background-color: rgb(185, 1, 1);
+}
+
+.loadingSystem{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.952);
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all ease .5s;
+    overflow-y: auto;
+    z-index: 88000;
+    cursor: pointer;
+}
+
+.loading{
+    width: 100%;
+    height: 200px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+}

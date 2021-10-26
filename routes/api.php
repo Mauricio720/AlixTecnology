@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\RequestController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +14,8 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('/get_user/{id}',[RequestController::class,'getUser'])->name('getUser');
 
 /*
 Route::middleware('auth:api')->get('/user', function (Request $request) {

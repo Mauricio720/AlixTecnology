@@ -12,20 +12,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class User extends Authenticatable
 {
     use Notifiable;
-    use HasRoles;
     use HasFactory;
     
     protected $table = 'users';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
+    
 
-    public $timestamps=false; 
 
 }

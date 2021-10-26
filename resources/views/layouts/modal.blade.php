@@ -1,4 +1,4 @@
-<div class="modal" id="modalAcoes">
+<div class="modal" id="modalActions">
     <div class="modal-dialog">
         <div class="modal-content">
 

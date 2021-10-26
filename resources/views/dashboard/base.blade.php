@@ -38,9 +38,13 @@
     <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet"> <!-- icons -->
     <!-- Main styles for this application-->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/painel/default.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/default.min.css') }}">
+   
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+
+      const BASE_URL="{{URL::to('/')}}";
+
       const ONE_ELEMENT=(element)=>{
           return document.querySelector(element);
       };
@@ -48,7 +52,6 @@
       const ALL_ELEMENTS=(element)=>{
           return document.querySelectorAll(element);
       };
-
     </script>
  
     @yield('css')
@@ -60,7 +63,13 @@
     <link href="{{ asset('css/coreui-chartjs.css') }}" rel="stylesheet">
   </head>
 
+  <div class="loadingSystem">
+    <img width="60" height="60" src="{{asset('storage/general_icons/loading.gif')}}" alt="" srcset="">
+  </div>
 
+  <div class="loading">
+    <img width="60" height="60" src="{{asset('storage/general_icons/loading.gif')}}" alt="" srcset="">
+  </div>
 
   <body class="c-app">
     <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
@@ -83,10 +92,13 @@
 
 
     <!-- CoreUI and necessary plugins-->
-    <script src="{{ asset('js/painel/default.min.js') }}"></script>
+    <script src="{{ asset('js/default.min.js') }}"></script>
 
     <script src="{{ asset('js/coreui.bundle.min.js') }}"></script>
     <script src="{{ asset('js/coreui-utils.js') }}"></script>
+    <script>
+        const LOADING_ELEMENT=ONE_ELEMENT('.loading');
+    </script>
     @yield('javascript')
   
   </body>
