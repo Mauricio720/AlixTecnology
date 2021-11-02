@@ -15,6 +15,15 @@
             </a>
         </li>
 
+        <li class="c-sidebar-nav-item">
+            <a class="c-sidebar-nav-link" href="{{route('defaultChecklist')}}">
+                <i class="c-sidebar-nav-icon h-100">
+                    <img width="16" src="{{asset('storage/general_icons/home.png')}}">
+                </i>
+                <span class="c-sidebar-nav-icon"></span>Listas Padrão
+            </a>
+        </li>
+
         <li class="c-sidebar-nav-item myProfileBtn" style="cursor: pointer" 
             data-toggle="modal" data-target="#modalActions" 
             id="{{Auth::user()->id}}" data-toggle="tooltip">
@@ -41,7 +50,7 @@
                 <i class="c-sidebar-nav-icon h-100">
                     <img width="16" src="{{asset('storage/general_icons/users.png')}}">
                 </i>
-                <span class="c-sidebar-nav-icon"></span>Todos os usuários
+                <span class="c-sidebar-nav-icon"></span>Usuários
             </a>
         </li>
 

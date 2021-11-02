@@ -14,12 +14,88 @@ class ClientsController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
+    public function index(Request $request){
         $data=[];
         $data['allClients']=Client::paginate(10);
+        $data['name']="";
+        $data['cnpj']="";
+        $data['responsible_general']="";
+        $data['technical_manager']="";
+        $data['financial_officer']="";
+        $data['contact_monitoring']="";
 
+        if($request->filled('name') || $request->filled('cnpj') || $request->filled('responsible_general')
+            || $request->filled('technical_manager') || $request->filled('financial_officer')
+            || $request->filled('contact_monitoring')){
+
+            $name=$request->input('name');
+            $cnpj=$request->input('cnpj');
+            $responsible_general=$request->input('responsible_general');
+            $technical_manager=$request->input('technical_manager');
+            $financial_officer=$request->input('financial_officer'); 
+            $contact_monitoring=$request->input('contact_monitoring');    
+            $data['allClients']=$this->filterClients($name,$cnpj,$responsible_general,$technical_manager,
+            $financial_officer,$contact_monitoring);
+
+            $data['name']=$name;
+            $data['cnpj']=$cnpj;
+            $data['responsible_general']=$responsible_general;
+            $data['technical_manager']=$technical_manager;
+            $data['financial_officer']=$financial_officer;
+            $data['contact_monitoring']=$contact_monitoring;
+        }
+        
         return view('dashboard.clients.allClients',$data);
     }
+
+    private function filterClients($name,$cnpj,$responsible_general,$technical_manager,
+        $financial_officer,$contact_monitoring){
+        
+        $clients=Client::query();
+        
+        if($name != ""){
+            $clients->where('name','LIKE','%'.$name.'%');
+        }
+
+        if($cnpj != ""){
+            $clients->where('cnpj','LIKE','%'.$cnpj.'%');
+        }
+        if($responsible_general != ""){
+            $clients->where('responsible_general_name','LIKE','%'.$responsible_general.'%')
+            ->orWhere('responsible_general_phone','LIKE','%'.$responsible_general.'%');
+        }
+
+        if($technical_manager != ""){
+            $clients->where('technical_manager_name','LIKE','%'.$technical_manager.'%')
+            ->orWhere('technical_manager_phone','LIKE','%'.$technical_manager.'%');
+        }
+
+        if($financial_officer != ""){
+            $clients->where('financial_officer_name','LIKE','%'.$financial_officer.'%')
+            ->orWhere('financial_officer_phone','LIKE','%'.$financial_officer.'%');
+        }
+
+        if($contact_monitoring!= ""){
+            $clients->where('contact_monitoring_name','LIKE','%'.$contact_monitoring.'%')
+            ->orWhere('contact_monitoring_phone','LIKE','%'.$contact_monitoring.'%');
+        }
+
+        return $clients->paginate(10);
+    }
+
+    public function seeClient($id){
+        $data=[];
+        $client=Client::where('id',$id)->first();
+        
+        if($client == null){
+            return redirect()->route('allClients');
+        }
+
+        $data['client']=$client;
+
+        return view('dashboard.clients.seeClient',$data);
+    }
+
 
     public function addClientView(Request $request){
         $data=[];
@@ -51,7 +127,7 @@ class ClientsController extends Controller
             $client->number=$data['number'];
             $client->neighboorhood=$data['neighboorhood'];
             $client->state=$data['state'];
-            $client->state=$data['cep'];
+            $client->cep=$data['cep'];
             $client->save();
         }else{
             return redirect()->route('addClientView')->withInput()->withErrors('Cnpj ja cadastrado!');
@@ -99,7 +175,7 @@ class ClientsController extends Controller
                 $client->number=$data['number'];
                 $client->neighboorhood=$data['neighboorhood'];
                 $client->state=$data['state'];
-                $client->state=$data['cep'];
+                $client->cep=$data['cep'];
                 $client->save();
             }else{
                 return redirect()->route('addClientView')->withInput()->withErrors('Cnpj ja cadastrado!');
@@ -163,7 +239,7 @@ class ClientsController extends Controller
             'number'=>['string','max:10','nullable'],
             'neighboorhood'=>['string','max:100','nullable'],
             'state'=>['string','max:100','nullable'],
-            'cep'=>['string','max:100','nullable'],
+            'cep'=>['string','max:100','nullable','formato_cep'],
         ],[],[
             'name'=>'nome cliente',
             'responsible_general_name'=>'nome responsável geral',

@@ -13,6 +13,13 @@
     font-size: 1.500em !important;
 }
 
+textarea:focus, input:focus, select:focus {
+    box-shadow: 0 0 0 0 !important;
+    border: 1 none !important;;
+    border-color: #768192 !important;
+    outline: 0 !important;
+} 
+
 .btnDefault{
     width: 35px;
     height: 35px;
@@ -25,9 +32,25 @@
 }
 
 .btnDefault--sm{
-    width: 28px;
-    height: 28px;
+    width: 28px !important;
+    height: 28px !important;
     font-size: 14px;
+}
+
+.btnSeeMore{
+    font-size: 19px;
+    font-weight: bold;
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+   
+    line-height: 15px;
+}
+
+.btnSeeMore:hover{
+    color: black;
+    background-color: white;
+
 }
 
 .btnAdd{
@@ -83,6 +106,10 @@
     background-color: rgb(51, 50, 50);
 }
 
+.btnDisabled{
+    opacity: 0.4;
+}
+
 .loadingSystem{
     position: fixed;
     top: 0;
@@ -106,5 +133,22 @@
     display: none;
     justify-content: center;
     align-items: center;
+}
 
+
+@keyframes errorBackgroundAnimation {
+	0% {background-color:  #fadddd}
+	25% {background-color: white;}
+	50% {background-color: #fadddd;}
+	75% {background-color:white;}
+	100% {background-color: #fadddd;}
+}
+
+.input-danger{
+    border-width: 2px;
+    border-color: #fadddd;
+    animation-name:errorBackgroundAnimation;
+	animation-duration:4s;
+	animation-delay:1s;
+	animation-iteration-count:infinite;
 }

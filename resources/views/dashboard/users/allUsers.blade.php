@@ -17,32 +17,33 @@
             </div>
         </div>
         
-        <div class="card-header bg-white">
-            <div class="row">
-                <div class="col-4">
-                    <form method="get">
-                        <div class="form-group">
-                            <input class="form-control" type="text" name="name" 
-                                placeholder="Nome do usuário" value="{{$name!=""?$name:''}}">
-                        </div>
-                        <div class="form-group">
-                            <input class="form-control" type="email" name="email" 
-                                placeholder="Email do usuário" value="{{$email!=""?$email:''}}">
-                        </div>
-                        <div class="form-group">
-                            <select class="form-control" name="permission">
-                                <option value="0">Selecione a permissão</option>
-                                <option {{$permission=="1" ? 'selected':''}} value="1">Adm</option>
-                                <option {{$permission=="2" ? 'selected':''}} value="2">Limitado</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <input class="btn btn-success w-50" type="submit" value="Filtrar">
-                        </div>
-                    </form>
-                </div>
-                <div class="col-8"></div>
+        <form class="card" method="get">
+            <div class="card-header bg-dark text-white">
+                <h5>Pesquisar:</h5>
             </div>
+            <div class="row card-body">
+                <div class="col-4">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="name" 
+                            placeholder="Nome do usuário" value="{{$name!=""?$name:''}}">
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="email" name="email" 
+                            placeholder="Email do usuário" value="{{$email!=""?$email:''}}">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" name="permission">
+                            <option value="0">Selecione a permissão</option>
+                            <option {{$permission=="1" ? 'selected':''}} value="1">Adm</option>
+                            <option {{$permission=="2" ? 'selected':''}} value="2">Limitado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input class="btn btn-success w-50" type="submit" value="Filtrar">
+                    </div>
+                </form>
+            </div>
+            <div class="col-8"></div>
         </div>
 
         @if($errors->any())

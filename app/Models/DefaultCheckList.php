@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class DefaultCheckList extends Model
 {
     use HasFactory;
+    public $table="default_checklists";
 }

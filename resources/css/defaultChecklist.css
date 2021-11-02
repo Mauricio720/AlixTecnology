@@ -1,0 +1,33 @@
+.defaultChecklist{
+    display: none;
+    flex-direction: column;
+    height: 50px;
+    border: 1px solid #d8dbe0;;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 2px;
+    transition: all ease .4s;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.defaultChecklist__content{
+    display: flex;
+}
+
+.defaultChecklist__slot{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    margin: 2px;
+}
+
+.defaultChecklist__slot--auto{
+    flex: inherit !important;
+}
+
+.defaultChecklist__container{
+    display: flex;
+    flex-direction: column;
+}
