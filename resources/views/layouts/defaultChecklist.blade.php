@@ -16,8 +16,11 @@
                 <option value="6">Data</option>
             </select>
         </div>
+        
         <div class="defaultChecklist__slot">
-            <input class="form-control" type="number" placeholder="Pontuação Total">
+            <input class="form-control w-50 mr-1" type="number" placeholder="pontos %" disabled min="1">
+
+            <input class="form-control w-50" type="number" placeholder="Pontuação" min="1">
         </div>
         <div class="defaultChecklist__slot">
             <input class="form-control" type="text" placeholder="Observação">
