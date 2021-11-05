@@ -1,3 +1,5 @@
+@extends('layouts.modal')
+
 <link rel="stylesheet" href="{{asset('css/defaultChecklist.min.css')}}">
 
 <div class="defaultChecklist">
@@ -28,6 +30,11 @@
         <div class="defaultChecklist__slot defaultChecklist__slot--auto">
             <div class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais Checklist">
                 ...
+            </div>
+
+            <div class="btnDefault btnDefault--sm btnAddOptions" title="Adicionar Usuário" 
+                data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
+                ++
             </div>
 
             <div class="btnDefault btnAdd btnDefault--sm btnAddDefaultChecklist" title="Adicionar">
