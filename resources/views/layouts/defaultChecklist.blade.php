@@ -2,6 +2,31 @@
 
 <link rel="stylesheet" href="{{asset('css/defaultChecklist.min.css')}}">
 
+<div class="optionsDefaultChecklist">
+    <div class="defaultChecklist__content">
+        <div class="defaultChecklist__slot">
+            <input class="form-control optionName" type="text" placeholder="Nome da opção">
+        </div>
+        
+        <div class="defaultChecklist__slot">
+            <input class="form-control mr-1" type="number" placeholder="Porcentagem Pontos">
+        </div>
+        
+        <div class="defaultChecklist__slot">
+            <input class="form-control" type="number" placeholder="Pontos">
+        </div>
+        
+        <div class="btnDefault btnDefault--sm btnChoose" disabled style="background-color: green;" title="Correto">
+            <img src="{{asset('storage/general_icons/checkbox.png')}}" width="100%">
+        </div>
+
+        <div class="btnDefault btnDefault--sm btnDeleteChoose" style="background-color: red;" title="Deletar">
+            <img src="{{asset('storage/general_icons/delete.png')}}" width="80%">
+        </div>
+        
+    </div>
+</div>
+
 <div class="defaultChecklist">
     <div class="defaultChecklist__content">
         <div class="defaultChecklist__slot">
@@ -32,7 +57,7 @@
                 ...
             </div>
 
-            <div class="btnDefault btnDefault--sm btnAddOptions" title="Adicionar Usuário" 
+            <div class="btnDefault btnDefault--sm btnAddOptions" title="Adicionar Opções" 
                 data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
                 ++
             </div>

@@ -1,8 +1,6 @@
 @extends('layouts.defaultChecklist')
 @extends('dashboard.base')
 
-
-
 @section('content')
    <div class="card">
         <div class="card-header">
