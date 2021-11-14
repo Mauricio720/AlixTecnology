@@ -27,6 +27,22 @@
     </div>
 </div>
 
+<div class="optionsDefaultChecklistExibition">
+    <div class="defaultChecklist__content">
+        <div class="defaultChecklist__slot">
+            <div class="form-control optionName"></div>
+        </div>
+        
+        <div class="defaultChecklist__slot">
+            <div class="form-control mr-1 optionPercentage"></div>
+        </div>
+        
+        <div class="defaultChecklist__slot">
+            <div class="form-control optionPoints"></div>
+        </div>
+    </div>
+</div>
+
 <div class="defaultChecklist">
     <div class="defaultChecklist__content">
         <div class="defaultChecklist__slot">
@@ -68,6 +84,67 @@
 
             <div class="btnDefault btnDefault--sm btnDelete" title="Deletar Checklist" >
                 <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
+            </div>
+        </div>
+    </div>
+    <div class="defaultChecklist__container">
+        
+    </div>
+</div>
+
+<form id="formChecklist" style="display: none;">
+    <div class="form-group">
+        <label>Nome Checklist</label>
+        <div class="form-control nameChecklist"></div>
+    </div>
+    <div class="form-group">
+        <label>Tipo Checklist</label>
+        <div class="form-control typeChecklist"></div>
+    </div>
+    <div class="form-group">
+        <label>Porcentagem Checklist</label>
+        <div class="form-control pointsPercentageChecklist"></div>
+    </div>
+    <div class="form-group">
+        <label>Pontos Checklist</label>
+        <div class="form-control pointsChecklist"></div>
+    </div>
+    <div class="form-group">
+        <label>Observação Checklist</label>
+        <div class="form-control observationChecklist"></div>
+    </div>
+</form>
+
+<div class="defaultChecklistExibition">
+    <div class="defaultChecklist__content">
+        <div class="defaultChecklist__slot">
+            <div class="form-control nameChecklist"></div>
+        </div>
+        <div class="defaultChecklist__slot">
+            <div class="form-control typeChecklist"></div>
+        </div>
+        
+        <div class="defaultChecklist__slot">
+            <div class="form-control w-50 mr-1 pointsPercentage"></div>
+            <div class="form-control w-50 points"></div>
+        </div>
+        <div class="defaultChecklist__slot">
+            <div class="form-control observation"></div>
+        </div>
+        <div class="defaultChecklist__slot defaultChecklist__slot--auto">
+            <div class="btnDefault btnDefault--sm btnOptions" title="Ver Opções" style="display: none;"
+                data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
+                ++
+            </div>
+
+            <div class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais Checklist" 
+                style="display: none; background-color:transparent">
+                <img src="{{asset('storage/general_icons/seeMore.png')}}" width="100%">
+            </div>
+
+            <div class="btnDefault btnDefault--sm btnSeeMoreCheck" title="Ver Mais Detalhes Checklist"
+                data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
+                ...
             </div>
         </div>
     </div>

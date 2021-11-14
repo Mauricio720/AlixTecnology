@@ -1,4 +1,4 @@
-.defaultChecklist, .optionsDefaultChecklist{
+.defaultChecklist, .defaultChecklistExibition ,.optionsDefaultChecklist,.optionsDefaultChecklistExibition{
     display: none;
     flex-direction: column;
     height: 65px;
@@ -32,6 +32,13 @@
 .defaultChecklist__container{
     display: flex;
     flex-direction: column;
+}
+
+.nameChecklist,.typeChecklist,.pointsPercentage,.points,.observation{
+    max-width: 250px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 

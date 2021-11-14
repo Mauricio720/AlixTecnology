@@ -18,6 +18,7 @@ ONE_ELEMENT('#btnAddDefaultCheck').addEventListener('click',(e)=>{
     eventsDefaultChecklist();
     eventsBtnDelete();
     verifyBtnSave();
+    showSubchecklistContainerLoop(defaultChecklistArray);
 });
 
 /*-----------------------------------------------MONTAGEM DO LAYOUT--------------------------------------------*/
@@ -31,6 +32,7 @@ function showDefaultChecklist(defaultChecklistArray) {
         verifyIdDefaultNullSelectDisabled(defaultChecklistClone,item); 
         verifyCorrectPercentageInputDanger(defaultChecklistClone,item);
         verifyIdDefaultNullInputDanger(defaultChecklistClone,item);
+        verifySubchecklists(defaultChecklistClone,item); 
         verifySubchecklistsLengthBtnSeeMore(defaultChecklistClone,item);
         verifyTypeSubchecklist(defaultChecklistClone,item); 
         verifyActiveDefaultChecklist(defaultChecklistClone,item); 
@@ -99,7 +101,6 @@ function verifyTypeSubchecklist(defaultChecklistClone,item) {
 function verifyActiveDefaultChecklist(defaultChecklistClone,item) {
     if(item.active){
         defaultChecklistClone.classList.add('active');
-        
     }
 }
 
@@ -132,7 +133,7 @@ function eventsDefaultChecklist() {
         let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
 
         element.addEventListener('click',(e)=>{
-           // if(validationDefaultChecklist(e.currentTarget.closest('.defaultChecklist'),defaultChecklist)){
+            if(validationDefaultChecklist(e.currentTarget.closest('.defaultChecklist'),defaultChecklist)){
                 addDefaultChecklist(id); 
                 ONE_ELEMENT('.checklistContent').innerHTML="";
                 setChecklistPoint(id);
@@ -143,23 +144,22 @@ function eventsDefaultChecklist() {
                 eventsBtnDelete();
                 verifyBtnSave();
                 eventsBtnAddOptions();
-                showSubchecklistContainer(elementChecklist);
-
-            //}
+                showSubchecklistContainerLoop(defaultChecklistArray);
+            }
         })
 
-        uniqueEventInputChecklistName(elementChecklist); 
-        uniqueEventInputPointingPercentage(elementChecklist); 
-        uniqueEventPointingNumber(elementChecklist);
-        uniqueEventObservation(elementChecklist); 
-        uniqueEventFocusInputDanger(elementChecklist); 
-        uniqueEventTypeChecklist(elementChecklist); 
+        uniqueEventInputChecklistName(elementChecklist,defaultChecklist); 
+        uniqueEventInputPointingPercentage(elementChecklist,defaultChecklist); 
+        uniqueEventPointingNumber(elementChecklist,defaultChecklist);
+        uniqueEventObservation(elementChecklist,defaultChecklist); 
+        uniqueEventFocusInputDanger(elementChecklist,defaultChecklist); 
+        uniqueEventTypeChecklist(elementChecklist,defaultChecklist); 
     });
 
-    showSubchecklistContainerLoop(defaultChecklistArray);
+    
 }
 
-function uniqueEventInputChecklistName(elementChecklist) {
+function uniqueEventInputChecklistName(elementChecklist,defaultChecklist) {
     elementChecklist.querySelectorAll('input')[0].addEventListener('keyup',(e)=>{
         let value=e.currentTarget.value;
         defaultChecklist.name=value;
@@ -184,12 +184,12 @@ function calcPointing(e) {
     defaultChecklist.points=newPoints;
     
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklist.id}`);
-    defaultChecklistElement.querySelectorAll('input')[2].value=newPoints.toFixed(2);
+    defaultChecklistElement.querySelectorAll('input')[1].value=newPoints.toFixed(2);
 
     return defaultChecklistFather.id;
 }
 
-function uniqueEventPointingNumber(elementChecklist) {
+function uniqueEventPointingNumber(elementChecklist,defaultChecklist) {
     elementChecklist.querySelectorAll('input')[2].addEventListener('input',(e)=>{
         let value=e.currentTarget.value;
         defaultChecklist.points=value;
@@ -198,7 +198,7 @@ function uniqueEventPointingNumber(elementChecklist) {
     });
 }
 
-function uniqueEventObservation(elementChecklist) {
+function uniqueEventObservation(elementChecklist,defaultChecklist) {
     elementChecklist.querySelectorAll('input')[3].addEventListener('keyup',(e)=>{
         let value=e.currentTarget.value;
         defaultChecklist.observation=value;
@@ -219,7 +219,7 @@ function uniqueEventFocusInputDanger(elementChecklist) {
     });
 }
 
-function uniqueEventTypeChecklist(elementChecklist) {
+function uniqueEventTypeChecklist(elementChecklist,defaultChecklist) {
     if(elementChecklist.querySelector('select') !== null){
         elementChecklist.querySelector('select').addEventListener('change',(e)=>{
             let value=e.currentTarget.value;
@@ -270,15 +270,16 @@ function eventsBtnDelete() {
     });
 }
 
-var typechecklist=""
+var typechecklistModal=""
 function eventsBtnAddOptions() {
     [...ALL_ELEMENTS('.checklistContent .btnAddOptions')].forEach((element)=>{
         element.addEventListener('click',(e)=>{
-            let type=e.currentTarget.getAttribute('type');
-            let defaultChecklist=e.currentTarget.closest('.defaultChecklist');
-            let points=defaultChecklist.querySelectorAll('input')[2].value;
-            let id=parseInt(defaultChecklist.getAttribute('idelement'));
-            
+            e.currentTarget.classList.remove('input-danger');
+            let id=parseInt(e.currentTarget.closest('.defaultChecklist').getAttribute('idelement'));
+            let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
+            let type=defaultChecklist.typechecklist;
+            let points=defaultChecklist.points;
+
             if(type==="3"){
                 openModalMultipleChoose(points,id);  
             }
@@ -288,292 +289,6 @@ function eventsBtnAddOptions() {
             }
         })
     });
-}
-
-/*----------------------------------------------EVENTOS DAS CHECKLISTS-----------------------------------------*/
-
-
-var allOptions=[];
-
-
-function openModalMultipleChoose(points,id) {
-    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (multiplas escolhas)";
-    removeEventsModal();
-    ONE_ELEMENT('#btnAddModal').style.display='block';
-    ONE_ELEMENT('#btnEditModal').style.display='block';
-
-    allOptions=[];
-    let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
-    if(defaultChecklist.options.length>0){
-       allOptions=defaultChecklist.options;
-       if(typechecklist==="4"){
-            allOptions=[];
-            defaultChecklist.options=[];
-        }
-
-        typechecklist="3";
-    }
-
-    ONE_ELEMENT('#btnAddModal').addEventListener('click',()=>{
-        addNewsOptionEmpty(points,true);
-        fillLayoutOptionsDefaultChecklist(true);
-        eventsMultipleChoose();
-    });
-
-    ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
-        let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
-        
-        if(verifyEmptyOptionName()){
-            errorDoubleChooseOptions(modalHeader);
-        }else if(verifyEmptyOptionsArray()){
-            errorMultipleChooseOptions(modalHeader); 
-        }else{
-            removeInputDanger();
-            addOption(true); 
-            ONE_ELEMENT('#modalActions .close').click();
-        }
-    });
-}
-
-function openModalDoubleChoose(points,id) {
-    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (dupla escolha) "
-    +" Pontuação "+points;
-    removeEventsModal();
-    
-    allOptions=[];
-    let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
-
-    if(defaultChecklist.options.length>0){
-        allOptions=defaultChecklist.options;
-        if(typechecklist==="3"){
-            allOptions=[];
-            defaultChecklist.options=[];
-        }
-    
-        typechecklist="4";
-    }else{
-        addNewsOptionEmpty(points)
-    }
-    
-    fillLayoutOptionsDefaultChecklist();
-    eventsBtnChooseDoubleChoose(points); 
-    ONE_ELEMENT('#btnAddModal').style.display='none';
-    ONE_ELEMENT('#btnEditModal').style.display='block';
-
-    ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
-        let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
-        
-        if(verifyEmptyOptionName()){
-            errorDoubleChooseOptions(modalHeader);
-        }else if(verifyEmptyOptionsArray()){
-            modalHeader.style.display='block';
-            modalHeader.querySelector('.modal-error-content').innerHTML="Adicione pelo menos uma opção!";
-        }else{
-            removeInputDanger();
-            addOption(); 
-            ONE_ELEMENT('#modalActions .close').click();
-        }
-    });
-}
-
-function removeEventsModal() {
-    let btnAdd=ONE_ELEMENT('#btnAddModal').cloneNode(true);
-    let btnEdit=ONE_ELEMENT('#btnEditModal').cloneNode(true);
-    ONE_ELEMENT('#modalActions').querySelector(".modal-footer").innerHTML="";
-    ONE_ELEMENT('#modalActions').querySelector(".modal-footer").append(btnAdd);
-    ONE_ELEMENT('#modalActions').querySelector(".modal-footer").append(btnEdit);
-}
-
-
-function verifyEmptyOptionName() {
-    let isEmptyInput=false;
-
-    allOptions.forEach((option)=>{
-        if(option.nameOption===""){
-            isEmptyInput=true;
-            idOption=option.id;
-        }
-    });
-
-    return isEmptyInput;
-}
-
-function verifyEmptyOptionsArray() {
-    if(allOptions.length===0){
-        return true;
-    }else{
-        return false;
-    }
-}
-
-function errorDoubleChooseOptions(modalHeader) {
-    modalHeader.style.display='block';
-    modalHeader.querySelector('.modal-error-content').innerHTML="Os nomes das opções não podem estar vazias!"
-    
-    let inputs=[...ALL_ELEMENTS('.optionsDefaultChecklist .optionName')];
-    inputs.forEach((input)=>{
-        if(input.value===""){
-            input.classList.add('input-danger');
-        }
-    })
-}
-
-function errorMultipleChooseOptions(modalHeader) {
-    modalHeader.style.display='block';
-    modalHeader.querySelector('.modal-error-content').innerHTML="Adicione pelo menos uma opção!";
-}
-
-function removeInputDanger() {
-    let inputs=[...ALL_ELEMENTS('.optionsDefaultChecklist .optionName')];
-    inputs.forEach((input)=>{
-        if(input.value===""){
-            input.classList.remove('input-danger');
-        }
-    })
-}
-
-function addOptionsMultiple() {
-    allOptions.forEach((option)=>{
-        defaultChecklist.options.push(option);
-    });
-}
-
-function addOption() {
-    if(defaultChecklist.options.length != 2){
-        allOptions.forEach((option)=>{
-            defaultChecklist.options.push(option);
-        });
-    }
-}
-
-function addNewsOptionEmpty(points,multiple=false) {
-    if(multiple===false){
-        for (let index = 0; index < 2; index++) {
-            let option={
-                id:index,
-                nameOption:'',
-                pointsValue:'',
-                percentage:50,
-                selected:false
-            };
-
-            if(index===0){
-                option.pointsValue=points;
-                option.selected=true;
-            }else{
-                option.pointsValue=0;
-                option.selected=false;
-            }
-    
-            allOptions.push(option);
-        }
-     }else{
-        let option={
-            id:allOptions.length+1,
-            nameOption:'',
-            pointsValue:'',
-            percentage:50,
-            selected:false
-        };
-        allOptions.push(option);
-     }
-}
-
-function fillLayoutOptionsDefaultChecklist(multipleChoose=false){
-    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-    
-    allOptions.forEach((option)=>{
-        let optionsDefaultChecklistClone=optionsDefaultChecklist.cloneNode(true);
-        optionsDefaultChecklistClone.querySelectorAll('input')[0].value=option.nameOption;
-        optionsDefaultChecklistClone.querySelectorAll('input')[1].disabled=true;
-        optionsDefaultChecklistClone.style.display='flex';
-        optionsDefaultChecklistClone.setAttribute('idOption',option.id);
-
-        if(option.selected){
-            optionsDefaultChecklistClone.querySelectorAll('input')[1].value=option.pointsValue;
-            optionsDefaultChecklistClone.querySelector('.btnChoose').classList.remove('btnDisabled');
-        }else{
-            optionsDefaultChecklistClone.querySelector('.btnChoose').classList.add('btnDisabled');
-        }
-
-        if(multipleChoose){
-            optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="block";
-            optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="none";
-        }else{
-            optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="block";
-            optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="none";
-        }
-
-        ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(optionsDefaultChecklistClone);
-    })
-}
-
-function eventsBtnChooseDoubleChoose(points) {
-    [...ALL_ELEMENTS('.optionsDefaultChecklist')].forEach((element)=>{
-        element.querySelector('.btnChoose').addEventListener('click',(e)=>{
-            clearSelected(allOptions);
-
-            let id=parseInt(element.getAttribute('idOption'));
-            let index=allOptions.findIndex((item)=>{
-                if(item.id===id){
-                    return true;
-                }
-            });
-
-            allOptions[index].selected=true;
-            allOptions[index].pointsValue=points;
-
-            ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-            
-            fillLayoutOptionsDefaultChecklist();
-            eventsBtnChooseDoubleChoose(points)
-        });
-
-        uniqueEventOptionName(element);
-    })
-}
-
-function eventsMultipleChoose() {
-    [...ALL_ELEMENTS('.optionsDefaultChecklist')].forEach((element)=>{
-        element.querySelector('.btnDeleteChoose').addEventListener('click',(e)=>{
-            let id=parseInt(element.getAttribute('idOption'));
-            deleteOption(id); 
-            ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-            fillLayoutOptionsDefaultChecklist(true);
-            eventsMultipleChoose();
-        });
-
-        uniqueEventOptionName(element);
-    })
-}
-
-function deleteOption(id) {
-    let index=allOptions.findIndex((option)=>{
-        if(option.id===id){
-            return true;
-        }
-    });
-    
-    allOptions.splice(index,1);
-}
-
-function uniqueEventOptionName(element) {
-    element.querySelectorAll('input')[0].addEventListener('input',(e)=>{
-        let id=parseInt(element.getAttribute('idOption'));
-        let index=allOptions.findIndex((item)=>{
-            if(item.id===id){
-                return true;
-            }
-        });
-
-        allOptions[index].nameOption=e.currentTarget.value;
-    });
-
-    element.querySelectorAll('input')[0].addEventListener('focus',(e)=>{
-        e.currentTarget.classList.remove('input-danger')
-    })
 }
 
 function clearSelected(allOptions) {
@@ -589,7 +304,7 @@ function setChecklistPoint(id) {
     let totalNumberDefaultChecklists=allDefaultChecklist.length;
     let pointsValue=points/totalNumberDefaultChecklists;
     let percentage= (pointsValue/points)*100;
-
+   
     allDefaultChecklist.forEach(element => {
         element.points=pointsValue.toFixed(2);
         element.percentage=percentage.toFixed(2);
@@ -660,10 +375,7 @@ function showSubchecklistContainerLoop(defaultChecklistArray) {
             defaultChecklistElement.active=true;
 
             if(item.idDefaultChecklist != null){
-                let defaultChecklistElementFather=ONE_ELEMENT(`#defaultCheck${item.idDefaultChecklist}`);
-                let heigthFather=defaultChecklistElementFather.offsetHeight;
-                let heigthFatherTotal=heigthFather+heightTotal;
-                defaultChecklistElementFather.style.height=`${heigthFatherTotal}px`;
+               increaseDefaultChecklistFather(item);
             }
 
         }else{
@@ -678,11 +390,27 @@ function showSubchecklistContainerLoop(defaultChecklistArray) {
     })
 }
 
+function increaseDefaultChecklistFather(item,extraHeight=65) {
+    let defaultChecklist=ONE_ELEMENT(`#defaultCheck${item.id}`);
+    let height=defaultChecklist.offsetHeight;
+    if(extraHeight > 65){
+        defaultChecklist.style.height=height+extraHeight+"px";
+    }
+    
+    if(item.idDefaultChecklist != null){
+        let defaultChecklistFather=filterDefaultChecklist(defaultChecklistArray,item.idDefaultChecklist,{});
+        let totalDefaultChecklist=item.subchecklists.length;
+        let margin=35*totalDefaultChecklist;
+        let heightTotal=65+(65*totalDefaultChecklist)+margin+extraHeight;
+        increaseDefaultChecklistFather(defaultChecklistFather,heightTotal); 
+    }
+}
+
 function validationDefaultChecklist(defaultChecklistElement,defaultChecklistArray){
     let isOK=true;
     let inputsChecklist=defaultChecklistElement.querySelectorAll('input');
     let selectChecklist=defaultChecklistElement.querySelector('select');
-
+    
     if(defaultChecklistArray.idDefaultChecklist===null){
         selectChecklist=null;
     }
@@ -807,25 +535,422 @@ function filterDefaultChecklistToPoints(defaultChecklistArray,id,itemObjectArray
 }
 
 
-ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
-    if(allValidations(defaultChecklistArray) !== ""){
+/*----------------------------------------------EVENTOS DAS CHECKLISTS-----------------------------------------*/
+
+
+var allOptions=[];
+var pointsModal=0;
+
+function openModalMultipleChoose(points,id) {
+    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (multiplas escolhas)"
+    +" Pontuação Checklist "+points;
+    
+    pointsModal=points;
+    let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
+    modalHeader.style.display="none";
+    
+    removeEventsModal();
+    removeInputDanger();
+
+    ONE_ELEMENT('#btnAddModal').style.display='block';
+    ONE_ELEMENT('#btnEditModal').style.display='block';
+
+    allOptions=[];
+    let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
+    
+    if(typechecklistModal==="4"){
+        defaultChecklist.options=[];
+    }
+    typechecklistModal="3";
+
+    if(defaultChecklist.options.length>0){
+       allOptions=defaultChecklist.options;
+    }
+
+    ONE_ELEMENT('#btnAddModal').addEventListener('click',()=>{
+        addNewsOptionEmpty(points,true);
+        fillLayoutOptionsDefaultChecklist(points,true);
+        eventsMultipleChoose();
+    });
+
+    ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
+        if(verifyEmptyOptionName()){
+            errorDoubleChooseOptions(modalHeader);
+        }else if(verifyEmptyOptionsArray()){
+            errorMultipleChooseOptions(modalHeader); 
+        }else{
+            removeInputDanger();
+            addOptionsMultiple(defaultChecklist); 
+            ONE_ELEMENT('#modalActions .close').click();
+        }
+    });
+}
+
+function openModalDoubleChoose(points,id) {
+    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (dupla escolha) "
+    +" Pontuação Checklist "+points;
+    pointsModal=points;
+    let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
+    modalHeader.style.display="none";
+    
+    removeEventsModal();
+    removeInputDanger();
+    
+    allOptions=[];
+    let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
+
+    if(typechecklistModal==="3"){
+        defaultChecklist.options=[];
+    }
+
+    typechecklistModal="4";
+
+    if(defaultChecklist.options.length>0){
+        allOptions=defaultChecklist.options;
+      
+    }else{
+        addNewsOptionEmpty()
+    }
+    
+    fillLayoutOptionsDefaultChecklist();
+    eventsDoubleChoose(); 
+    ONE_ELEMENT('#btnAddModal').style.display='none';
+    ONE_ELEMENT('#btnEditModal').style.display='block';
+
+    ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
+        if(verifyEmptyOptionName()){
+            errorDoubleChooseOptions(modalHeader);
         
-    }; 
+        }else if(verifyEmptyOptionsArray()){
+            modalHeader.style.display='block';
+            modalHeader.querySelector('.modal-error-content').innerHTML="Adicione pelo menos uma opção!";
+        
+        }else{
+            removeInputDanger();
+            addOption(defaultChecklist); 
+            ONE_ELEMENT('#modalActions .close').click();
+        }
+    });
+}
+
+function removeEventsModal() {
+    let btnAdd=ONE_ELEMENT('#btnAddModal').cloneNode(true);
+    let btnEdit=ONE_ELEMENT('#btnEditModal').cloneNode(true);
+    ONE_ELEMENT('#modalActions').querySelector(".modal-footer").innerHTML="";
+    ONE_ELEMENT('#modalActions').querySelector(".modal-footer").append(btnAdd);
+    ONE_ELEMENT('#modalActions').querySelector(".modal-footer").append(btnEdit);
+}
+
+
+function verifyEmptyOptionName() {
+    let isEmptyInput=false;
+
+    allOptions.forEach((option)=>{
+        if(option.nameOption===""){
+            isEmptyInput=true;
+            idOption=option.id;
+        }
+    });
+
+    return isEmptyInput;
+}
+
+function verifyEmptyOptionsArray() {
+    if(allOptions.length===0){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+function errorDoubleChooseOptions(modalHeader) {
+    modalHeader.style.display='block';
+    modalHeader.querySelector('.modal-error-content').innerHTML="Os nomes das opções não podem estar vazias!"
+    
+    let inputs=[...ALL_ELEMENTS('.optionsDefaultChecklist .optionName')];
+    inputs.forEach((input)=>{
+        if(input.value===""){
+            input.classList.add('input-danger');
+        }
+    })
+}
+
+function errorMultipleChooseOptions(modalHeader) {
+    modalHeader.style.display='block';
+    modalHeader.querySelector('.modal-error-content').innerHTML="Adicione pelo menos uma opção!";
+}
+
+function removeInputDanger() {
+    let inputs=[...ALL_ELEMENTS('.optionsDefaultChecklist .optionName')];
+    inputs.forEach((input)=>{
+        if(input.value===""){
+            input.classList.remove('input-danger');
+        }
+    })
+}
+
+function addOptionsMultiple(defaultChecklist) {
+    allOptions.forEach((option)=>{
+        defaultChecklist.options.push(option);
+    });
+}
+
+function addOption(defaultChecklist) {
+    if(defaultChecklist.options.length != 2){
+        allOptions.forEach((option)=>{
+            defaultChecklist.options.push(option);
+        });
+    }
+}
+
+function addNewsOptionEmpty(multiple=false) {
+    if(multiple===false){
+        for (let index = 0; index < 2; index++) {
+            let option={
+                id:index,
+                nameOption:'',
+                pointsValue:'',
+                percentage:50,
+                selected:false
+            };
+
+            if(index===0){
+                option.pointsValue=pointsModal;
+                option.selected=true;
+            }else{
+                option.pointsValue=0;
+                option.selected=false;
+            }
+    
+            allOptions.push(option);
+        }
+     }else{
+        let option={
+            id:allOptions.length+1,
+            nameOption:'',
+            pointsValue:'',
+            percentage:50,
+            correctPercentage:true,
+            selected:false
+        };
+        allOptions.push(option);
+     }
+}
+
+function fillLayoutOptionsDefaultChecklist(multipleChoose=false){
+    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+    
+    allOptions.forEach((option)=>{
+        let optionsDefaultChecklistClone=optionsDefaultChecklist.cloneNode(true);
+        optionsDefaultChecklistClone.querySelectorAll('input')[0].value=option.nameOption;
+        optionsDefaultChecklistClone.querySelectorAll('input')[2].disabled=true;
+        optionsDefaultChecklistClone.style.display='flex';
+        optionsDefaultChecklistClone.setAttribute('idOption',option.id);
+
+        if(option.selected){
+            optionsDefaultChecklistClone.querySelectorAll('input')[2].value=option.pointsValue;
+            optionsDefaultChecklistClone.querySelector('.btnChoose').classList.remove('btnDisabled');
+        }else{
+            optionsDefaultChecklistClone.querySelector('.btnChoose').classList.add('btnDisabled');
+        }
+
+        if(multipleChoose){
+            optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="block";
+            optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="block";
+            optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="none";
+            optionsDefaultChecklistClone.querySelectorAll('input')[2].value=calcPercentageEquals()[0].toFixed(2); 
+            optionsDefaultChecklistClone.querySelectorAll('input')[1].value=calcPercentageEquals()[1].toFixed(2); 
+            option.pointsValue=calcPercentageEquals()[0];
+            option.percentage=calcPercentageEquals()[1];
+        }else{
+            optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="none";
+            optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="block";
+            optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="none";
+        }
+
+        optionsDefaultChecklistClone.setAttribute('id',`optionDefaultChecklist${option.id}`);
+        ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(optionsDefaultChecklistClone);
+    })
+}
+
+function eventsDoubleChoose() {
+    [...ALL_ELEMENTS('.optionsDefaultChecklist')].forEach((element)=>{
+        uniqueEventsBtnChoose(element);
+        uniqueEventOptionName(element);
+    })
+}
+
+function uniqueEventsBtnChoose(element) {
+    element.querySelector('.btnChoose').addEventListener('click',(e)=>{
+        clearSelected(allOptions);
+
+        let id=parseInt(element.getAttribute('idOption'));
+        let index=allOptions.findIndex((item)=>{
+            if(item.id===id){
+                return true;
+            }
+        });
+
+        allOptions[index].selected=true;
+        allOptions[index].pointsValue=pointsModal;
+
+        ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+        
+        fillLayoutOptionsDefaultChecklist();
+        eventsDoubleChoose()
+    });
+}
+
+function eventsMultipleChoose() {
+    [...ALL_ELEMENTS('.optionsDefaultChecklist')].forEach((element)=>{
+        uniqueEventDeleteOption(element); 
+        uniqueEventOptionName(element);
+        uniqueEventInputPercentage(element);
+    })
+}
+
+function uniqueEventDeleteOption(element) {
+    element.querySelector('.btnDeleteChoose').addEventListener('click',(e)=>{
+        let id=parseInt(element.getAttribute('idOption'));
+        deleteOption(id); 
+        ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+        fillLayoutOptionsDefaultChecklist(true);
+        eventsMultipleChoose();
+    });
+}
+
+function deleteOption(id) {
+    let index=allOptions.findIndex((option)=>{
+        if(option.id===id){
+            return true;
+        }
+    });
+    
+    allOptions.splice(index,1);
+}
+
+function uniqueEventOptionName(element) {
+    element.querySelectorAll('input')[0].addEventListener('input',(e)=>{
+        let id=parseInt(element.getAttribute('idOption'));
+        let index=allOptions.findIndex((item)=>{
+            if(item.id===id){
+                return true;
+            }
+        });
+
+        allOptions[index].nameOption=e.currentTarget.value;
+    });
+
+    element.querySelectorAll('input')[0].addEventListener('focus',(e)=>{
+        e.currentTarget.classList.remove('input-danger')
+    })
+}
+
+function uniqueEventInputPercentage(element) {
+    element.querySelectorAll('input')[1].addEventListener('input',(e)=>{
+        let id=parseInt(element.getAttribute('idOption'));
+        let index=allOptions.findIndex((item)=>{
+            if(item.id===id){
+                return true;
+            }
+        });
+
+        allOptions[index].percentage;
+        calcNewValuePercentage(e,allOptions[index]);
+    });
+}
+
+function calcNewValuePercentage(e,optionsDefaultChecklist) {
+    let value=parseFloat(e.currentTarget.value);
+    optionsDefaultChecklist.percentage=value;
+
+    let totalPoints=pointsModal;
+
+    let newPoints=(value/100)*totalPoints;
+    optionsDefaultChecklist.pointsValue=newPoints;
+    
+    let optionsDefaultChecklistElement=ONE_ELEMENT(`#optionDefaultChecklist${optionsDefaultChecklist.id}`);
+    optionsDefaultChecklistElement.querySelectorAll('input')[2].value=newPoints.toFixed(2);
+
+    verifyCorrectPercentageOptions();
+}
+
+function calcPercentageEquals() {
+    let numberOptions=allOptions.length;
+    let pointsValue=pointsModal/numberOptions;
+    let percentage= (pointsValue/pointsModal)*100;
+    
+    return [pointsValue,percentage];
+}
+
+function verifyCorrectPercentageOptions() {
+    let totalPoint=0;
+    allOptions.forEach(option => {
+        totalPoint+=parseFloat(option.pointsValue);
+    });
+
+
+    if(totalPoint != pointsModal){
+        allOptions.forEach(option => {
+            option.correctPercentage=false;
+        })
+       
+    }else{
+        allOptions.forEach(option => {
+            option.correctPercentage=true;
+        })
+    }
+    
+    allOptions.forEach(item =>{
+        if(item.correctPercentage===false){
+            let defaultChecklistElement=ONE_ELEMENT(`#optionDefaultChecklist${item.id}`);
+            defaultChecklistElement.querySelectorAll('input')[1].classList.add('input-danger');
+        }else{
+            let defaultChecklistElement=ONE_ELEMENT(`#optionDefaultChecklist${item.id}`);
+            defaultChecklistElement.querySelectorAll('input')[1].classList.remove('input-danger');
+        }
+    })
+}
+
+
+
+ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
+    let alertHeader=ONE_ELEMENT('.alert-header');
+    alertHeader.classList.add('d-none');
+
+    if(allValidations(defaultChecklistArray) === ""){
+        ONE_ELEMENT('#allChecklists').value=JSON.stringify(defaultChecklistArray);
+        ONE_ELEMENT('#formChecklists').submit();
+    };
+
 });
 
 const ERROR_EMPTY_INPUTS=1;
 const ERROR_SELECT_VALUE=2;
 const ERROR_PERCENTAGE=3;
 const ERROR_SUBCHECKLIST_FATHER=4;
+const ERROR_EMPTY_DOUBLE_OPTIONS=5;
+const ERROR_EMPTY_OPTIONS=6;
+const ERROR_OPTIONS_PERCETAGE=7;
+
+//erro numero 5 só pode ser causa se alguem bagunçar o front pelo inspecionar
+/*erro numero 7 caso o tipo de checklist seja o dupla escolha só pode 
+    ser causado se alguém bagunçar o front pelo inspecionar*/ 
 
 function allValidationsLayout(item,errorNumber) {
+
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${item.id}`);
     let errorsDescription=[
         '',
         'Há campos obrigatórios das checklist que não foram preenchidos!',
         'Há checklists que não foram definidas seu tipo!',
         'Há checklists que suas pontuações estão desiguais!',
-        'Há checklists principais que precisam das subchecklists'
+        'Há checklists principais que precisam das subchecklists!',
+        'Há checklists do tipo (dupla escolha) sem opções!',
+        'Há checklists do tipo (multiplas escolhas) sem opções!',
+        'Há checklists do tipo (multiplas escolhas) com a porcentagem incorreta!'
     ];
 
     if(errorNumber === ERROR_EMPTY_INPUTS){
@@ -852,6 +977,12 @@ function allValidationsLayout(item,errorNumber) {
         defaultChecklistElement.classList.add('input-danger');
     }
 
+    if(errorNumber===ERROR_EMPTY_DOUBLE_OPTIONS || errorNumber===ERROR_EMPTY_OPTIONS 
+        || errorNumber===ERROR_OPTIONS_PERCETAGE){
+        
+        defaultChecklistElement.querySelector('.btnAddOptions').classList.add('input-danger');
+    }
+
     let alertHeader=ONE_ELEMENT('.alert-header');
     alertHeader.classList.remove('d-none');
 
@@ -876,6 +1007,26 @@ function allValidations(defaultChecklistArray,error="") {
         if(item.idDefaultChecklist === null){
             if(item.subchecklists.length===0){
                 errorNumber=ERROR_SUBCHECKLIST_FATHER;
+            }
+        }
+
+        if(item.typechecklist==="3"){
+            let numberOptions=item.options.length;
+            if(numberOptions < 1){
+                errorNumber=ERROR_EMPTY_OPTIONS;
+            }
+
+            item.options.forEach((option)=>{
+                if(option.correctPercentage===false){
+                    errorNumber=ERROR_OPTIONS_PERCETAGE;
+                }
+            })
+        }
+
+        if(item.typechecklist==="4"){
+            let numberOptions=item.options.length;
+            if(numberOptions !=2){
+                errorNumber=ERROR_EMPTY_DOUBLE_OPTIONS;
             }
         }
 

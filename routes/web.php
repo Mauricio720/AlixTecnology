@@ -20,6 +20,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\RequestController;
+use App\Models\DefaultCheckList;
 
 Route::get('/',[HomeController::class,'index'])->name('home');
 
@@ -40,7 +41,10 @@ Route::post('/edit_client',[ClientsController::class,'editClient'])->name('editC
 Route::get('/delete_client/{id}',[ClientsController::class,'deleteClient'])->name('deleteClient');
 
 Route::get('/all_default_checklist',[DefaultChecklistController::class,'index'])->name('defaultChecklist');
-Route::get('/addDefaultChecklist',[DefaultChecklistController::class,'add'])->name('addDefaultChecklist');
+Route::get('/add_default_checklist',[DefaultChecklistController::class,'addView'])->name('addDefaultChecklist');
+Route::post('/add_default_checklist',[DefaultChecklistController::class,'add'])->name('addDefaultChecklist');
+Route::get('/get_default_checklist/{id}',[DefaultChecklistController::class,'getDefaultChecklistById'])->name('getDefaultChecklistById');
+Route::get('/delete_default_checklist/{id}',[DefaultChecklistController::class,'delete'])->name('deleteDefaultChecklist');
 
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 Auth::routes();

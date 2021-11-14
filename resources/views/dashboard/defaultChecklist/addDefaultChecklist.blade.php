@@ -2,13 +2,21 @@
 @extends('dashboard.base')
 
 @section('content')
-   <div class="card">
+   <form id="formChecklists" action="{{route('addDefaultChecklist')}}" method="post" style="display: none">
+        @csrf
+        <input type="hidden" name="allChecklists" id="allChecklists" value="allChecklists"> 
+    </form>
+
+    <div class="card">
         <div class="card-header">
             <div class="row">
                 <div class="col-6">
                     <h4>Adicionar Checklist Padrão</h4>
                 </div>
                 <div class="col-6 d-flex justify-content-end">
+                    <a href="{{route('defaultChecklist')}}" class="btnDefault btnBack" title="Voltar">
+                        <img src="{{asset('storage/general_icons/back.png')}}" width="16" height="16">
+                    </a>
                     <div class="btnDefault btnAdd" id="btnAddDefaultCheck" title="Adicionar Checklist" >
                         +
                     </div>
