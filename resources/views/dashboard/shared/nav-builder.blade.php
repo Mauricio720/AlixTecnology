@@ -16,11 +16,20 @@
         </li>
 
         <li class="c-sidebar-nav-item">
+            <a class="c-sidebar-nav-link" href="{{route('allChecklists')}}">
+                <i class="c-sidebar-nav-icon h-100">
+                    <img width="16" src="{{asset('storage/general_icons/home.png')}}">
+                </i>
+                <span class="c-sidebar-nav-icon"></span>Checklist
+            </a>
+        </li>
+
+        <li class="c-sidebar-nav-item">
             <a class="c-sidebar-nav-link" href="{{route('defaultChecklist')}}">
                 <i class="c-sidebar-nav-icon h-100">
                     <img width="16" src="{{asset('storage/general_icons/home.png')}}">
                 </i>
-                <span class="c-sidebar-nav-icon"></span>Listas Padrão
+                <span class="c-sidebar-nav-icon"></span>Checklist Padrão
             </a>
         </li>
 

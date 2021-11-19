@@ -25,5 +25,5 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('js/seeDefaultChecklist.min.js') }}" defer></script>
+    <script src="{{ asset('js/seeDefaultChecklist.min.js') }}"></script>
 @endsection

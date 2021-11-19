@@ -51,6 +51,7 @@
         <div class="defaultChecklist__slot">
             <select class="form-control">
                 <option value="">Selecione Tipo Checklist</option>
+                <option value="0">Agrupamento</option>
                 <option value="1">Texto</option>
                 <option value="2">Upload</option>
                 <option value="3">Multiplas Escolhas</option>
@@ -78,7 +79,7 @@
                 ++
             </div>
 
-            <div class="btnDefault btnAdd btnDefault--sm btnAddDefaultChecklist" title="Adicionar">
+            <div class="btnDefault btnAdd btnDefault--sm btnAddDefaultChecklist" title="Adicionar" style="display: none">
                 +
             </div>
 

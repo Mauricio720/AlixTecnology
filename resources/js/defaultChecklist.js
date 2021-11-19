@@ -54,6 +54,8 @@ function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
 function verifyIdDefaultNullSelectDisabled(defaultChecklistClone,item) {
     if(item.idDefaultChecklist===null){
         defaultChecklistClone.querySelector('select').disabled=true;
+        defaultChecklistClone.querySelector('select').value=0;
+        defaultChecklistClone.querySelector('.btnAddDefaultChecklist').style.display="block";
     }else{
         defaultChecklistClone.querySelector('select').value=item.typechecklist.toString();
     }
@@ -95,6 +97,10 @@ function verifyTypeSubchecklist(defaultChecklistClone,item) {
         defaultChecklistClone.querySelector('.btnAddOptions').style.display="block";
     }else{
         defaultChecklistClone.querySelector('.btnAddOptions').style.display="none";
+    }
+
+    if(item.typechecklist==="0"){
+        defaultChecklistClone.querySelector('.btnAddDefaultChecklist').style.display="block";
     }
 }
 
@@ -226,7 +232,12 @@ function uniqueEventTypeChecklist(elementChecklist,defaultChecklist) {
             defaultChecklist.typechecklist=value;
         
             e.currentTarget.classList.remove('input-danger');
-            
+            if(value==="0"){
+                e.currentTarget.closest('.defaultChecklist').querySelector('.btnAddDefaultChecklist').style.display='block';
+            }else{
+                e.currentTarget.closest('.defaultChecklist').querySelector('.btnAddDefaultChecklist').style.display='none';
+            }
+
             if(value==="3" || value==="4"){
                 e.currentTarget.closest('.defaultChecklist').querySelector('.btnAddOptions').style.display="block";
                 e.currentTarget.closest('.defaultChecklist').querySelector('.btnAddOptions').setAttribute('type',value);
@@ -934,6 +945,7 @@ const ERROR_SUBCHECKLIST_FATHER=4;
 const ERROR_EMPTY_DOUBLE_OPTIONS=5;
 const ERROR_EMPTY_OPTIONS=6;
 const ERROR_OPTIONS_PERCETAGE=7;
+const ERROR_GROUPING=8;
 
 //erro numero 5 só pode ser causa se alguem bagunçar o front pelo inspecionar
 /*erro numero 7 caso o tipo de checklist seja o dupla escolha só pode 
@@ -950,7 +962,8 @@ function allValidationsLayout(item,errorNumber) {
         'Há checklists principais que precisam das subchecklists!',
         'Há checklists do tipo (dupla escolha) sem opções!',
         'Há checklists do tipo (multiplas escolhas) sem opções!',
-        'Há checklists do tipo (multiplas escolhas) com a porcentagem incorreta!'
+        'Há checklists do tipo (multiplas escolhas) com a porcentagem incorreta!',
+        'Há checklists do tipo (agrupamento) que precisam ter pelo menos uma subchecklist!'
     ];
 
     if(errorNumber === ERROR_EMPTY_INPUTS){
@@ -983,6 +996,10 @@ function allValidationsLayout(item,errorNumber) {
         defaultChecklistElement.querySelector('.btnAddOptions').classList.add('input-danger');
     }
 
+    if(errorNumber===ERROR_GROUPING){
+        defaultChecklistElement.querySelector('.btnAddDefaultChecklist').classList.add('input-danger');
+    }
+
     let alertHeader=ONE_ELEMENT('.alert-header');
     alertHeader.classList.remove('d-none');
 
@@ -1007,6 +1024,12 @@ function allValidations(defaultChecklistArray,error="") {
         if(item.idDefaultChecklist === null){
             if(item.subchecklists.length===0){
                 errorNumber=ERROR_SUBCHECKLIST_FATHER;
+            }
+        }
+
+        if(item.typechecklist==="0"){
+            if(item.subchecklists.length===0){
+                errorNumber=ERROR_GROUPING;
             }
         }
 

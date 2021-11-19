@@ -16,7 +16,7 @@ function showDefaultChecklist(defaultChecklistArray,defaultChecklistElement=null
         
         fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item);
         appendDefaultChecklist(defaultChecklistClone,defaultChecklistElement);
-        appendOptions(item); 
+        appendOptions(item,defaultChecklistClone); 
         repeatLoopShowDefaultChecklist(item,defaultChecklistClone); 
 
         defaultChecklistClone.querySelector('.btnSeeMoreCheck').setAttribute('id',item.id);
@@ -36,7 +36,7 @@ function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
         'Nenhuma observação':item.observation;
 }
 
-function appendOptions(item) {
+function appendOptions(item,defaultChecklistClone) {
     if(item.options.length > 0){
         defaultChecklistClone.querySelector('.btnOptions').style.display='block';
         defaultChecklistClone.querySelector('.btnOptions').setAttribute('id',item.id);
@@ -77,8 +77,8 @@ function openModal(options) {
     options.forEach((option)=>{
         let optionsDefaultChecklistClone=optionsDefaultChecklist.cloneNode(true);
         optionsDefaultChecklistClone.querySelector('.optionName').innerHTML=option.name;
-        optionsDefaultChecklistClone.querySelector('.optionPercentage').innerHTML=option.percentage;
-        optionsDefaultChecklistClone.querySelector('.optionPoints').innerHTML=option.points;
+        optionsDefaultChecklistClone.querySelector('.optionPercentage').innerHTML=option.percentage+"%";
+        optionsDefaultChecklistClone.querySelector('.optionPoints').innerHTML="Pontos: "+option.points;
         optionsDefaultChecklistClone.style.display='flex';
         
         ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(optionsDefaultChecklistClone);

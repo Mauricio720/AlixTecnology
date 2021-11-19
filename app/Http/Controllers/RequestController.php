@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Util\DefaultCheckListOrganization;
 use Illuminate\Http\Request;
 
 class RequestController extends Controller
@@ -32,5 +33,12 @@ class RequestController extends Controller
         }
         
         echo json_encode($data);
+    }
+
+    public function getAllDefaultChecklist($id){
+        $defaultChecklistOrganization=new DefaultCheckListOrganization();
+        $allDefaultChecklist=json_encode($defaultChecklistOrganization->getDefaultChecklistById($id));
+        
+        echo $allDefaultChecklist;
     }
 }

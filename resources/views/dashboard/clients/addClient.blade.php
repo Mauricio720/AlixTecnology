@@ -8,7 +8,8 @@
                     <h4>Adicionar Cliente</h4>
                 </div>
                 <div class="col-6 d-flex justify-content-end">
-                    <a href="{{route('allClients')}}" class="btnDefault btnBack" title="Voltar">
+                    <a href="{{$registerChecklist==""?route('allClients'):route('addChecklist')}}" 
+                        class="btnDefault btnBack" title="Voltar">
                         <img src="{{asset('storage/general_icons/back.png')}}" width="16" height="16">
                     </a>
                 </div>
@@ -29,6 +30,7 @@
         <div class="card-body">
             <form method="POST" action="{{route('addClient')}}">
                 @csrf
+                <input type="hidden" name="registerChecklist" value="{{$registerChecklist}}">
                 <div class="row">
                     <div class="col-6">
                         <div class="card">

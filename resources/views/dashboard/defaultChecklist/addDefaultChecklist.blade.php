@@ -5,6 +5,8 @@
    <form id="formChecklists" action="{{route('addDefaultChecklist')}}" method="post" style="display: none">
         @csrf
         <input type="hidden" name="allChecklists" id="allChecklists" value="allChecklists"> 
+        <input type="hidden" name="registerChecklist" value="{{$registerChecklist}}">
+
     </form>
 
     <div class="card">
@@ -14,7 +16,7 @@
                     <h4>Adicionar Checklist Padrão</h4>
                 </div>
                 <div class="col-6 d-flex justify-content-end">
-                    <a href="{{route('defaultChecklist')}}" class="btnDefault btnBack" title="Voltar">
+                    <a href="{{$registerChecklist==""?route('defaultChecklist'):route('addChecklist')}}" class="btnDefault btnBack" title="Voltar">
                         <img src="{{asset('storage/general_icons/back.png')}}" width="16" height="16">
                     </a>
                     <div class="btnDefault btnAdd" id="btnAddDefaultCheck" title="Adicionar Checklist" >

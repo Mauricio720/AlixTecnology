@@ -99,6 +99,8 @@ class ClientsController extends Controller
 
     public function addClientView(Request $request){
         $data=[];
+        $data['registerChecklist']=$request->registerChecklist!=""?$request->registerChecklist:'';
+        
         return view('dashboard.clients.addClient',$data);
     }
 
@@ -132,8 +134,13 @@ class ClientsController extends Controller
         }else{
             return redirect()->route('addClientView')->withInput()->withErrors('Cnpj ja cadastrado!');
         }
-       
-        return redirect()->route('allClients');
+        
+        if($request->filled('registerChecklist')){
+            return redirect()->route('addChecklist');
+        }else{
+            return redirect()->route('allClients');
+        }
+        
     }
 
     public function editClientView($id){
