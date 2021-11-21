@@ -10,18 +10,16 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ChecklistController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\DefaultChecklistController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\RequestController;
-use App\Models\DefaultCheckList;
 
 Route::get('/',[HomeController::class,'index'])->name('home');
 
@@ -49,7 +47,8 @@ Route::get('/delete_default_checklist/{id}',[DefaultChecklistController::class,'
 
 Route::get('/get_default_checklist_request/{id}',[RequestController::class,'getAllDefaultChecklist'])->name('getAllDefaultChecklist');
 Route::get('/all_checklists',[ChecklistController::class,'index'])->name('allChecklists');
-Route::get('/add_checklist',[ChecklistController::class,'add'])->name('addChecklist');
+Route::get('/add_checklist',[ChecklistController::class,'add'])->name('addChecklistView');
+Route::post('/add_checklist',[ChecklistController::class,'addChecklist'])->name('addChecklist');
 
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 Auth::routes();

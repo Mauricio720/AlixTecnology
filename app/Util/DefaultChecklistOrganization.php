@@ -67,10 +67,10 @@ class DefaultCheckListOrganization {
 
     public function getDefaultChecklistById($id){
         $defaultChecklist=DefaultCheckList::where('id',$id)->first();
-        return $this->organizationDefaultChecklist($defaultChecklist,[],false);
+        return $this->organizationDefaultChecklist($defaultChecklist,[]);
     }
 
-    private function organizationDefaultChecklist($defaultChecklist,$arrayOrganization,$isSubchecklist){
+    private function organizationDefaultChecklist($defaultChecklist,$arrayOrganization){
         $arrayOrganization=$arrayOrganization;
 
         $newArray['id']=$defaultChecklist->id;

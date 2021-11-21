@@ -46,8 +46,8 @@ function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
     defaultChecklistClone.setAttribute('id',"defaultCheck"+item.id);
     
     defaultChecklistClone.querySelectorAll('input')[0].value=item.name;
-    defaultChecklistClone.querySelectorAll('input')[1].value=item.percentage;
-    defaultChecklistClone.querySelectorAll('input')[2].value=item.points;
+    defaultChecklistClone.querySelectorAll('input')[1].value=parseFloat(item.percentage).toFixed(2); 
+    defaultChecklistClone.querySelectorAll('input')[2].value=parseFloat(item.points).toFixed(2);
     defaultChecklistClone.querySelectorAll('input')[3].value=item.observation;
 }
 
@@ -151,6 +151,7 @@ function eventsDefaultChecklist() {
                 verifyBtnSave();
                 eventsBtnAddOptions();
                 showSubchecklistContainerLoop(defaultChecklistArray);
+                typechecklistModal="";
             }
         })
 
@@ -161,8 +162,6 @@ function eventsDefaultChecklist() {
         uniqueEventFocusInputDanger(elementChecklist,defaultChecklist); 
         uniqueEventTypeChecklist(elementChecklist,defaultChecklist); 
     });
-
-    
 }
 
 function uniqueEventInputChecklistName(elementChecklist,defaultChecklist) {
@@ -317,10 +316,26 @@ function setChecklistPoint(id) {
     let percentage= (pointsValue/points)*100;
    
     allDefaultChecklist.forEach(element => {
-        element.points=pointsValue.toFixed(2);
-        element.percentage=percentage.toFixed(2);
+        element.points=pointsValue;
+        element.percentage=percentage;
         element.correctPercentage=true;
+
+        if(element.options.length > 0){
+            updatePointsOptions(element.options,element.points); 
+        }
     });
+}
+
+function updatePointsOptions(options,points) {
+    options.forEach((option)=>{
+        let numberOptions=options.length;
+        let pointsValue=points/numberOptions;
+        let percentage= (pointsValue/pointsModal)*100;
+
+        option.pointsValue=pointsValue;
+        option.percentage=percentage;
+        option.correctPercentage=true;
+    })
 }
 
 function verifyCorrectPercentage(idDefaultChecklistFather) {
@@ -555,7 +570,7 @@ var pointsModal=0;
 function openModalMultipleChoose(points,id) {
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (multiplas escolhas)"
-    +" Pontuação Checklist "+points;
+    +" Pontuação Checklist "+parseFloat(points).toFixed(2);
     
     pointsModal=points;
     let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
@@ -569,15 +584,12 @@ function openModalMultipleChoose(points,id) {
 
     allOptions=[];
     let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
-    
-    if(typechecklistModal==="4"){
-        defaultChecklist.options=[];
-    }
-    typechecklistModal="3";
-
     if(defaultChecklist.options.length>0){
-       allOptions=defaultChecklist.options;
+        allOptions=defaultChecklist.options;
     }
+
+    fillLayoutOptionsDefaultChecklist(points,true);
+    eventsMultipleChoose();
 
     ONE_ELEMENT('#btnAddModal').addEventListener('click',()=>{
         addNewsOptionEmpty(points,true);
@@ -601,7 +613,7 @@ function openModalMultipleChoose(points,id) {
 function openModalDoubleChoose(points,id) {
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (dupla escolha) "
-    +" Pontuação Checklist "+points;
+    +" Pontuação Checklist "+parseFloat(points).toFixed(2);
     pointsModal=points;
     let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
     modalHeader.style.display="none";
@@ -611,13 +623,6 @@ function openModalDoubleChoose(points,id) {
     
     allOptions=[];
     let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
-
-    if(typechecklistModal==="3"){
-        defaultChecklist.options=[];
-    }
-
-    typechecklistModal="4";
-
     if(defaultChecklist.options.length>0){
         allOptions=defaultChecklist.options;
       
@@ -930,7 +935,7 @@ function verifyCorrectPercentageOptions() {
 ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
     let alertHeader=ONE_ELEMENT('.alert-header');
     alertHeader.classList.add('d-none');
-
+    
     if(allValidations(defaultChecklistArray) === ""){
         ONE_ELEMENT('#allChecklists').value=JSON.stringify(defaultChecklistArray);
         ONE_ELEMENT('#formChecklists').submit();

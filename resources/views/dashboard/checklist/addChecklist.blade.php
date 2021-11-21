@@ -2,6 +2,12 @@
 @extends('layouts.checklist')
 
 @section('content')
+    <form style="display: none;" action="{{route('addChecklist')}}" enctype="multipart/form-data" method="post" id="formChecklist">
+        @csrf
+        <input type="hidden" name="idClient" id="idClient">
+        <input type="hidden" name="checklistArray" id="checklistArray">
+    </form>
+
     <div class="card">
         <div class="card-header">
             <div class="row">
@@ -13,6 +19,14 @@
                         <img src="{{asset('storage/general_icons/back.png')}}" width="16" height="16">
                     </a>
                 </div>
+            </div>
+        </div>
+        <div class="card-header bg-white alert-header d-none">
+            <div class="alert alert-danger alert-dismissible fade show text-center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="alert-content"></div>
             </div>
         </div>
         <div class="card-body">
@@ -32,6 +46,9 @@
 
                 <div class="card-header">
                     <form class="row">
+                        <input type="hidden" name="nameDefaultChecklist" 
+                            value="{{$nameDefaultChecklist!=""?$nameDefaultChecklist:""}}"/>
+                        
                         <div class="col-6 d-flex">
                             <div class="form-group w-75">
                                 <input class="form-control" type="text" name="nameCnpj" 
@@ -60,7 +77,7 @@
                             @foreach($allClients as $client)
                                 <tr>
                                     <td>
-                                        <input type='radio' name="clientRadio" value="{{$client->id}}">
+                                        <input type='radio' class="clientRadio" name="clientRadio" value="{{$client->id}}">
                                     </td>
                                     <td>{{$client->name}}</td>
                                     <td>{{$client->cnpj}}</td>
@@ -94,6 +111,8 @@
 
                 <div class="card-header">
                     <form class="row">
+                        <input type="hidden" name="nameCnpj" value="{{$nameCnpj!=""?$nameCnpj:""}}"/>
+                        
                         <div class="col-6 d-flex">
                             <div class="form-group w-75">
                                 <input class="form-control" type="text" name="nameDefaultChecklist" 
@@ -147,6 +166,11 @@
                 </div>
                 <div class="card-body" id="contentChecklist"></div>
             </div>
+        </div>
+        <div class="card-footer">
+            <center>
+                <input class="btn btn-success w-25" type="submit" value="Salvar" id="btnSave">
+            </center>
         </div>
     </div>
 </div>

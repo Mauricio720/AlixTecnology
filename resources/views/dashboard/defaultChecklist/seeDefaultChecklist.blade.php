@@ -1,5 +1,5 @@
-@extends('layouts.defaultChecklist')
 @extends('dashboard.base')
+@extends('layouts.defaultChecklist')
 
 @section('content')
     <input type="hidden" id="defaultChecklistArray" value="{{$allDefaultChecklist}}">

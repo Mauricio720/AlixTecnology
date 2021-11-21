@@ -20,14 +20,14 @@ class DefaultChecklistController extends Controller
         $data['observationChecklist']="";
 
         if($request->hasAny(['nameChecklist','pointsChecklist','observationChecklist'])){
-            $data['allDefaultChecklist']=$this->filterDefaultChecklist($request);
-
+            $data=$this->filterDefaultChecklist($request,$data);
         }
 
         return view('dashboard.defaultChecklist.allDefaultChecklist',$data);
     }
 
-    private function filterDefaultChecklist($request){
+    private function filterDefaultChecklist($request,$data){
+     
         $query=DefaultCheckList::query();
             
         $nameChecklist=$request->input('nameChecklist');
@@ -40,18 +40,20 @@ class DefaultChecklistController extends Controller
     
         
         if($request->filled('nameChecklist')){
-            $query->Where('name','LIKE','%'.$nameChecklist.'%');
+            $query->where('name','LIKE','%'.$nameChecklist.'%');
         }
         
         if($request->filled('pointsChecklist')){
-            $query->Where('points',$pointsChecklist);
+            $query->where('points','LIKE','%'.$pointsChecklist.'%');
         }
 
         if($request->filled('observationChecklist')){
-            $query->Where('observation','LIKE','%'.$observationChecklist.'%');
+            $query->where('observation','LIKE','%'.$observationChecklist.'%');
         }
 
         $data['allDefaultChecklist']=$query->where('idDefaultChecklist',null)->paginate(10);
+
+        return $data;
     }
 
     public function addView(Request $request){
