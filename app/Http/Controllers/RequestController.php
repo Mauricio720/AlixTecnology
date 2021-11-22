@@ -41,4 +41,22 @@ class RequestController extends Controller
         
         echo $allDefaultChecklist;
     }
+
+    public function uploadFile(Request $request){
+        $array=['error'=>""];
+
+        $file=$request->all()['checklistFile'];
+        $fileName=md5(rand(0,99999).rand(0,99999)).'.'.$file->getClientOriginalExtension();
+        
+        if($file->getClientOriginalExtension() == "php" || $file->getClientOriginalExtension() == "js" ){
+            $array['error']="Extensão inválida";
+        }else{
+            $pathImage="public/checklists_files/";
+            $file->storeAs($pathImage,$fileName);
+    
+            $array['fileName']=$fileName;
+        }
+
+        return json_encode($array);
+    }
 }

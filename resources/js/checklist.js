@@ -203,15 +203,8 @@ function eventsChecklistsTypeInputs(element,checklist) {
             let possiblePoints=checklist.points;
             let imageFile=e.currentTarget.files[0];
             
-            var fileObject = imageFile;
-            var newObject  = {
-                'lastModified'     : fileObject.lastModified,
-                'lastModifiedDate' : fileObject.lastModifiedDate,
-                'name'             : fileObject.name,
-                'size'             : fileObject.size,
-                'type'             : fileObject.type
-            };  
-            checklist.value=newObject  ;
+            uploadFile(imageFile,checklist);
+            
             checklist.pointsObtained=possiblePoints;
            
             element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained}`;
@@ -236,6 +229,22 @@ function eventsChecklistsTypeInputs(element,checklist) {
             updatePointsFatherChecklist(checklist,possiblePoints,increment);
         });
     }
+}
+
+async function uploadFile(file,checklist){
+    const formData=new FormData();
+    formData.append('checklistFile',file);
+   
+    const res=await fetch(BASE_URL+"/upload_file/",{
+        headers: {
+           "X-CSRF-Token": csrfToken
+        },
+        method:'POST',
+        body:formData        
+    });
+    
+    const json=await res.json();
+    checklist.value=json.fileName;
 }
 
 function eventsChecklistsMultipleOptions(element,checklist,multiple=true) {

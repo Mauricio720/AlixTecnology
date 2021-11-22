@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\DefaultCheckList;
 use App\Util\CheckListOrganization;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ChecklistController extends Controller
 {
@@ -15,6 +16,8 @@ class ChecklistController extends Controller
     }
 
     public function index(Request $request){
+    
+        
         $data=[];
         $data['allChecklist']=CheckList::join('default_checklists','checklists.id_default_checklist','default_checklists.id')    
             ->join('clients','checklists.id_client','clients.id')
@@ -107,16 +110,24 @@ class ChecklistController extends Controller
         $checklistArray=json_decode($data['checklistArray']);
         $idClient=$data['idClient'];
       
-        /*
         $checklistOrganization=new CheckListOrganization($idClient);
          
         if($request->filled('checklistArray')){
             $checklistOrganization->addChecklist($checklistArray);
+            $checklistOrganization->deleteFilesNotUsed();
         }
 
-        return redirect()->route('allChecklists');*/
+        return redirect()->route('allChecklists');
     }
 
+    public function getChecklistById($id){
+        $checklistOrganization=new CheckListOrganization();
+        $data['allChecklists']=json_encode($checklistOrganization->getChecklistById($id));
+        $data['checklist']=CheckList::where('id',$id)->first();
+
+        return view('dashboard.checklist.seeChecklist',$data);
+    }
+    
     private function filterClients($nameCnpj){
         $clients=Client::where('name','LIKE','%'.$nameCnpj.'%')->orWhere('cnpj','LIKE','%'.$nameCnpj.'%');
         return $clients->paginate(5);

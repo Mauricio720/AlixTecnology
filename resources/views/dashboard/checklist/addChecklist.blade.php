@@ -177,5 +177,8 @@
 @endsection
 
 @section('javascript')
+    <script>
+        var csrfToken="{{csrf_token()}}"; 
+    </script>
     <script src="{{ asset('js/checklist.min.js') }}" defer></script>
 @endsection

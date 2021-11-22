@@ -78,7 +78,7 @@
                             <td>{{$checklist->userName}}</td>
                             <td>{{$checklist->created_at->format('d/m/Y H:i:s')}}</td>
                             <td class="d-flex">
-                                <a href="{{route('getDefaultChecklistById',['id'=>$checklist->id])}}" 
+                                <a href="{{route('getChecklistById',['id'=>$checklist->id])}}" 
                                     class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
                                     ...
                                 </a>

@@ -49,6 +49,8 @@ Route::get('/get_default_checklist_request/{id}',[RequestController::class,'getA
 Route::get('/all_checklists',[ChecklistController::class,'index'])->name('allChecklists');
 Route::get('/add_checklist',[ChecklistController::class,'add'])->name('addChecklistView');
 Route::post('/add_checklist',[ChecklistController::class,'addChecklist'])->name('addChecklist');
+Route::get('/get_checklist/{id}',[ChecklistController::class,'getChecklistById'])->name('getChecklistById');
+Route::post('/upload_file',[RequestController::class,'uploadFile'])->name('uploadFile');
 
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 Auth::routes();
