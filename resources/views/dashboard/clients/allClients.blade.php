@@ -79,13 +79,23 @@
                         <td>{{$client->financial_officer_name}}</td>
                         <td>{{$client->contact_monitoring_name}}</td>
                         <td class="d-flex">
+                            <a href="{{route('addChecklist',['idClient'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 
+                                title="Adicionar Checklist">
+                                +
+                            </a>
+
+                            <a href="{{route('allChecklists',['idClient'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 
+                                title="Ver checklist" >
+                                ...
+                            </a>
+                            
                             <a href="{{route('seeClient',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 
-                                title="Ver Mais Cliente" id="{{$client->id}}">
+                                title="Ver Mais Cliente">
                                 ...
                             </a>
 
                             <a href="{{route('editClientView',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnEdit" 
-                                title="Editar Cliente" id="{{$client->id}}" >
+                                title="Editar Cliente" >
                                 <img src="{{asset('storage/general_icons/pencil.png')}}" width="16" height="16">
                             </a>
 

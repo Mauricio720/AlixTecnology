@@ -64,7 +64,7 @@ class CheckListOrganization {
             $checklistOption->id_checklist=$idChecklist;
             $checklistOption->id_default_checklist_option=$option->id;
             $checklistOption->points=$option->points;
-            $checklistOption->points=$option->pointsObtained;
+            $checklistOption->pointsObtained=$option->pointsObtained;
             $checklistOption->selected=$option->selected;
             $checklistOption->save();
         }
@@ -86,6 +86,7 @@ class CheckListOrganization {
         $newArray['percentage']=$defaultChecklist->percentage;
         $newArray['points']=$checklist->points;
         $newArray['pointsObtained']=$checklist->pointsObtained;
+        $newArray['file_name']=$checklist->file_name;
         $newArray['value']=$checklist->value;
         $newArray['observation']=$defaultChecklist->observation;
         $newArray['created_at']=date('d/m/Y',strtotime($checklist->created_at));

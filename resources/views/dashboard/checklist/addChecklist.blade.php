@@ -2,7 +2,8 @@
 @extends('layouts.checklist')
 
 @section('content')
-    <form style="display: none;" action="{{route('addChecklist')}}" enctype="multipart/form-data" method="post" id="formChecklist">
+    <form style="display: none;" action="{{route('addChecklist')}}" enctype="multipart/form-data" 
+        method="post" id="formChecklistAdd">
         @csrf
         <input type="hidden" name="idClient" id="idClient">
         <input type="hidden" name="checklistArray" id="checklistArray">
@@ -77,7 +78,8 @@
                             @foreach($allClients as $client)
                                 <tr>
                                     <td>
-                                        <input type='radio' class="clientRadio" name="clientRadio" value="{{$client->id}}">
+                                        <input type='radio' class="clientRadio" name="clientRadio" 
+                                            value="{{$client->id}}" {{$idClient!=""?'checked':''}}>
                                     </td>
                                     <td>{{$client->name}}</td>
                                     <td>{{$client->cnpj}}</td>

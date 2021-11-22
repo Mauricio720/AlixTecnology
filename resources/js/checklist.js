@@ -375,7 +375,7 @@ ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
         window.scrollTo(0,0);
     }else{
         ONE_ELEMENT('#checklistArray').value=JSON.stringify(defaultChecklistArray);
-        ONE_ELEMENT('#formChecklist').submit();
+        ONE_ELEMENT('#formChecklistAdd').submit();
     }
 });
 

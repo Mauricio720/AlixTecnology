@@ -46,8 +46,8 @@ Route::get('/get_default_checklist/{id}',[DefaultChecklistController::class,'get
 Route::get('/delete_default_checklist/{id}',[DefaultChecklistController::class,'delete'])->name('deleteDefaultChecklist');
 
 Route::get('/get_default_checklist_request/{id}',[RequestController::class,'getAllDefaultChecklist'])->name('getAllDefaultChecklist');
-Route::get('/all_checklists',[ChecklistController::class,'index'])->name('allChecklists');
-Route::get('/add_checklist',[ChecklistController::class,'add'])->name('addChecklistView');
+Route::get('/all_checklists/{idClient?}',[ChecklistController::class,'index'])->name('allChecklists');
+Route::get('/add_checklist/{idClient?}',[ChecklistController::class,'add'])->name('addChecklistView');
 Route::post('/add_checklist',[ChecklistController::class,'addChecklist'])->name('addChecklist');
 Route::get('/get_checklist/{id}',[ChecklistController::class,'getChecklistById'])->name('getChecklistById');
 Route::post('/upload_file',[RequestController::class,'uploadFile'])->name('uploadFile');

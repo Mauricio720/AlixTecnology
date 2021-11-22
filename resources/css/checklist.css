@@ -1,4 +1,4 @@
-.checklist{
+.checklist,.checklistExibition,.optionsChecklistExibition{
     display: none;
     flex-direction: column;
     min-height: 100px;

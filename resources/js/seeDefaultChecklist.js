@@ -29,7 +29,7 @@ function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
     defaultChecklistClone.setAttribute('id',"defaultCheck"+item.id);
     
     defaultChecklistClone.querySelector('.nameChecklist').innerHTML=item.name;
-    defaultChecklistClone.querySelector('.typeChecklist').innerHTML=typeChecklistArray[item.id_type_checklist];
+    defaultChecklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
     defaultChecklistClone.querySelector('.pointsPercentage').innerHTML=item.percentage+"%";
     defaultChecklistClone.querySelector('.points').innerHTML="Pontos: "+item.points;
     defaultChecklistClone.querySelector('.observation').innerHTML=item.observation===""?
@@ -112,7 +112,7 @@ function openModalChecklist(item) {
 
     
     formChecklist.querySelector('.nameChecklist').innerHTML=item.name;
-    formChecklist.querySelector('.typeChecklist').innerHTML=typeChecklistArray[item.id_type_checklist];
+    formChecklist.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
     formChecklist.querySelector('.pointsPercentageChecklist').innerHTML=item.percentage+"%";
     formChecklist.querySelector('.pointsChecklist').innerHTML="Pontos: "+item.points;
     formChecklist.querySelector('.observationChecklist').innerHTML=item.observation===""?
@@ -174,7 +174,6 @@ function showSubchecklistContainerLoop(defaultChecklistArray) {
 
 function increaseDefaultChecklistFather(item,extraHeight=65) {
     let defaultChecklist=ONE_ELEMENT(`#defaultCheck${item.id}`);
-    console.log(defaultChecklist);
     let height=defaultChecklist.offsetHeight;
     if(extraHeight > 65){
         defaultChecklist.style.height=height+extraHeight+"px";

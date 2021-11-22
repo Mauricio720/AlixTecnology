@@ -15,17 +15,24 @@ class ChecklistController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(Request $request){
-    
-        
+    public function index(Request $request,$idClient=null){
         $data=[];
-        $data['allChecklist']=CheckList::join('default_checklists','checklists.id_default_checklist','default_checklists.id')    
+        $queryChecklist=CheckList::query();
+        
+        $queryChecklist->join('default_checklists','checklists.id_default_checklist','default_checklists.id')    
             ->join('clients','checklists.id_client','clients.id')
             ->join('users','checklists.id_user','users.id')
-            ->where('id_checklist',null)
-            ->paginate(10,['checklists.*','default_checklists.name as checklistName','clients.name as clientName'
-                ,'users.name as userName','default_checklists.observation as observationChecklist']);
+            ->where('id_checklist',null);
         
+        
+
+        if($idClient != null){
+            $queryChecklist->where('id_client',$idClient);
+        }    
+        
+        $data['allChecklist']=$queryChecklist->orderBy('id','DESC')->paginate(10,['checklists.*','default_checklists.name as checklistName','clients.name as clientName'
+        ,'users.name as userName','default_checklists.observation as observationChecklist']);
+
         $data['nameChecklist']="";
         $data['pointsChecklist']="";
         $data['pointsObtained']="";
@@ -84,10 +91,21 @@ class ChecklistController extends Controller
 
     public function add(Request $request){
         $data=[];
-        $data['allClients']=Client::paginate(5);
+        $queryClient=Client::query();
         
+        $data['idClient']="";
+        $idClient=$request->input(['idClient']);
+        
+        if($idClient!=null){
+            $data['idClient']=$idClient;
+            $queryClient->where('id',$idClient);
+        }
+        
+        $data['allClients']=$queryClient->paginate(5);
+
         $data['nameCnpj']='';
         if($request->has('nameCnpj')){
+            $data['idClient']="";
             $nameCnpj=$request->input('nameCnpj');
             $data['allClients']=$this->filterClients($nameCnpj);
             $data['nameCnpj']=$nameCnpj;
@@ -123,7 +141,9 @@ class ChecklistController extends Controller
     public function getChecklistById($id){
         $checklistOrganization=new CheckListOrganization();
         $data['allChecklists']=json_encode($checklistOrganization->getChecklistById($id));
+   
         $data['checklist']=CheckList::where('id',$id)->first();
+        $data['defaultChecklist']=DefaultCheckList::where('id',$data['checklist']->id_default_checklist)->first();
 
         return view('dashboard.checklist.seeChecklist',$data);
     }
