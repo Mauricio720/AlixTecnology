@@ -37,6 +37,7 @@ function showDefaultChecklist(defaultChecklistArray) {
         verifyTypeSubchecklist(defaultChecklistClone,item); 
         verifyActiveDefaultChecklist(defaultChecklistClone,item); 
         appendDefaultChecklist(defaultChecklistClone,item); 
+        setChecklistPoint(item.id);
         repeatLoopShowDefaultChecklist(item);
     });
 }
@@ -128,7 +129,6 @@ function repeatLoopShowDefaultChecklist(item) {
 /*-----------------------------------------------MONTAGEM DO LAYOUT-FIM--------------------------------------------*/
 
 
-
 /*----------------------------------------------EVENTOS DAS CHECKLISTS-----------------------------------------*/
 
 function eventsDefaultChecklist() {
@@ -142,7 +142,7 @@ function eventsDefaultChecklist() {
             if(validationDefaultChecklist(e.currentTarget.closest('.defaultChecklist'),defaultChecklist)){
                 addDefaultChecklist(id); 
                 ONE_ELEMENT('.checklistContent').innerHTML="";
-                setChecklistPoint(id);
+                
                 defaultChecklist.active=true;
                 showDefaultChecklist(defaultChecklistArray);
                 eventsDefaultChecklist();
@@ -171,14 +171,14 @@ function uniqueEventInputChecklistName(elementChecklist,defaultChecklist) {
     });
 }
 
-function uniqueEventInputPointingPercentage(elementChecklist) {
+function uniqueEventInputPointingPercentage(elementChecklist,defaultChecklist) {
     elementChecklist.querySelectorAll('input')[1].addEventListener('input',(e)=>{
-        idDefaultChecklistFather=calcPointing(e); 
+        idDefaultChecklistFather=calcPointing(e,defaultChecklist); 
         verifyCorrectPercentage(idDefaultChecklistFather);
     });
 }
 
-function calcPointing(e) {
+function calcPointing(e,defaultChecklist) {
     let value=parseFloat(e.currentTarget.value);
     defaultChecklist.percentage=value;
 
@@ -189,7 +189,7 @@ function calcPointing(e) {
     defaultChecklist.points=newPoints;
     
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklist.id}`);
-    defaultChecklistElement.querySelectorAll('input')[1].value=newPoints.toFixed(2);
+    defaultChecklistElement.querySelectorAll('input')[2].value=parseFloat(newPoints).toFixed(2);
 
     return defaultChecklistFather.id;
 }
@@ -319,22 +319,30 @@ function setChecklistPoint(id) {
         element.points=pointsValue;
         element.percentage=percentage;
         element.correctPercentage=true;
-
+        
         if(element.options.length > 0){
-            updatePointsOptions(element.options,element.points); 
+            updatePointsOptions(element.options,element.points,element.typechecklist); 
         }
     });
 }
 
-function updatePointsOptions(options,points) {
+function updatePointsOptions(options,points,typechecklist) {
     options.forEach((option)=>{
         let numberOptions=options.length;
         let pointsValue=points/numberOptions;
         let percentage= (pointsValue/pointsModal)*100;
-
-        option.pointsValue=pointsValue;
-        option.percentage=percentage;
-        option.correctPercentage=true;
+        
+        if(typechecklist==="4"){
+            if(option.selected){
+                option.pointsValue=points;
+            }else{
+                option.pointsValue=0;
+            }
+        }else{
+            option.pointsValue=pointsValue;
+            option.percentage=percentage;
+            option.correctPercentage=true;
+        }
     })
 }
 
@@ -392,44 +400,25 @@ function showSubchecklistContainerLoop(defaultChecklistArray) {
     defaultChecklistArray.forEach(item =>{
         let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${item.id}`);
         if(item.active){
-            let totalDefaultChecklist=item.subchecklists.length;
+            let totalDefaultChecklist=defaultChecklistElement.querySelectorAll('.checklistContent .defaultChecklist').length;
+          
             let margin=35*totalDefaultChecklist;
             let heightTotal=65+(65*totalDefaultChecklist)+margin;
-            
+           
             defaultChecklistElement.style.height=`${heightTotal}px`;
             defaultChecklistElement.classList.add('active');
-            defaultChecklistElement.active=true;
-
-            if(item.idDefaultChecklist != null){
-               increaseDefaultChecklistFather(item);
-            }
-
+            item.active=true;
+          
         }else{
             defaultChecklistElement.style.height="65px";
             defaultChecklistElement.classList.remove('active');
-            defaultChecklistElement.active=false;
+            item.active=false;
         }
 
         if(item.subchecklists.length > 0){
             showSubchecklistContainerLoop(item.subchecklists);
         }
     })
-}
-
-function increaseDefaultChecklistFather(item,extraHeight=65) {
-    let defaultChecklist=ONE_ELEMENT(`#defaultCheck${item.id}`);
-    let height=defaultChecklist.offsetHeight;
-    if(extraHeight > 65){
-        defaultChecklist.style.height=height+extraHeight+"px";
-    }
-    
-    if(item.idDefaultChecklist != null){
-        let defaultChecklistFather=filterDefaultChecklist(defaultChecklistArray,item.idDefaultChecklist,{});
-        let totalDefaultChecklist=item.subchecklists.length;
-        let margin=35*totalDefaultChecklist;
-        let heightTotal=65+(65*totalDefaultChecklist)+margin+extraHeight;
-        increaseDefaultChecklistFather(defaultChecklistFather,heightTotal); 
-    }
 }
 
 function validationDefaultChecklist(defaultChecklistElement,defaultChecklistArray){
@@ -528,6 +517,22 @@ function filterDefaultChecklist(defaultChecklistArray,id,itemObject) {
     return item;
 }
 
+function filterDefaultChecklistNumber(defaultChecklistArray,id,numberDefaultChecklist=0) {
+    let numberDefaultChecklistTotal=numberDefaultChecklist;
+
+    defaultChecklistArray.forEach((itemObject)=>{
+        if(itemObject.id!==id){
+            numberDefaultChecklistTotal++;
+        }
+        
+        if(itemObject.subchecklists.length>0){
+            numberDefaultChecklistTotal=filterDefaultChecklistNumber(itemObject.subchecklists,id,numberDefaultChecklistTotal);
+        }
+    });
+
+    return numberDefaultChecklistTotal;
+}
+
 function filterDefaultChecklistToDelete(defaultChecklistArray,id,itemObject) {
     let item=itemObject;
     defaultChecklistArray.forEach((itemObject,index,object)=>{
@@ -566,12 +571,18 @@ function filterDefaultChecklistToPoints(defaultChecklistArray,id,itemObjectArray
 
 var allOptions=[];
 var pointsModal=0;
+var onlyOneChoose=false;
 
 function openModalMultipleChoose(points,id) {
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (multiplas escolhas)"
     +" Pontuação Checklist "+parseFloat(points).toFixed(2);
     
+    let only_one_choose_input=ONE_ELEMENT('#only_one_choose');
+    only_one_choose_input.style.display='block';
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(only_one_choose_input);
+
+
     pointsModal=points;
     let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
     modalHeader.style.display="none";
@@ -588,12 +599,13 @@ function openModalMultipleChoose(points,id) {
         allOptions=defaultChecklist.options;
     }
 
-    fillLayoutOptionsDefaultChecklist(points,true);
-    eventsMultipleChoose();
+    eventOnlyOneChoose(defaultChecklist);
+
+    fillLayoutOptionsDefaultChecklist(true,onlyOneChoose);
 
     ONE_ELEMENT('#btnAddModal').addEventListener('click',()=>{
-        addNewsOptionEmpty(points,true);
-        fillLayoutOptionsDefaultChecklist(points,true);
+        addNewsOptionEmpty(true);
+        fillLayoutOptionsDefaultChecklist(true,onlyOneChoose);
         eventsMultipleChoose();
     });
 
@@ -610,11 +622,26 @@ function openModalMultipleChoose(points,id) {
     });
 }
 
+function eventOnlyOneChoose(checklist) {
+    ONE_ELEMENT('#only_one_choose').querySelector('input').addEventListener('change',(e)=>{
+        if(e.currentTarget.checked){
+            onlyOneChoose=true;
+        }else{
+            onlyOneChoose=false;
+        }
+
+        ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+        allOptions=[];
+        checklist.options=[];
+    });
+}
+
 function openModalDoubleChoose(points,id) {
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (dupla escolha) "
     +" Pontuação Checklist "+parseFloat(points).toFixed(2);
     pointsModal=points;
+
     let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
     modalHeader.style.display="none";
     
@@ -708,6 +735,7 @@ function removeInputDanger() {
 }
 
 function addOptionsMultiple(defaultChecklist) {
+    defaultChecklist.options=[];
     allOptions.forEach((option)=>{
         defaultChecklist.options.push(option);
     });
@@ -755,7 +783,7 @@ function addNewsOptionEmpty(multiple=false) {
      }
 }
 
-function fillLayoutOptionsDefaultChecklist(multipleChoose=false){
+function fillLayoutOptionsDefaultChecklist(multipleChoose=false,only_one_choose=false){
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     
     allOptions.forEach((option)=>{
@@ -776,10 +804,20 @@ function fillLayoutOptionsDefaultChecklist(multipleChoose=false){
             optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="block";
             optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="block";
             optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="none";
-            optionsDefaultChecklistClone.querySelectorAll('input')[2].value=calcPercentageEquals()[0].toFixed(2); 
-            optionsDefaultChecklistClone.querySelectorAll('input')[1].value=calcPercentageEquals()[1].toFixed(2); 
-            option.pointsValue=calcPercentageEquals()[0];
-            option.percentage=calcPercentageEquals()[1];
+            
+            if(only_one_choose===false){
+                optionsDefaultChecklistClone.querySelectorAll('input')[2].value=calcPercentageEquals()[0].toFixed(2); 
+                optionsDefaultChecklistClone.querySelectorAll('input')[1].value=calcPercentageEquals()[1].toFixed(2); 
+                option.pointsValue=calcPercentageEquals()[0];
+                option.percentage=calcPercentageEquals()[1];
+            }else{
+                optionsDefaultChecklistClone.querySelectorAll('input')[2].value=pointsModal; 
+                optionsDefaultChecklistClone.querySelectorAll('input')[1].
+                    closest('.defaultChecklist__slot').style.display='none'; 
+                option.pointsValue=pointsModal;
+                option.percentage=calcPercentageEquals()[1];
+            }
+          
         }else{
             optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="none";
             optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="block";

@@ -10,7 +10,7 @@
     </form>
 
     <div class="card">
-        <div class="card-header">
+        <div class="card-header bg-dark text-white">
             <div class="row">
                 <div class="col-6">
                     <h4>Adicionar Checklist</h4>
@@ -32,7 +32,7 @@
         </div>
         <div class="card-body">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-dark text-white">
                     <div class="row">
                         <div class="col-6">
                             <h4>Selecione o cliente:</h4>
@@ -98,7 +98,7 @@
             </div>
 
             <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-dark text-white">
                     <div class="row">
                         <div class="col-6">
                             <h4>Selecione a checklist padrão:</h4>
@@ -159,12 +159,22 @@
                 </div>
             </div>
 
-            <div class="card" id="cardContentChecklist">
-                <div class="card-header">
-                    <h5 class="defaultChecklist__name"></h5>
-                    <h5 class="defaultChecklist__points"></h5>
-                    <h5 class="defaultChecklist__possiblePoints"></h5>
-                    <h5 class="defaultChecklist__observation"></h5>
+            <div class="card" id="card-loading" style="display: none">
+
+            </div>
+
+            <div class="card" id="cardContentChecklist" style="display: none;">
+                <div class="card-header bg-dark text-white">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="defaultChecklist__name"></h5>
+                            <h5 class="defaultChecklist__points"></h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <h5 class="defaultChecklist__possiblePoints"></h5>
+                            <h5 class="defaultChecklist__observation"></h5>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body" id="contentChecklist"></div>
             </div>

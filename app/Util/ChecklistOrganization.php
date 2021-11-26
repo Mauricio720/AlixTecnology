@@ -23,13 +23,19 @@ class CheckListOrganization {
         $checklistModel->id_checklist=$idChecklist;
         $checklistModel->points=$checklist->points;
         $checklistModel->pointsObtained=$checklist->pointsObtained;
-        $checklistModel->observation=$checklist->observation;
+        $checklistModel->observation=$checklist->oficialObservation;
         $checklistModel->id_client=$this->idClient;
         $checklistModel->id_user=Auth::user()->id;
         
         if($checklist->id_type_checklist===2){
             $checklistModel->value="";
             $checklistModel->file_name=$checklist->value;
+        }else{
+            $checklistModel->value=$checklist->value;
+        }
+
+        if($checklist->id_type_checklist==6){
+            $checklistModel->value=date('d/m/Y',strtotime($checklist->value));
         }else{
             $checklistModel->value=$checklist->value;
         }
@@ -72,7 +78,11 @@ class CheckListOrganization {
 
     public function getChecklistById($id){
         $checklist=Checklist::where('id',$id)->first();
-        return $this->organizationChecklist($checklist,[],false);
+        if($checklist!==null){
+            return $this->organizationChecklist($checklist,[],false);
+        }else{
+            return [];
+        }
     }
 
     private function organizationChecklist($checklist,$arrayOrganization){
@@ -88,7 +98,7 @@ class CheckListOrganization {
         $newArray['pointsObtained']=$checklist->pointsObtained;
         $newArray['file_name']=$checklist->file_name;
         $newArray['value']=$checklist->value;
-        $newArray['observation']=$defaultChecklist->observation;
+        $newArray['observation']=$checklist->observation;
         $newArray['created_at']=date('d/m/Y',strtotime($checklist->created_at));
         $newArray['options']=$this->getOptions($checklist->id);
         

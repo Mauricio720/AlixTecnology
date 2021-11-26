@@ -49,8 +49,11 @@ Route::get('/get_default_checklist_request/{id}',[RequestController::class,'getA
 Route::get('/all_checklists/{idClient?}',[ChecklistController::class,'index'])->name('allChecklists');
 Route::get('/add_checklist/{idClient?}',[ChecklistController::class,'add'])->name('addChecklistView');
 Route::post('/add_checklist',[ChecklistController::class,'addChecklist'])->name('addChecklist');
-Route::get('/get_checklist/{id}',[ChecklistController::class,'getChecklistById'])->name('getChecklistById');
+Route::get('/get_checklist/{id}/{historic_checklist_idClient?}',[ChecklistController::class,'getChecklistById'])->name('getChecklistById');
 Route::post('/upload_file',[RequestController::class,'uploadFile'])->name('uploadFile');
+Route::get('/historic_checklist/{idClient}',[ChecklistController::class,'historicChecklist'])->name('historicChecklist');
+Route::get('/historic_checklist_compare/{idChecklist1}/{idChecklist2}',[ChecklistController::class,'compareChecklist'])->name('compareChecklist');
+
 
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 Auth::routes();

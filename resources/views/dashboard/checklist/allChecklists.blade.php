@@ -56,7 +56,7 @@
 
         <div class="card-body">
             <table class="table table-bordered">
-                <thead>
+                <thead class="table-dark">
                     <th>Nome</th>
                     <th>Cliente</th>
                     <th>Pontuação</th>
@@ -90,4 +90,6 @@
         </div>
     </div>
 @endsection
+
+
 

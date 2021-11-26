@@ -60,7 +60,7 @@
 
     <div class="card-body">
         <table class="table table-bordered">
-            <thead>
+            <thead class="table-dark">
                 <th>Nome</th>
                 <th>Cnpj</th>
                 <th>Geral</th>
@@ -79,14 +79,15 @@
                         <td>{{$client->financial_officer_name}}</td>
                         <td>{{$client->contact_monitoring_name}}</td>
                         <td class="d-flex">
-                            <a href="{{route('addChecklist',['idClient'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 
+                            <a href="{{route('addChecklist',['idClient'=>$client->id])}}" class="btnDefault 
+                                    btnDefault--sm btnAdd" 
                                 title="Adicionar Checklist">
                                 +
                             </a>
 
-                            <a href="{{route('allChecklists',['idClient'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 
-                                title="Ver checklist" >
-                                ...
+                            <a href="{{route('historicChecklist',['idClient'=>$client->id])}}" class="btnDefault btnDefault--sm " 
+                                title="Histórico checklist" >
+                                <img src="{{asset('storage/general_icons/history.png')}}" width="16" height="16"/>
                             </a>
                             
                             <a href="{{route('seeClient',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 

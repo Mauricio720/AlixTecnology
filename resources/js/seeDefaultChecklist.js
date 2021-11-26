@@ -1,6 +1,6 @@
 var defaultChecklist=ONE_ELEMENT('.defaultChecklistExibition');
 var defaultChecklistArray=JSON.parse(ONE_ELEMENT('#defaultChecklistArray').value);
-var typeChecklistArray=['','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica','Data'];
+var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica','Data'];
 var optionsDefaultChecklist=ONE_ELEMENT('.optionsDefaultChecklistExibition');
 var formChecklist=ONE_ELEMENT('#formChecklist');
 
@@ -27,13 +27,18 @@ function showDefaultChecklist(defaultChecklistArray,defaultChecklistElement=null
 function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
     defaultChecklistClone.setAttribute('idElement',item.id);
     defaultChecklistClone.setAttribute('id',"defaultCheck"+item.id);
-    
+
     defaultChecklistClone.querySelector('.nameChecklist').innerHTML=item.name;
+    defaultChecklistClone.querySelector('.nameChecklist').setAttribute('title',item.name);
     defaultChecklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
+    defaultChecklistClone.querySelector('.typeChecklist').setAttribute('title',"Tipo: "+typeChecklistArray[item.id_type_checklist]);
     defaultChecklistClone.querySelector('.pointsPercentage').innerHTML=item.percentage+"%";
+    defaultChecklistClone.querySelector('.pointsPercentage').setAttribute('title',item.percentage+"%");
     defaultChecklistClone.querySelector('.points').innerHTML="Pontos: "+item.points;
+    defaultChecklistClone.querySelector('.points').setAttribute('title',item.points);
     defaultChecklistClone.querySelector('.observation').innerHTML=item.observation===""?
         'Nenhuma observação':item.observation;
+    defaultChecklistClone.querySelector('.observation').setAttribute('title',item.observation);
 }
 
 function appendOptions(item,defaultChecklistClone) {

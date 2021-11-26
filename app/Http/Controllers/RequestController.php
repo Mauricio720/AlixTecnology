@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Util\DefaultCheckListOrganization;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RequestController extends Controller
 {   
@@ -44,19 +45,31 @@ class RequestController extends Controller
 
     public function uploadFile(Request $request){
         $array=['error'=>""];
-
-        $file=$request->all()['checklistFile'];
-        $fileName=md5(rand(0,99999).rand(0,99999)).'.'.$file->getClientOriginalExtension();
         
-        if($file->getClientOriginalExtension() == "php" || $file->getClientOriginalExtension() == "js" ){
-            $array['error']="Extensão inválida";
-        }else{
-            $pathImage="public/checklists_files/";
-            $file->storeAs($pathImage,$fileName);
-    
-            $array['fileName']=$fileName;
-        }
+        $data=$request->only(['checklistFile']);
+        $file=$data['checklistFile'];
+        $errors=Validator::make($data,[
+            'checklistFile'=>['max:40000']
+        ],[],['checklistFile'=>'arquivo']);
 
+ 
+        if($errors->fails()){
+            $array['error']=$errors->errors()->first();
+        }else{
+            $fileName=md5(rand(0,99999).rand(0,99999)).'.'.$file->getClientOriginalExtension();
+            if($file->isValid()){
+                if($file->getClientOriginalExtension() == "php" || $file->getClientOriginalExtension() == "js" 
+                    || $file->getClientOriginalExtension() == "exe"){
+                    $array['error']="Extensão inválida";
+                }else{
+                    $pathImage="public/checklists_files/";
+                    $file->storeAs($pathImage,$fileName);
+            
+                    $array['fileName']=$fileName;
+                }
+            }
+        }
+        
         return json_encode($array);
     }
 }

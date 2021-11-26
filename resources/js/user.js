@@ -15,7 +15,6 @@ function openModal(title,actionUrl,edit,id=null){
     form.setAttribute('action',actionUrl);
     clearInputs();
     
-    
     ONE_ELEMENT('#idUser').value=id;
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(form);
@@ -28,7 +27,6 @@ function openModal(title,actionUrl,edit,id=null){
         LOADING_ELEMENT.style.display="flex";
         ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(LOADING_ELEMENT);
         fillUserInfo(id,form);
-       
     }
 
     ONE_ELEMENT('#btnAddModal').addEventListener('click',()=>{

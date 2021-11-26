@@ -14,7 +14,7 @@ class DefaultChecklistController extends Controller
 
     public function index(Request $request){
         $data=[];
-        $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)->paginate(10);
+        $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)->orderBy('id','DESC')->paginate(10);
         $data['nameChecklist']="";
         $data['pointsChecklist']="";
         $data['observationChecklist']="";

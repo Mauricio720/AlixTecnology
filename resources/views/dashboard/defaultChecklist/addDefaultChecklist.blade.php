@@ -10,7 +10,7 @@
     </form>
 
     <div class="card">
-        <div class="card-header">
+        <div class="card-header bg-dark text-white">
             <div class="row">
                 <div class="col-6">
                     <h4>Adicionar Checklist Padrão</h4>

@@ -116,6 +116,10 @@
     </div>
 </form>
 
+<div id="only_one_choose" style="display: none;">
+    <input type="checkbox">
+    <label class="only_one_choose_label">Escolha única</label>
+</div>
 <div class="defaultChecklistExibition">
     <div class="defaultChecklist__content">
         <div class="defaultChecklist__slot">

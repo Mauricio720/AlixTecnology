@@ -4,11 +4,11 @@
 @section('content')
     <input type="hidden" id="defaultChecklistArray" value="{{$allDefaultChecklist}}">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header bg-dark text-white">
             <div class="row">
                 <div class="col-6">
-                    <h4>Checklist Padrão: {{$defaultChecklist->name}}</h4><br>
-                    <h5>Pontuação Total: {{$defaultChecklist->points}}</h5><br>
+                    <h4>Checklist Padrão: {{$defaultChecklist->name}}</h4>
+                    <h5>Pontuação Total: {{$defaultChecklist->points}}</h5>
                     <h5>Observação: {{$defaultChecklist->observation==""?'Não informado':$defaultChecklist->observation}}</h5>
                 </div>
 

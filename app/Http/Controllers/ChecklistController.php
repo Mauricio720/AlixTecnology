@@ -6,6 +6,7 @@ use App\Models\Checklist;
 use App\Models\Client;
 use App\Models\DefaultCheckList;
 use App\Util\CheckListOrganization;
+use App\Util\DefaultCheckListOrganization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -101,7 +102,7 @@ class ChecklistController extends Controller
             $queryClient->where('id',$idClient);
         }
         
-        $data['allClients']=$queryClient->paginate(5);
+        $data['allClients']=$queryClient->paginate(5,['*'],'page_client');
 
         $data['nameCnpj']='';
         if($request->has('nameCnpj')){
@@ -111,7 +112,7 @@ class ChecklistController extends Controller
             $data['nameCnpj']=$nameCnpj;
         }
         
-        $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)->paginate(5);
+        $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)->paginate(5,['*'],'page_default_checklist');
         $data['nameDefaultChecklist']='';
 
         if($request->has('nameDefaultChecklist')){
@@ -138,10 +139,11 @@ class ChecklistController extends Controller
         return redirect()->route('allChecklists');
     }
 
-    public function getChecklistById($id){
+    public function getChecklistById($id,$historic_checklist_idClient=false){
         $checklistOrganization=new CheckListOrganization();
         $data['allChecklists']=json_encode($checklistOrganization->getChecklistById($id));
-   
+        
+        $data['historic_checklist_idClient']=$historic_checklist_idClient;
         $data['checklist']=CheckList::where('id',$id)->first();
         $data['defaultChecklist']=DefaultCheckList::where('id',$data['checklist']->id_default_checklist)->first();
 
@@ -156,5 +158,82 @@ class ChecklistController extends Controller
     private function filterDefaultChecklist($nameDefaultChecklist){
         $defaultChecklist=DefaultCheckList::where('idDefaultChecklist',null)->where('name','LIKE','%'.$nameDefaultChecklist.'%');
         return $defaultChecklist->paginate(5);
+    }
+
+    public function historicChecklist(Request $request,$idClient){
+        $data['client']=Client::where('id',$idClient)->first();
+
+        $data['allChecklist']=CheckList::join('default_checklists','checklists.id_default_checklist','default_checklists.id')    
+            ->join('clients','checklists.id_client','clients.id')->where('id_checklist',null)
+            ->where('clients.id',$idClient)
+            ->whereYear('checklists.created_at',date('Y'))
+            ->where('idDefaultChecklist',null)->paginate(10,['checklists.*','default_checklists.name as checklistName',
+            'clients.name as clientName','default_checklists.observation as observationChecklist']);;
+
+        $data['year']=date('Y');
+
+        $data['startDate']="";
+        $data['finalDate']="";
+        if($request->has(['startDate','finalDate'])){
+            $data=$this->filterChecklistHistoric($request,$data,$idClient);
+        }
+
+        return view('dashboard.checklist.historic_checklist',$data);    
+    }
+
+    private function filterChecklistHistoric($request,$data,$idClient){
+        $checklistQuery=Checklist::query()->join('default_checklists','checklists.id_default_checklist','default_checklists.id')    
+        ->join('clients','checklists.id_client','clients.id')->where('id_checklist',null)
+        ->where('clients.id',$idClient);
+        
+        if($request->filled(['startDate','finalDate'])){
+            $startDate=$request->input('startDate');
+            $finalDate=$request->input('finalDate');
+        
+            $checklistQuery->whereBetween('checklists.created_at',[$startDate,$finalDate]);
+            $data['startDate']=$startDate;
+            $data['finalDate']=$finalDate;
+            $yearStartDate=date('Y',strtotime($startDate));
+            $yearFinalDate=date('Y',strtotime($finalDate));
+            if($yearStartDate==$yearFinalDate){
+                $data['year']=date('Y',strtotime($startDate));    
+            }else{
+                $data['year']=date('Y',strtotime($startDate)). '-' .date('Y',strtotime($finalDate));
+            }
+        }
+
+        $data['allChecklist']=$checklistQuery->paginate(10,['checklists.*','default_checklists.name as checklistName',
+        'clients.name as clientName','default_checklists.observation as observationChecklist']);
+
+        return $data;
+    }
+
+    public function compareChecklist($idChecklist1,$idChecklist2){
+        $data=[];
+
+        $checklist1=Checklist::where('id',$idChecklist1)->first();
+        $checklist2=Checklist::where('id',$idChecklist2)->first();
+        
+        if($checklist1 == null || $checklist2 == null){
+            return redirect()->route('allClients');
+        }
+        
+        if($checklist1->id_default_checklist != $checklist2->id_default_checklist){
+            return redirect()->route('allClients');
+        }
+        
+        $defaultChecklist=DefaultCheckList::where('id',$checklist1->id_default_checklist)->first();
+        
+        $defaultChecklistOrganization=new DefaultCheckListOrganization();
+        $data['defaultChecklistArray']=json_encode($defaultChecklistOrganization->getDefaultChecklistById($defaultChecklist->id));
+        
+        $checklistOrganization=new CheckListOrganization();
+        $data['checklist1']=json_encode($checklistOrganization->getChecklistById($checklist1->id));
+        $data['checklist2']=json_encode($checklistOrganization->getChecklistById($checklist2->id));
+        
+        $data['client']=Client::where('id',$checklist1->id_client)->first();
+        
+        return view('dashboard.checklist.compareChecklist',$data);    
+
     }
 }

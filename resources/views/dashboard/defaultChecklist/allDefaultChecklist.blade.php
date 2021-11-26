@@ -47,7 +47,7 @@
 
         <div class="card-body">
             <table class="table table-bordered">
-                <thead>
+                <thead class="table-dark">
                     <th>Nome</th>
                     <th>Pontuação Total</th>
                     <th>Observação</th>
@@ -59,7 +59,7 @@
                     <tr>
                         <td>{{$defaultChecklist->name}}</td>
                         <td>{{$defaultChecklist->points}}</td>
-                        <td>{{$defaultChecklist->observation==""?"Não Informado":$defaultChecklist->observation}}</td>
+                        <td style="max-width: 150px;">{{$defaultChecklist->observation==""?"Não Informado":$defaultChecklist->observation}}</td>
                         <td>{{$defaultChecklist->created_at->format('d/m/Y H:i:s')}}</td>
                         <td class="d-flex">
                             <a href="{{route('getDefaultChecklistById',['id'=>$defaultChecklist->id])}}" 

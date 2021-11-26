@@ -7,7 +7,7 @@
     padding: 10px;
     box-shadow: 1px 1px 1px 1px #ccc;
     margin: 2px;
-    transition: all ease .4s;
+    transition: all ease .6s;
     margin-top: 20px;
     overflow: hidden;
     background-color: #fbfbfb;
@@ -16,6 +16,13 @@
 .checklist__title{
     font-weight: bold;
     font-size: 18px;
+    border-bottom: 1px dashed #e9e9e9;
+    padding: 2px;
+}
+
+.checklist__date{
+    font-weight: bold;
+    font-size: 16px;
     border-bottom: 1px dashed #e9e9e9;
     padding: 2px;
 }
@@ -36,10 +43,16 @@
     justify-content: center;
     flex: 1;
     margin: 2px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .checklistPoints,.checklistPercentage,.checklistObservation{
     font-size: 16px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .checklist__slot--auto{
@@ -56,6 +69,7 @@
     font-size: 20px;
     justify-content: start;
     margin-left: 10px;
+    
 }
 
 .checklist input{
@@ -68,7 +82,7 @@
 
 .checklistOption{
     display: none;
-    width: 60%;
+    width: 65%;
     border-bottom: 1px solid #e9e9e9;
     margin-top: 10px;
 }
@@ -76,9 +90,40 @@
 .checkboxName,.radioName{
     font-size: 16px;
     margin-left: 5px;
+    
 }
+
 
 .checklist__options{
     display: flex;
     flex-direction: column;
+}
+
+.checklistCompare{
+    padding: 5px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.checklists__point{
+    display: none;
+    flex-direction: column;
+    width: 180px;
+    height: 60px;
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    background-color: white;
+}
+
+.checklists__point-slot{
+    display: flex;
+    flex: 1;
+    justify-content: center;
 }

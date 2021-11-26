@@ -1,16 +1,21 @@
 var checklist=ONE_ELEMENT('.checklistExibition');
-var checklistArray=JSON.parse(ONE_ELEMENT('#checklistArray').value);
+var checklistCompare=ONE_ELEMENT('.checklistCompare');
+var checklistArray=JSON.parse(ONE_ELEMENT('#checklistArray1').value);
+var checklistArray2=JSON.parse(ONE_ELEMENT('#checklistArray2').value);
 var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica','Data'];
 var optionsChecklist=ONE_ELEMENT('.optionsChecklistExibition');
 var formChecklist=ONE_ELEMENT('#formChecklistExibition');
 
 showChecklist(checklistArray.subchecklist); 
+showChecklist2(checklistArray2.subchecklist); 
 eventsBtnSeeMore();
 eventsBtnSeeOption(); 
 eventsBtnSeeMoreCheck(); 
 
 function showChecklist(checklistArray,checklistElement=null) {
-    checklistArray.map((item)=>{
+   checklistArray.map((item)=>{
+        checklistCompareClone=checklistCompare.cloneNode(true);
+        
         let checklistClone=checklist.cloneNode(true);
         checklistClone.style.display='flex'
         
@@ -18,8 +23,8 @@ function showChecklist(checklistArray,checklistElement=null) {
             checklistClone.querySelector('.checklist__slot--value').remove();
         }
 
-        fillInputsAndAttributeChecklist(checklistClone,item);
-        appendChecklist(checklistClone,checklistElement);
+        fillInputsAndAttributeChecklist(checklistClone,item,1);
+        appendChecklist(checklistClone,checklistElement,checklistCompareClone);
         appendOptions(item,checklistClone); 
         repeatLoopShowChecklist(item,checklistClone); 
 
@@ -28,13 +33,33 @@ function showChecklist(checklistArray,checklistElement=null) {
     });
 }
 
-function fillInputsAndAttributeChecklist(checklistClone,item) {
-    checklistClone.setAttribute('idElement',item.id);
-    checklistClone.setAttribute('id',"check"+item.id);
-    checklistClone.classList.add('active');
+function showChecklist2(checklistArray,checklistElement=null) {
+    checklistArray.map((item,index)=>{
+        let checklistClone=checklist.cloneNode(true);
+        checklistClone.style.display='flex'
+        
+        if(item.id_type_checklist===0 || item.id_type_checklist===3 || item.id_type_checklist===4){
+            checklistClone.querySelector('.checklist__slot--value').remove();
+        }
 
+        fillInputsAndAttributeChecklist(checklistClone,item,2);
+        let checklistCompareElement=ALL_ELEMENTS('.checklistContentCompare .checklistCompare')[index];
+        appendChecklist(checklistClone,checklistElement,checklistCompareElement,true);
+        appendOptions(item,checklistClone); 
+        repeatLoopShowChecklist(item,checklistClone); 
+
+        checklistClone.querySelector('.btnSeeMoreCheck').setAttribute('id',item.id);
+
+    });
+}
+
+function fillInputsAndAttributeChecklist(checklistClone,item,checklistNumber) {
+    checklistClone.setAttribute('idElement',item.id);
+    checklistClone.setAttribute('checklistNumber',checklistNumber);
+    checklistClone.setAttribute('id',"check"+item.id);
+    
     checklistClone.querySelector('.checklist__title').innerHTML=item.name;
-    checklistClone.querySelector('.checklist__title').setAttribute('title',item.name);
+    checklistClone.querySelector('.checklist__date').innerHTML=item.created_at;
 
     if(item.id_type_checklist===2){
         let linkElement=checklistClone.querySelector('.valueChecklist').querySelector('a');
@@ -46,15 +71,12 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
             checklistClone.querySelector('.valueChecklist').innerHTML=item.value;
         }
     }
+
     checklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
-    checklistClone.querySelector('.typeChecklist').setAttribute('title',typeChecklistArray[item.id_type_checklist]);
     checklistClone.querySelector('.points').innerHTML="Pontos Possiveis: "+item.points;
-    checklistClone.querySelector('.points').setAttribute('title',item.points);
     checklistClone.querySelector('.pointsObtained').innerHTML="Pontos Obtidos: "+item.pointsObtained;
-    checklistClone.querySelector('.pointsObtained').setAttribute('title',item.pointsObtained);
     checklistClone.querySelector('.observation').innerHTML=item.observation===""?
         'Nenhuma observação':item.observation;
-    checklistClone.querySelector('.observation').setAttribute('title',item.observation);
 }
 
 function appendOptions(item,checklistClone) {
@@ -64,9 +86,13 @@ function appendOptions(item,checklistClone) {
     }
 }
 
-function appendChecklist(checklistClone,checklistElement) {
+function appendChecklist(checklistClone,checklistElement,checklistCompare,isSecondChecklist=false) {
     if(checklistElement === null){
-        ONE_ELEMENT('.checklistContent').append(checklistClone);
+        checklistCompare.append(checklistClone);
+        if(isSecondChecklist===false){
+            ONE_ELEMENT('.checklistContentCompare').append(checklistCompare);
+
+        }
     }else{
         checklistElement.querySelector('.checklist__container').append(checklistClone);
     }
@@ -80,10 +106,18 @@ function repeatLoopShowChecklist(item,checklistClone=null) {
 }
 
 function eventsBtnSeeOption() {
-    [...ALL_ELEMENTS('.checklistContent .btnOptions')].forEach((element)=>{
+    [...ALL_ELEMENTS('.checklistContentCompare .btnOptions')].forEach((element)=>{
         element.addEventListener('click',(e)=>{
             let id=parseInt(e.currentTarget.getAttribute('id'));
-            let checklist=filterChecklist(checklistArray.subchecklist,id,{}); 
+            let checklistNumber=parseInt(e.currentTarget.closest('.checklistExibition').getAttribute('checklistNumber'))
+            let subchecklist=[];
+            if(checklistNumber===1){
+                subchecklist=checklistArray.subchecklist;
+            }else{
+                subchecklist=checklistArray2.subchecklist;
+            }
+
+            let checklist=filterChecklist(subchecklist,id,{}); 
             openModal(checklist.options);
         })
     });
@@ -108,7 +142,7 @@ function openModal(options) {
 }
 
 function eventsBtnSeeMore() {
-    [...ALL_ELEMENTS('.checklistContent .btnSeeMore')].forEach((element)=>{
+    [...ALL_ELEMENTS('.checklistContentCompare .btnSeeMore')].forEach((element)=>{
         element.addEventListener('click',(e)=>{
             let elementChecklist=e.currentTarget.closest('.checklistExibition');
             showSubchecklistContainer(elementChecklist);
@@ -117,10 +151,20 @@ function eventsBtnSeeMore() {
 }
 
 function eventsBtnSeeMoreCheck() {
-    [...ALL_ELEMENTS('.checklistContent .btnSeeMoreCheck')].forEach((element)=>{
+    [...ALL_ELEMENTS('.checklistContentCompare .btnSeeMoreCheck')].forEach((element)=>{
         element.addEventListener('click',(e)=>{
             let id=parseInt(e.currentTarget.getAttribute('id'));
-            let checklist=filterChecklist(checklistArray.subchecklist,id,{}); 
+            let checklistNumber=parseInt(e.currentTarget.closest('.checklistExibition')
+                .getAttribute('checklistNumber'));
+            
+            let subchecklist=[];
+            if(checklistNumber===1){
+                subchecklist=checklistArray.subchecklist;
+            }else{
+                subchecklist=checklistArray2.subchecklist;
+            }
+            
+            let checklist=filterChecklist(subchecklist,id,{}); 
             openModalChecklist(checklist);
         })
     });
@@ -132,8 +176,10 @@ function openModalChecklist(item) {
     ONE_ELEMENT('#btnAddModal').style.display='none';
     ONE_ELEMENT('#btnEditModal').style.display='none';
 
+    
     formChecklist.querySelector('.nameChecklist').innerHTML=item.name;
     formChecklist.querySelector('.typeChecklist').innerHTML=typeChecklistArray[item.id_type_checklist];
+    
     if(item.id_type_checklist===2){
         let linkElement=formChecklist.querySelector('.valueChecklist').querySelector('a');
         linkElement.style.display='block';
@@ -146,6 +192,7 @@ function openModalChecklist(item) {
             formChecklist.querySelector('.valueChecklist').closest('.form-group').style.display="none";
         }
     }
+    
     formChecklist.querySelector('.pointsChecklist').innerHTML="Pontos: "+item.points;
     formChecklist.querySelector('.pointsObtainedChecklist').innerHTML=item.pointsObtained;
     formChecklist.querySelector('.observationChecklist').innerHTML=item.observation===""?
@@ -159,12 +206,22 @@ function openModalChecklist(item) {
 
 function showSubchecklistContainer(elementChecklist){
     let id=parseInt(elementChecklist.getAttribute('idElement'));
-    let checklist=filterChecklist(checklistArray.subchecklist,id,{});
+    let checklistNumber=parseInt(elementChecklist.getAttribute('checklistNumber'));
+    console.log(checklistNumber);
+    let subchecklist=[];
+    
+    if(checklistNumber===1){
+        subchecklist=checklistArray.subchecklist;
+    }else{
+        subchecklist=checklistArray2.subchecklist;
+    }
+
+    let checklist=filterChecklist(subchecklist,id,{});
     
     if(!elementChecklist.classList.contains('active')){
-        let totalDefaultChecklist=elementChecklist.querySelectorAll('.checklistContent .checklistExibition').length;
+        let totalDefaultChecklist=elementChecklist.querySelectorAll('.checklistContent .defaultChecklistExibition').length;
         let margin=35*totalDefaultChecklist;
-        let heightTotal=100+(100*totalDefaultChecklist)+margin;
+        let heightTotal=65+(65*totalDefaultChecklist)+margin;
             
         elementChecklist.style.height=`${heightTotal}px`;
         elementChecklist.classList.add('active');
@@ -178,22 +235,25 @@ function showSubchecklistContainer(elementChecklist){
 
 function showSubchecklistContainerLoop(checklistArray) {
     checklistArray.forEach(item =>{
-        let checklistElement=ONE_ELEMENT(`#check${item.id}`);
+        let defaultChecklistElement=ONE_ELEMENT(`#check${item.id}`);
         
         if(item.active){
-            let totalDefaultChecklist=checklistElement.querySelectorAll('.checklistContent .checklistExibition').length;
-          
+            let totalDefaultChecklist=item.subchecklist.length;
             let margin=35*totalDefaultChecklist;
-            let heightTotal=100+(100*totalDefaultChecklist)+margin;
-           
-            checklistElement.style.height=`${heightTotal}px`;
-            checklistElement.classList.add('active');
-            item.active=true;
+            let heightTotal=65+(65*totalDefaultChecklist)+margin;
+            
+            defaultChecklistElement.style.height=`${heightTotal}px`;
+            defaultChecklistElement.classList.add('active');
+            defaultChecklistElement.active=true;
+
+            if(item.subchecklist > 0){
+               increaseDefaultChecklistFather(item);
+            }
 
         }else{
             defaultChecklistElement.style.height="65px";
             defaultChecklistElement.classList.remove('active');
-            item.active=false;
+            defaultChecklistElement.active=false;
         }
 
         if(item.subchecklist.length > 0){
