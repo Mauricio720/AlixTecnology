@@ -1,0 +1,10 @@
+/vendor
+composer.phar
+composer.lock
+.DS_Store
+.idea/
+/tests/log/
+*.cache
+docker-compose.yml
+.phpcs-cache
+.phpunit.result.cache
