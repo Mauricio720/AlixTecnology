@@ -130,7 +130,13 @@ function fillLayoutChecklist(checklistClone,subchecklist) {
         checklistClone.querySelector('.checklist__title').setAttribute('title',subchecklist.name);
     }
     
-    checklistClone.querySelector('.checklistTypechecklist').innerHTML=`Tipo: ${typeChecklistArray[subchecklist.id_type_checklist]}`;
+    let only_one_choose="";
+    if(subchecklist.only_one_choose){
+        only_one_choose="(Pontuação única)*";
+        checklistClone.querySelector('.checklistTypechecklist').style="flex:2;";
+    }
+
+    checklistClone.querySelector('.checklistTypechecklist').innerHTML=`${typeChecklistArray[subchecklist.id_type_checklist]} ${only_one_choose}`;
     checklistClone.querySelector('.checklistTypechecklist').setAttribute('title',`${typeChecklistArray[subchecklist.id_type_checklist]}`);
     checklistClone.querySelector('.checklistPossiblePoints').innerHTML=`Pontos: ${subchecklist.points.toFixed(2)}`;
     checklistClone.querySelector('.checklistPossiblePoints').setAttribute('title',subchecklist.points.toFixed(2));
@@ -138,10 +144,13 @@ function fillLayoutChecklist(checklistClone,subchecklist) {
     checklistClone.querySelector('.checklistPoints').setAttribute('title',subchecklist.pointsObtained.toFixed(2));
 
     if(subchecklist.observation!==""){
-        checklistClone.querySelector('.checklistObservation').innerHTML=subchecklist.observation;
-        checklistClone.querySelector('.checklistObservation').setAttribute('title',subchecklist.observation);
-    }else{
-        checklistClone.querySelector('.checklistObservation').style.display='none';
+        if(subchecklist.id_type_checklist!==3 && subchecklist.id_type_checklist!==4){
+            checklistClone.querySelector('.observationIcon').style.display='block';
+            checklistClone.querySelector('.observationIcon').setAttribute('title',subchecklist.observation);
+        }else{
+            checklistClone.querySelector('.observationIconMultiple').style.display='block';
+            checklistClone.querySelector('.observationIconMultiple').setAttribute('title',subchecklist.observation);
+        }
     }
 }
 
@@ -166,11 +175,7 @@ function filllayoutOptions(subchecklist,checklistClone) {
         checklistOptionClone.querySelector('.optionName').innerHTML=option.name;
         checklistOptionClone.querySelector('.checklistPoints').innerHTML=`Pontos: ${option.points.toFixed(2)}`;
         
-        if(subchecklist.observation!==""){
-            checklistOptionClone.querySelector('.checklistObservation').innerHTML=option.observation;
-        }else{
-            checklistOptionClone.querySelector('.checklistObservation').style.display='none';
-        }
+        
         checklistClone.querySelector('.checklist__options').append(checklistOptionClone);
     })
 }
@@ -241,7 +246,9 @@ function eventsChecklistsTypeInputs(element,checklist) {
             checklist.pointsObtained=possiblePoints;
            
             element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
-            updatePointsFatherChecklist(checklist,possiblePoints);
+            if(checklist.value===""){
+                updatePointsFatherChecklist(checklist,possiblePoints);
+            }
         });
     }else{
         inputType.addEventListener('input',(e)=>{
@@ -249,8 +256,6 @@ function eventsChecklistsTypeInputs(element,checklist) {
             let text=e.currentTarget.value;
             let increment=true;
             
-            checklist.value=text;
-
             if(text!==""){
                 checklist.pointsObtained=possiblePoints;
             }else{
@@ -259,7 +264,14 @@ function eventsChecklistsTypeInputs(element,checklist) {
             }
 
             element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
-            updatePointsFatherChecklist(checklist,possiblePoints,increment);
+            if(checklist.value===""){
+                updatePointsFatherChecklist(checklist,possiblePoints,increment);
+            }
+
+            if(increment===false){
+                updatePointsFatherChecklist(checklist,possiblePoints,increment);
+            }
+            checklist.value=text;
         });
     }
 }
@@ -295,10 +307,6 @@ function eventsChecklistsMultipleOptions(element,checklist,multiple=true) {
         let optionInput= multiple===false?option.querySelector('input[type=radio]'):option.querySelector('input[type=checkbox]');   
         
         optionInput.addEventListener('change',(e)=>{
-            checklist.options.forEach((option)=>{
-                option.selected=false;
-            });
-
             let index=checklist.options.findIndex((option)=>{
                 if(option.id===idOption){
                     return true;
@@ -313,22 +321,53 @@ function eventsChecklistsMultipleOptions(element,checklist,multiple=true) {
                 checklist.pointsObtained=pointsObtained+points;
                 option.selected=true;
                 option.pointsObtained=points;
+                let increment=true;
+                
+                if(points===0){
+                    increment=false;
+                    points=checklist.points;
+                }
 
-                if(multiple===false){
+                if(checklist.only_one_choose){
                     checklist.pointsObtained=points;
                 }
-                updatePointsFatherChecklist(checklist,points);
+                
+                if(multiple===false){
+                    checklist.pointsObtained=points;
+                    if(increment===false){
+                        checklist.pointsObtained=0;
+                    }
+                }
+
+                updatePointsFatherChecklist(checklist,points,increment);
+                element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
+
             }else{
                 checklist.pointsObtained=pointsObtained-points;
+                option.selected=false;
                 if(multiple===false){
                     checklist.pointsObtained=points
                 }
-                option.pointsObtained=0;
-                updatePointsFatherChecklist(checklist,points,false);
-            }
-            
-            element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
+                
+                if(checklist.only_one_choose){
+                    let options=0;
+                    checklist.options.forEach((option)=>{
+                        if(option.selected){
+                            options++;
+                        }
+                    })
 
+                    if(options===0){
+                        checklist.pointsObtained=0;
+                        updatePointsFatherChecklist(checklist,points,false);
+                        element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
+                    }
+                }else{
+                    option.pointsObtained=0;
+                    updatePointsFatherChecklist(checklist,points,false);
+                    element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
+                }
+            }
         });
     })
 }

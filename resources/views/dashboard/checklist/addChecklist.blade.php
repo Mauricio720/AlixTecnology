@@ -69,10 +69,7 @@
                             <th></th>
                             <th>Nome</th>
                             <th>Cnpj</th>
-                            <th>Geral</th>
-                            <th>Técnico</th>
-                            <th>Financeiro</th>
-                            <th>Monitoramento</th>
+                          
                         </thead>
                         <tbody>
                             @foreach($allClients as $client)
@@ -83,10 +80,7 @@
                                     </td>
                                     <td>{{$client->name}}</td>
                                     <td>{{$client->cnpj}}</td>
-                                    <td>{{$client->responsible_general_name}}</td>
-                                    <td>{{$client->technical_manager_name}}</td>
-                                    <td>{{$client->financial_officer_name}}</td>
-                                    <td>{{$client->contact_monitoring_name}}</td>
+                                   
                                 </tr>
                             @endforeach
                         </tbody>
@@ -147,7 +141,7 @@
                                     </td>
                                     <td>{{$defaultChecklist->name}}</td>
                                     <td>{{$defaultChecklist->points}}</td>
-                                    <td>{{$defaultChecklist->observation==""?"Não Informado":$defaultChecklist->observation}}</td>
+                                    <td style="max-width: 150px">{{$defaultChecklist->observation==""?"Não Informado":$defaultChecklist->observation}}</td>
                                     <td>{{$defaultChecklist->created_at->format('d/m/Y - H:i:s')}}</td>
                                 </tr>
                             @endforeach

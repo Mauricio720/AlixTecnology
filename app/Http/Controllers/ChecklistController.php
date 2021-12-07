@@ -69,7 +69,7 @@ class ChecklistController extends Controller
         }
         
         if($request->filled('pointsChecklist')){
-            $query->where('checklists.points','%'.$pointsChecklist.'%');
+            $query->where('checklists.points','LIKE','%'.$pointsChecklist.'%');
         }
 
         if($request->filled('pointsObtained')){
@@ -112,7 +112,8 @@ class ChecklistController extends Controller
             $data['nameCnpj']=$nameCnpj;
         }
         
-        $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)->paginate(5,['*'],'page_default_checklist');
+        $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)
+            ->orderBy('id','DESC')->paginate(5,['*'],'page_default_checklist');
         $data['nameDefaultChecklist']='';
 
         if($request->has('nameDefaultChecklist')){
@@ -157,7 +158,7 @@ class ChecklistController extends Controller
 
     private function filterDefaultChecklist($nameDefaultChecklist){
         $defaultChecklist=DefaultCheckList::where('idDefaultChecklist',null)->where('name','LIKE','%'.$nameDefaultChecklist.'%');
-        return $defaultChecklist->paginate(5);
+        return $defaultChecklist->orderBy('id','DESC')->paginate(5);
     }
 
     public function historicChecklist(Request $request,$idClient){

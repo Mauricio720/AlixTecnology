@@ -49,5 +49,17 @@
     font-size: 17px;
 }
 
+#formChecklist .form-control{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.optionsDefaultChecklistExibition .form-control{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 
 

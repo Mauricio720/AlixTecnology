@@ -45,6 +45,17 @@
             </form>
         </div>
 
+        @if($errors->any())
+            <div class="card-header bg-white">
+                <div class="alert alert-danger alert-dismissible fade show text-center">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{$errors->first()}}
+                </div>
+            </div>
+        @endif 
+
         <div class="card-body">
             <table class="table table-bordered">
                 <thead class="table-dark">

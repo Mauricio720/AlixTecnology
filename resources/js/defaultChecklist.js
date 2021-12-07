@@ -190,8 +190,28 @@ function calcPointing(e,defaultChecklist) {
     
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklist.id}`);
     defaultChecklistElement.querySelectorAll('input')[2].value=parseFloat(newPoints).toFixed(2);
+    
+    if(defaultChecklist.subchecklists.length>0){
+        let pointsSubchecklist=newPoints/defaultChecklist.subchecklists.length;
+        defaultChecklist.subchecklists.forEach((subchecklist)=>{
+            updatedSubchecklistPoints(subchecklist.id,pointsSubchecklist) ;
+        });
+    }
 
     return defaultChecklistFather.id;
+}
+
+function updatedSubchecklistPoints(id,pointsSubchecklist) {
+    let defaultChecklistSubchecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
+    let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklistSubchecklist.id}`);
+    defaultChecklistElement.querySelectorAll('input')[2].value=parseFloat(pointsSubchecklist).toFixed(2);
+
+    if(defaultChecklistSubchecklist.subchecklists.length > 0){
+        let newPointsSubchecklist=pointsSubchecklist/defaultChecklistSubchecklist.subchecklists.length;
+        defaultChecklistSubchecklist.subchecklists.forEach((subchecklist)=>{
+            updatedSubchecklistPoints(subchecklist.id,newPointsSubchecklist); 
+        })
+    }
 }
 
 function uniqueEventPointingNumber(elementChecklist,defaultChecklist) {
@@ -213,14 +233,20 @@ function uniqueEventObservation(elementChecklist,defaultChecklist) {
 function uniqueEventFocusInputDanger(elementChecklist) {
     elementChecklist.querySelectorAll('input')[0].addEventListener('focus',(e)=>{
         e.currentTarget.classList.remove('input-danger');
+        elementChecklist.classList.remove('input-danger');
+        ONE_ELEMENT('.alert-header').classList.add('d-none');
     });
 
     elementChecklist.querySelectorAll('input')[2].addEventListener('focus',(e)=>{
         e.currentTarget.classList.remove('input-danger');
+        elementChecklist.classList.remove('input-danger');
+        ONE_ELEMENT('.alert-header').classList.add('d-none');
     });
     
     elementChecklist.querySelectorAll('input')[3].addEventListener('focus',(e)=>{
         e.currentTarget.classList.remove('input-danger');
+        elementChecklist.classList.remove('input-danger');
+        ONE_ELEMENT('.alert-header').classList.add('d-none');
     });
 }
 
@@ -321,17 +347,19 @@ function setChecklistPoint(id) {
         element.correctPercentage=true;
         
         if(element.options.length > 0){
-            updatePointsOptions(element.options,element.points,element.typechecklist); 
+            updatePointsOptions(element.options,element.points,element); 
         }
     });
 }
 
-function updatePointsOptions(options,points,typechecklist) {
+function updatePointsOptions(options,points,element) {
+    let typechecklist=element.typechecklist;
+    let onlyOneChoose=element.onlyOneChoose;
+
     options.forEach((option)=>{
         let numberOptions=options.length;
         let pointsValue=points/numberOptions;
         let percentage= (pointsValue/pointsModal)*100;
-        
         if(typechecklist==="4"){
             if(option.selected){
                 option.pointsValue=points;
@@ -339,9 +367,13 @@ function updatePointsOptions(options,points,typechecklist) {
                 option.pointsValue=0;
             }
         }else{
-            option.pointsValue=pointsValue;
-            option.percentage=percentage;
-            option.correctPercentage=true;
+            if(onlyOneChoose===false){
+                option.pointsValue=pointsValue;
+                option.percentage=percentage;
+                option.correctPercentage=true;
+            }else{
+                option.pointsValue=points;
+            }
         }
     })
 }
@@ -478,6 +510,7 @@ function addDefaultChecklist(idDefaultChecklist=null) {
         points:"",
         observation:'',
         options:[],
+        onlyOneChoose:false,
         subchecklists:[]
     };
 
@@ -578,10 +611,9 @@ function openModalMultipleChoose(points,id) {
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (multiplas escolhas)"
     +" Pontuação Checklist "+parseFloat(points).toFixed(2);
     
-    let only_one_choose_input=ONE_ELEMENT('#only_one_choose');
+    let only_one_choose_input=ONE_ELEMENT('#only_one_choose').cloneNode(true);
     only_one_choose_input.style.display='block';
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(only_one_choose_input);
-
 
     pointsModal=points;
     let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
@@ -595,15 +627,26 @@ function openModalMultipleChoose(points,id) {
 
     allOptions=[];
     let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
+    
+    if(defaultChecklist.onlyOneChoose){
+        onlyOneChoose=true;
+        only_one_choose_input.querySelector('input').checked=true;
+    }else{
+        onlyOneChoose=false;
+        only_one_choose_input.querySelector('input').checked=false;
+    }
+    
+    eventOnlyOneChoose(defaultChecklist); 
     if(defaultChecklist.options.length>0){
         allOptions=defaultChecklist.options;
     }
-
-    eventOnlyOneChoose(defaultChecklist);
-
+    
     fillLayoutOptionsDefaultChecklist(true,onlyOneChoose);
+    eventsMultipleChoose();
 
     ONE_ELEMENT('#btnAddModal').addEventListener('click',()=>{
+        modalHeader.style.display="none";
+        removeInputDanger();
         addNewsOptionEmpty(true);
         fillLayoutOptionsDefaultChecklist(true,onlyOneChoose);
         eventsMultipleChoose();
@@ -612,8 +655,14 @@ function openModalMultipleChoose(points,id) {
     ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
         if(verifyEmptyOptionName()){
             errorDoubleChooseOptions(modalHeader);
+        
         }else if(verifyEmptyOptionsArray()){
             errorMultipleChooseOptions(modalHeader); 
+        
+        }else if(verifyPercentageOptions(modalHeader)===false){
+            modalHeader.style.display='block';
+            modalHeader.querySelector('.modal-error-header').innerHTML="Porcentagem das opções estão incorretas!!"
+        
         }else{
             removeInputDanger();
             addOptionsMultiple(defaultChecklist); 
@@ -622,17 +671,33 @@ function openModalMultipleChoose(points,id) {
     });
 }
 
-function eventOnlyOneChoose(checklist) {
+function verifyPercentageOptions() {
+    let isOk=true;
+
+    allOptions.forEach(option => {
+        if(option.correctPercentage===false){
+            isOk=false;
+        }
+    });
+
+    return isOk;
+}
+
+function eventOnlyOneChoose(defaultChecklist) {
     ONE_ELEMENT('#only_one_choose').querySelector('input').addEventListener('change',(e)=>{
         if(e.currentTarget.checked){
+            defaultChecklist.onlyOneChoose=true;
             onlyOneChoose=true;
         }else{
+            defaultChecklist.onlyOneChoose=false;
             onlyOneChoose=false;
         }
 
         ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
         allOptions=[];
-        checklist.options=[];
+        if(defaultChecklist.options.length>0){
+            defaultChecklist.options=[];
+        }
     });
 }
 
@@ -668,7 +733,7 @@ function openModalDoubleChoose(points,id) {
         
         }else if(verifyEmptyOptionsArray()){
             modalHeader.style.display='block';
-            modalHeader.querySelector('.modal-error-content').innerHTML="Adicione pelo menos uma opção!";
+            modalHeader.querySelector('.alert').innerHTML="Adicione pelo menos uma opção!";
         
         }else{
             removeInputDanger();
@@ -794,7 +859,7 @@ function fillLayoutOptionsDefaultChecklist(multipleChoose=false,only_one_choose=
         optionsDefaultChecklistClone.setAttribute('idOption',option.id);
 
         if(option.selected){
-            optionsDefaultChecklistClone.querySelectorAll('input')[2].value=option.pointsValue;
+            optionsDefaultChecklistClone.querySelectorAll('input')[2].value=option.pointsValue.toFixed(2);
             optionsDefaultChecklistClone.querySelector('.btnChoose').classList.remove('btnDisabled');
         }else{
             optionsDefaultChecklistClone.querySelector('.btnChoose').classList.add('btnDisabled');
@@ -811,7 +876,7 @@ function fillLayoutOptionsDefaultChecklist(multipleChoose=false,only_one_choose=
                 option.pointsValue=calcPercentageEquals()[0];
                 option.percentage=calcPercentageEquals()[1];
             }else{
-                optionsDefaultChecklistClone.querySelectorAll('input')[2].value=pointsModal; 
+                optionsDefaultChecklistClone.querySelectorAll('input')[2].value=pointsModal.toFixed(2); 
                 optionsDefaultChecklistClone.querySelectorAll('input')[1].
                     closest('.defaultChecklist__slot').style.display='none'; 
                 option.pointsValue=pointsModal;
@@ -870,7 +935,7 @@ function uniqueEventDeleteOption(element) {
         let id=parseInt(element.getAttribute('idOption'));
         deleteOption(id); 
         ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-        fillLayoutOptionsDefaultChecklist(true);
+        fillLayoutOptionsDefaultChecklist(true,onlyOneChoose);
         eventsMultipleChoose();
     });
 }
@@ -974,7 +1039,7 @@ ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
     let alertHeader=ONE_ELEMENT('.alert-header');
     alertHeader.classList.add('d-none');
     
-    if(allValidations(defaultChecklistArray) === ""){
+    if(allValidations(defaultChecklistArray)){
         ONE_ELEMENT('#allChecklists').value=JSON.stringify(defaultChecklistArray);
         ONE_ELEMENT('#formChecklists').submit();
     };
@@ -1050,41 +1115,53 @@ function allValidationsLayout(item,errorNumber) {
 
 }
 
-function allValidations(defaultChecklistArray,error="") {
-    let errorNumber=error;
+function allValidations(defaultChecklistArray) {
+    let itemError="";
+    let errorNumber=[];
+    let isOk=false;
+    let thereIsErrors=0;
 
     defaultChecklistArray.forEach((item)=>{
         if(item.name==="" || item.percentage==="" ||  item.points===""){
-            errorNumber=ERROR_EMPTY_INPUTS;
+            errorNumber.push(ERROR_EMPTY_INPUTS);
+            itemError=item;
+        }
         
-        }else if(item.typechecklist === "" && item.idDefaultChecklist !== null){
-            errorNumber=ERROR_SELECT_VALUE;
+        if(item.typechecklist === "" && item.idDefaultChecklist !== null){
+            errorNumber.push(ERROR_SELECT_VALUE);
+            itemError=item;
+        }
         
-        }else if(item.correctPercentage===false){
-            errorNumber=ERROR_PERCENTAGE;
+        if(item.correctPercentage===false){
+            errorNumber.push(ERROR_PERCENTAGE);
+            itemError=item;
         }
 
         if(item.idDefaultChecklist === null){
             if(item.subchecklists.length===0){
-                errorNumber=ERROR_SUBCHECKLIST_FATHER;
+                errorNumber.push(ERROR_SUBCHECKLIST_FATHER);
+                itemError=item;
             }
         }
 
         if(item.typechecklist==="0"){
             if(item.subchecklists.length===0){
-                errorNumber=ERROR_GROUPING;
+                errorNumber.push(ERROR_GROUPING);
+                itemError=item;
             }
         }
 
         if(item.typechecklist==="3"){
             let numberOptions=item.options.length;
             if(numberOptions < 1){
-                errorNumber=ERROR_EMPTY_OPTIONS;
+                errorNumber.push(ERROR_EMPTY_OPTIONS);
+                itemError=item;
             }
 
             item.options.forEach((option)=>{
                 if(option.correctPercentage===false){
-                    errorNumber=ERROR_OPTIONS_PERCETAGE;
+                    errorNumber.push(ERROR_OPTIONS_PERCETAGE);
+                    itemError=item;
                 }
             })
         }
@@ -1092,20 +1169,33 @@ function allValidations(defaultChecklistArray,error="") {
         if(item.typechecklist==="4"){
             let numberOptions=item.options.length;
             if(numberOptions !=2){
-                errorNumber=ERROR_EMPTY_DOUBLE_OPTIONS;
+                errorNumber.push(ERROR_EMPTY_DOUBLE_OPTIONS);
+                itemError=item;
             }
         }
 
-        if(errorNumber != ""){
-            allValidationsLayout(item,errorNumber); 
+        if(thereIsErrors===0){
+            if(errorNumber.length===0){
+                isOk=true;
+            }else{
+                isOk=false;
+                thereIsErrors++;
+            }
+        }
+
+        if(errorNumber != [] && itemError.id===item.id){
+            errorNumber.forEach((error)=>{
+                allValidationsLayout(item,error);
+            });
+            
+            errorNumber=[];
         }
         
-        if(errorNumber === ""){
-            if(item.subchecklists){
-                errorNumber=allValidations(item.subchecklists,errorNumber);
-            }
+        if(item.subchecklists.length>0){
+            isOk=allValidations(item.subchecklists);
         }
+    
     });
 
-    return errorNumber;
+    return isOk;
 }

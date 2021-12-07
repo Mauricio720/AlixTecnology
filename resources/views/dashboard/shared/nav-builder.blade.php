@@ -18,7 +18,7 @@
         <li class="c-sidebar-nav-item">
             <a class="c-sidebar-nav-link" href="{{route('allChecklists')}}">
                 <i class="c-sidebar-nav-icon h-100">
-                    <img width="16" src="{{asset('storage/general_icons/home.png')}}">
+                    <img width="16" src="{{asset('storage/general_icons/checklist.png')}}">
                 </i>
                 <span class="c-sidebar-nav-icon"></span>Checklist
             </a>
@@ -27,7 +27,7 @@
         <li class="c-sidebar-nav-item">
             <a class="c-sidebar-nav-link" href="{{route('defaultChecklist')}}">
                 <i class="c-sidebar-nav-icon h-100">
-                    <img width="16" src="{{asset('storage/general_icons/home.png')}}">
+                    <img width="16" src="{{asset('storage/general_icons/checklist_default.png')}}">
                 </i>
                 <span class="c-sidebar-nav-icon"></span>Checklist Padrão
             </a>
@@ -57,7 +57,7 @@
         <li class="c-sidebar-nav-item">
             <a class="c-sidebar-nav-link" href="{{route('allUsers')}}">
                 <i class="c-sidebar-nav-icon h-100">
-                    <img width="16" src="{{asset('storage/general_icons/users.png')}}">
+                    <img width="16" src="{{asset('storage/general_icons/user.png')}}">
                 </i>
                 <span class="c-sidebar-nav-icon"></span>Usuários
             </a>

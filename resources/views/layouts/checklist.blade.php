@@ -14,7 +14,6 @@
         <div class="checklist__slot checklistTypeChecklist" title=""></div>
         <div class="checklist__slot checklistPossiblePoints" title=""></div>
         <div class="checklist__slot checklistPoints" title=""></div>
-        <div class="checklist__slot checklistObservation" title=""></div>
         <div class="checklist__slot">
             <input style="display: block" class="form-control inputObservation" type="text" placeholder="Digite alguma observação">
         </div>
@@ -23,18 +22,18 @@
         
     </div>
     <div class="alert alert-danger mt-2 d-none"></div>
+    <div class="observationIcon">!</div>
  
 </div>
 
 <div class="checklistOption" style="margin-left: 95px;">
     <div class="checklist__content" >
         <div class="checklist__slot justify-content-start">
-            <input type="checkbox" class="checklistOptionCheck mr-2 mb-1">
-            <input type="radio" class="checklistOptionRadio mr-2 mb-1">
+            <input type="checkbox" class="checklistOptionCheck mr-2 mb-2">
+            <input type="radio" class="checklistOptionRadio mr-2 mb-2">
             <label class="optionName"></label>
         </div>
         <div class="checklist__slot justify-content-start checklistPoints" title=""></div>
-        <div class="checklist__slot justify-content-start checklistObservation" title=""></div>
         <div class="checklist__slot">
             <input style="display: block" class="form-control inputObservation" type="text" placeholder="Digite alguma observação">
         </div>
@@ -47,12 +46,13 @@
         <div class="checklist__slot checklistTypeChecklist" title=""></div>
         <div class="checklist__slot checklistPossiblePoints" title=""></div>
         <div class="checklist__slot checklistPoints" title=""></div>
-        <div class="checklist__slot checklistObservation" title=""></div>
     </div>
     <div class="checklist__options"></div>
     <div class="checklist__container">
         
     </div>
+    <div class="observationIconMultiple">!</div>
+
 </div>
 
 <div class="checklists__point">

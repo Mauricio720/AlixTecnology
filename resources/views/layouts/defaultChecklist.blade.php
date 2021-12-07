@@ -118,7 +118,7 @@
 
 <div id="only_one_choose" style="display: none;">
     <input type="checkbox">
-    <label class="only_one_choose_label">Escolha única</label>
+    <label class="only_one_choose_label">Pontuação única</label>
 </div>
 <div class="defaultChecklistExibition">
     <div class="defaultChecklist__content">

@@ -31,8 +31,7 @@ function showChecklist(checklistArray,checklistElement=null) {
 function fillInputsAndAttributeChecklist(checklistClone,item) {
     checklistClone.setAttribute('idElement',item.id);
     checklistClone.setAttribute('id',"check"+item.id);
-    checklistClone.classList.add('active');
-
+    checklistClone.style.height="100px";
     checklistClone.querySelector('.checklist__title').innerHTML=item.name;
     checklistClone.querySelector('.checklist__title').setAttribute('title',item.name);
 
@@ -170,7 +169,7 @@ function showSubchecklistContainer(elementChecklist){
         elementChecklist.classList.add('active');
         checklist.active=true;
     }else{
-        elementChecklist.style.height="65px";
+        elementChecklist.style.height="100px";
         elementChecklist.classList.remove('active');
         checklist.active=false;
     }

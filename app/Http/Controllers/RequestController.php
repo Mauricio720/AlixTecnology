@@ -60,7 +60,7 @@ class RequestController extends Controller
             if($file->isValid()){
                 if($file->getClientOriginalExtension() == "php" || $file->getClientOriginalExtension() == "js" 
                     || $file->getClientOriginalExtension() == "exe"){
-                    $array['error']="Extensão inválida";
+                        $array['error']="Extensão inválida";
                 }else{
                     $pathImage="public/checklists_files/";
                     $file->storeAs($pathImage,$fileName);

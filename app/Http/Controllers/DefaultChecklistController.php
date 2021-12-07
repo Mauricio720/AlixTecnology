@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Checklist;
 use App\Models\DefaultCheckList;
 use Illuminate\Http\Request;
 use App\Util\DefaultCheckListOrganization;
@@ -93,12 +94,25 @@ class DefaultChecklistController extends Controller
         $defaultChecklist=DefaultCheckList::where('id',$id)->first();
 
         if($defaultChecklist != null){
-            $defaultChecklistOrganization=new DefaultCheckListOrganization();
-            $defaultChecklistOrganization->deleteDefaultChecklist($defaultChecklist);
+            if($this->verifyChecklist($id)){
+                $defaultChecklistOrganization=new DefaultCheckListOrganization();
+                $defaultChecklistOrganization->deleteDefaultChecklist($defaultChecklist);
+            }else{
+                return redirect()->route('defaultChecklist')->withErrors('Há checklists oficiais que estão usando essa checklist!');
+            }
         }
 
         return redirect()->route('defaultChecklist');
 
+    }
+
+    private function verifyChecklist($id){
+        $checklist=Checklist::where('id_default_checklist',$id)->first();
+        if($checklist==null){
+            return true;
+        }else{
+            return false;
+        }
     }
     
 }

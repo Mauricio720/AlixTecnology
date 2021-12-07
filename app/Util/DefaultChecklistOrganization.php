@@ -15,6 +15,9 @@ class DefaultCheckListOrganization {
         $defaultChecklistModel->percentage=$defaultChecklist->percentage;
         $defaultChecklistModel->points=$defaultChecklist->points;
         $defaultChecklistModel->observation=$defaultChecklist->observation;
+        if($defaultChecklist->typechecklist=="3"){
+            $defaultChecklistModel->only_one_choose=$defaultChecklist->onlyOneChoose;
+        }
         $defaultChecklistModel->save();
 
         if(count($defaultChecklist->options) > 0){
@@ -80,6 +83,7 @@ class DefaultCheckListOrganization {
         $newArray['percentage']=$defaultChecklist->percentage;
         $newArray['points']=$defaultChecklist->points;
         $newArray['observation']=$defaultChecklist->observation;
+        $newArray['only_one_choose']=$defaultChecklist->only_one_choose;
         $newArray['created_at']=date('d/m/Y',strtotime($defaultChecklist->created_at));
         $newArray['options']=$this->getOptions($defaultChecklist->id);
         

@@ -83,7 +83,7 @@ function openModal(options) {
         let optionsDefaultChecklistClone=optionsDefaultChecklist.cloneNode(true);
         optionsDefaultChecklistClone.querySelector('.optionName').innerHTML=option.name;
         optionsDefaultChecklistClone.querySelector('.optionPercentage').innerHTML=option.percentage+"%";
-        optionsDefaultChecklistClone.querySelector('.optionPoints').innerHTML="Pontos: "+option.points;
+        optionsDefaultChecklistClone.querySelector('.optionPoints').innerHTML="Pontos: "+option.points.toFixed(2);
         optionsDefaultChecklistClone.style.display='flex';
         
         ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(optionsDefaultChecklistClone);
