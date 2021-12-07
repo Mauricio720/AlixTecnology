@@ -35,75 +35,48 @@ class CreateAllTable extends Migration
         Schema::create('default_checklists', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
             $table->string('name',150);
+            $table->integer('idDefaultChecklist')->nullable();
+            $table->float('percentage');
+            $table->double('points',8,2);
+            $table->text('observation')->nullable();
+            $table->tinyInteger('only_one_choose')->nullable();;
             $table->timestamps();
-            $table->integer('id_type_checklist');
+            $table->integer('id_type_checklist')->nullable();
         });
 
-        Schema::create('default_subchecklists', function (Blueprint $table) {
+        
+        Schema::create('default_checklist_options', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
-            $table->integer('id_default_checklist');
             $table->string('name',150);
+            $table->integer('idDefaultChecklist')->nullable();
+            $table->float('percentage');
+            $table->double('points',8,2);
+            $table->tinyInteger('selected');
             $table->timestamps();
-            $table->integer('type_subchecklist')
-                ->comment(
-                    '1 - UPLOAD;
-                    2 -TEXT;
-                    3- CHECKBOX;
-                    4- TRUE OU FALSE;
-                    5-NÙMERICO;
-                    6-DATA'
-            );
         });
 
-        Schema::create('default_subchecklist_itens', function (Blueprint $table) {
-            $table->bigIncrements('id')->unique();
-            $table->integer('id_default_subchecklist');
-            $table->string('name',150);
-            $table->timestamps();
-            $table->integer('type_subchecklist_item')
-                ->comment(
-                    '1 - UPLOAD;
-                    2 -TEXT;
-                    3- CHECKBOX;
-                    4- TRUE OU FALSE;
-                    5-NÙMERICO;
-                    6-DATA'
-            );
-        });
 
         Schema::create('checklists', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
             $table->integer('id_default_checklist');
+            $table->integer('id_checklist')->nullable();;
             $table->string('file_name',250)->nullable();
-            $table->float('total_points');
+            $table->double('points',8,2);
+            $table->double('pointsObtained',8,2);
+            $table->string('value',250)->nullable();;
             $table->integer('id_client');
             $table->integer('id_user');
             $table->text('observation');
             $table->timestamps();
         });
 
-        Schema::create('subchecklist', function (Blueprint $table) {
+        Schema::create('checklist_options', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
+            $table->integer('id_default_checklist');
             $table->integer('id_checklist');
-            $table->string('file_name',250)->nullable();
-            $table->float('total_points');
-            $table->integer('value');
-            $table->text('observation');
-            $table->timestamps();
-        });
-
-        Schema::create('subchecklist_itens', function (Blueprint $table) {
-            $table->bigIncrements('id')->unique();
-            $table->integer('id_subchecklist');
-            $table->integer('id_default_subchecklist_itens');
-            $table->string('file_name',250)->nullable();
-            $table->integer('points');
-            $table->timestamps();
-        });
-
-        Schema::create('type_checklist', function (Blueprint $table) {
-            $table->bigIncrements('id')->unique();
-            $table->string('name',250);
+            $table->double('points',8,2);
+            $table->double('pointsObtained',8,2);
+            $table->tinyInteger('selected');
             $table->timestamps();
         });
     }

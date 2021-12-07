@@ -59,56 +59,59 @@
     </div>
 
     <div class="card-body">
-        <table class="table table-bordered">
-            <thead class="table-dark">
-                <th>Nome</th>
-                <th>Cnpj</th>
-                <th>Geral</th>
-                <th>Técnico</th>
-                <th>Financeiro</th>
-                <th>Monitoramento</th>
-                <th>Ações</th>
-            </thead>
-            <tbody>
-                @foreach($allClients as $client)
-                    <tr>
-                        <td>{{$client->name}}</td>
-                        <td>{{$client->cnpj}}</td>
-                        <td>{{$client->responsible_general_name}}</td>
-                        <td>{{$client->technical_manager_name}}</td>
-                        <td>{{$client->financial_officer_name}}</td>
-                        <td>{{$client->contact_monitoring_name}}</td>
-                        <td class="d-flex">
-                            <a href="{{route('addChecklist',['idClient'=>$client->id])}}" class="btnDefault 
-                                    btnDefault--sm btnAdd" 
-                                title="Adicionar Checklist">
-                                +
-                            </a>
+        
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <th>Nome</th>
+                    <th>Cnpj</th>
+                    <th>Geral</th>
+                    <th>Técnico</th>
+                    <th>Financeiro</th>
+                    <th>Monitoramento</th>
+                    <th>Ações</th>
+                </thead>
+                <tbody>
+                    @foreach($allClients as $client)
+                        <tr>
+                            <td>{{$client->name}}</td>
+                            <td>{{$client->cnpj}}</td>
+                            <td>{{$client->responsible_general_name}}</td>
+                            <td>{{$client->technical_manager_name}}</td>
+                            <td>{{$client->financial_officer_name}}</td>
+                            <td>{{$client->contact_monitoring_name}}</td>
+                            <td class="d-flex">
+                                <a href="{{route('addChecklist',['idClient'=>$client->id])}}" class="btnDefault 
+                                        btnDefault--sm btnAdd" 
+                                    title="Adicionar Checklist">
+                                    +
+                                </a>
 
-                            <a href="{{route('historicChecklist',['idClient'=>$client->id])}}" class="btnDefault btnDefault--sm " 
-                                title="Histórico checklist" >
-                                <img src="{{asset('storage/general_icons/history.png')}}" width="16" height="16"/>
-                            </a>
-                            
-                            <a href="{{route('seeClient',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 
-                                title="Ver Mais Cliente">
-                                ...
-                            </a>
+                                <a href="{{route('historicChecklist',['idClient'=>$client->id])}}" class="btnDefault btnDefault--sm " 
+                                    title="Histórico checklist" >
+                                    <img src="{{asset('storage/general_icons/history.png')}}" width="16" height="16"/>
+                                </a>
+                                
+                                <a href="{{route('seeClient',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnSeeMore" 
+                                    title="Ver Mais Cliente">
+                                    ...
+                                </a>
 
-                            <a href="{{route('editClientView',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnEdit" 
-                                title="Editar Cliente" >
-                                <img src="{{asset('storage/general_icons/pencil.png')}}" width="16" height="16">
-                            </a>
+                                <a href="{{route('editClientView',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnEdit" 
+                                    title="Editar Cliente" >
+                                    <img src="{{asset('storage/general_icons/pencil.png')}}" width="16" height="16">
+                                </a>
 
-                            <a href="{{route('deleteClient',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
-                                msg="Tem certeza que deseja excluir esse cliente?">
-                                <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
-                            </a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                <a href="{{route('deleteClient',['id'=>$client->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
+                                    msg="Tem certeza que deseja excluir esse cliente?">
+                                    <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
     </div>
     <div class="card-footer">
         {{$allClients->links()}}
