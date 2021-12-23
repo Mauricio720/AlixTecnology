@@ -12,6 +12,8 @@ class ClientsController extends Controller
 {
     public function __construct(){
         $this->middleware('auth');
+        $this->middleware('check.client');
+
     }
 
     public function index(Request $request){
@@ -235,13 +237,13 @@ class ClientsController extends Controller
             'name'=>['required','string','max:250'],
             'cnpj'=>['cnpj','required','string'],
             'responsible_general_name'=>['required','string','max:150'],
-            'responsible_general_phone'=>['required','string','max:20','celular_com_ddd'],
-            'technical_manager_name'=>['required','string','max:150'],
-            'technical_manager_phone'=>['required','string','max:20','celular_com_ddd'],
-            'financial_officer_name'=>['required','string','max:150'],
-            'financial_officer_phone'=>['required','string','max:20','celular_com_ddd'],
-            'contact_monitoring_name'=>['required','string','max:150'],
-            'contact_monitoring_phone'=>['required','string','max:20','celular_com_ddd'],
+            'responsible_general_phone'=>['string','max:20','celular_com_ddd'],
+            'technical_manager_name'=>['string','max:150'],
+            'technical_manager_phone'=>['string','max:20','celular_com_ddd'],
+            'financial_officer_name'=>['string','max:150'],
+            'financial_officer_phone'=>['string','max:20','celular_com_ddd'],
+            'contact_monitoring_name'=>['string','max:150'],
+            'contact_monitoring_phone'=>['string','max:20','celular_com_ddd'],
             'street'=>['string','max:100','nullable'],
             'number'=>['string','max:10','nullable'],
             'neighboorhood'=>['string','max:100','nullable'],

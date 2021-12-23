@@ -110,9 +110,7 @@
                     @endforeach
                 </tbody>
             </table>
-        @endif
-
-    </div>
+        </div>
     <div class="card-footer">
         {{$allClients->links()}}
     </div>

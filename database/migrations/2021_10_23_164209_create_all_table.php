@@ -16,19 +16,20 @@ class CreateAllTable extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
             $table->string('name',250);
-            $table->char('cnpj',18);
+            $table->char('cnpj',18)->nullable();;
             $table->string('street',100)->nullable();
             $table->string('number',10)->nullable();
             $table->string('neighboorhood',100)->nullable();
             $table->string('state',100)->nullable();
-            $table->string('responsible_general_name',150);
-            $table->string('responsible_general_phone',20);
-            $table->string('technical_manager_name',150);
-            $table->string('technical_manager_phone',20);
-            $table->string('financial_officer_name',150);
-            $table->string('financial_officer_phone',20);
-            $table->string('contact_monitoring_name',150);
-            $table->string('contact_monitoring_phone',20);
+            $table->string('cep',14)->nullable();
+            $table->string('responsible_general_name',150)->nullable();;
+            $table->string('responsible_general_phone',20)->nullable();;
+            $table->string('technical_manager_name',150)->nullable();;
+            $table->string('technical_manager_phone',20)->nullable();;
+            $table->string('financial_officer_name',150)->nullable();;
+            $table->string('financial_officer_phone',20)->nullable();;
+            $table->string('contact_monitoring_name',150)->nullable();;
+            $table->string('contact_monitoring_phone',20)->nullable();;
             $table->timestamps();
         });
 

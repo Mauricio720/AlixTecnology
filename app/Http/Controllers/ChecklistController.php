@@ -14,6 +14,7 @@ class ChecklistController extends Controller
 {
     public function __construct(){
         $this->middleware('auth');
+
     }
 
     public function index(Request $request,$idClient=null){
@@ -91,6 +92,8 @@ class ChecklistController extends Controller
     }
 
     public function add(Request $request){
+        $this->middleware('check.client');
+
         $data=[];
         $queryClient=Client::query();
         
