@@ -7,7 +7,7 @@ use App\Models\DefaultChecklistOption;
 
 class DefaultCheckListOrganization {
 
-    public function addDefaultChecklist($defaultChecklist,$idDefaultChecklist=null){
+    public function addDefaultChecklist($defaultChecklist,$idDefaultChecklist=null,$json=null){
         $defaultChecklistModel=new DefaultCheckList();
         $defaultChecklistModel->idDefaultChecklist=$idDefaultChecklist;
         $defaultChecklistModel->name=$defaultChecklist->name;
@@ -15,9 +15,17 @@ class DefaultCheckListOrganization {
         $defaultChecklistModel->percentage=$defaultChecklist->percentage;
         $defaultChecklistModel->points=$defaultChecklist->points;
         $defaultChecklistModel->observation=$defaultChecklist->observation;
+        $defaultChecklistModel->duplicate=$defaultChecklist->duplicate;
+        
         if($defaultChecklist->typechecklist=="3"){
             $defaultChecklistModel->only_one_choose=$defaultChecklist->onlyOneChoose;
+            $defaultChecklistModel->only_one_choose_points=$defaultChecklist->onlyOneChoosePoints;
         }
+
+        if($idDefaultChecklist==null){
+            $defaultChecklistModel->json=$json;
+        }
+        
         $defaultChecklistModel->save();
 
         if(count($defaultChecklist->options) > 0){

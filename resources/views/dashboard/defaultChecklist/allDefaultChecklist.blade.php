@@ -57,35 +57,76 @@
         @endif 
 
         <div class="card-body">
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <th>Nome</th>
-                    <th>Pontuação Total</th>
-                    <th>Observação</th>
-                    <th>Criado</th>
-                    <th>Ações</th>
-                </thead>
-                <tbody>
-                @foreach ($allDefaultChecklist as $defaultChecklist)
-                    <tr>
-                        <td>{{$defaultChecklist->name}}</td>
-                        <td>{{$defaultChecklist->points}}</td>
-                        <td style="max-width: 150px;">{{$defaultChecklist->observation==""?"Não Informado":$defaultChecklist->observation}}</td>
-                        <td>{{$defaultChecklist->created_at->format('d/m/Y H:i:s')}}</td>
-                        <td class="d-flex">
-                            <a href="{{route('getDefaultChecklistById',['id'=>$defaultChecklist->id])}}" 
-                                class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
-                                ...
-                            </a>
-                            <a href="{{route('deleteDefaultChecklist',['id'=>$defaultChecklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
-                                msg="Tem certeza que deseja excluir essa checklist padrão?">
-                                <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
-                            </a>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+            <div class="card">
+                <div class="card-header">
+                    <h4>Em progresso</h4>
+                </div>   
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <th>Nomes</th>
+                            <th>Criado</th>
+                            <th>Ações</th>
+                        </thead>
+                        <tbody>
+                        @foreach ($allDefaultChecklistInProgress as $defaultChecklist)
+                            <tr>
+                                <td>{{$defaultChecklist->names}}</td>
+                                <td>{{$defaultChecklist->created_at->format('d/m/Y H:i:s')}}</td>
+                                <td class="d-flex">
+                                    <a href="{{route('addDefaultChecklist',
+                                        ['checklistRegister'=>false,'default_checklist_json_id'=>$defaultChecklist->id])}}" 
+                                        class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
+                                        ...
+                                    </a>
+                                    <a href="{{route('deleteDefaultCheckJson',['id'=>$defaultChecklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
+                                        msg="Tem certeza que deseja excluir essa checklist padrão em progresso?">
+                                        <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4>Finalizadas</h4>
+                </div>   
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <th>Nome</th>
+                            <th>Pontuação Total</th>
+                            <th>Observação</th>
+                            <th>Criado</th>
+                            <th>Ações</th>
+                        </thead>
+                        <tbody>
+                        @foreach ($allDefaultChecklist as $defaultChecklist)
+                            <tr>
+                                <td>{{$defaultChecklist->name}}</td>
+                                <td>{{$defaultChecklist->points}}</td>
+                                <td style="max-width: 150px;">{{$defaultChecklist->observation==""?"Não Informado":$defaultChecklist->observation}}</td>
+                                <td>{{$defaultChecklist->created_at->format('d/m/Y H:i:s')}}</td>
+                                <td class="d-flex">
+                                    <a href="{{route('getDefaultChecklistById',['id'=>$defaultChecklist->id])}}" 
+                                        class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
+                                        ...
+                                    </a>
+                                    <a href="{{route('deleteDefaultChecklist',['id'=>$defaultChecklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
+                                        msg="Tem certeza que deseja excluir essa checklist padrão?">
+                                        <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

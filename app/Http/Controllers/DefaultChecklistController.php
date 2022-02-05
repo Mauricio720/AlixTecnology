@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Checklist;
+use App\Models\DefaultChecklistJson;
 use App\Models\DefaultCheckList;
 use Illuminate\Http\Request;
 use App\Util\DefaultCheckListOrganization;
+use Illuminate\Support\Facades\Auth;
 
 class DefaultChecklistController extends Controller
 {
@@ -16,6 +18,7 @@ class DefaultChecklistController extends Controller
     public function index(Request $request){
         $data=[];
         $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)->orderBy('id','DESC')->paginate(10);
+        $data['allDefaultChecklistInProgress']=DefaultChecklistJson::orderBy('id','DESC')->paginate(10);
         $data['nameChecklist']="";
         $data['pointsChecklist']="";
         $data['observationChecklist']="";
@@ -25,6 +28,39 @@ class DefaultChecklistController extends Controller
         }
 
         return view('dashboard.defaultChecklist.allDefaultChecklist',$data);
+    }
+
+   
+
+    public function addView(Request $request){
+        $data=[];
+        
+        $data['default_checkjson_id']='';
+        $data['default_checklist_json']='';
+        $data['lastIdIncrement']="";
+        $data['lastIdIncrementOption']="";
+        
+        if($request->default_checklist_json_id != ""){
+            $idChecklistJson=intVal($request->default_checklist_json_id);
+            $checklistJson=DefaultChecklistJson::where('id',$idChecklistJson)->first();
+            $data['default_checkjson_id']=$idChecklistJson;
+            $data['default_checklist_json']=$checklistJson->json;
+            $data['lastIdIncrement']=$checklistJson->lastIdIncrement;
+            $data['lastIdIncrementOption']=$checklistJson->lastIdIncrementOption;
+        }
+
+        $data['allDefaultChecklist']=DefaultCheckList::where('idDefaultChecklist',null)
+            ->orderBy('id','DESC')->paginate(5,['*'],'page_default_checklist');
+       
+        $data['nameChecklist']='';
+
+        if($request->has('nameChecklist')){
+            $data=$this->filterDefaultChecklist($request,$data);
+        }
+
+        $data['registerChecklist']=$request->registerChecklist!=""?$request->registerChecklist:'';
+
+        return view('dashboard.defaultChecklist.addDefaultChecklist',$data);
     }
 
     private function filterDefaultChecklist($request,$data){
@@ -57,20 +93,21 @@ class DefaultChecklistController extends Controller
         return $data;
     }
 
-    public function addView(Request $request){
-        $data=[];
-        $data['registerChecklist']=$request->registerChecklist!=""?$request->registerChecklist:'';
+   public function add(Request $request){
+        if($request->filled('idDefaultCheckJson')){
+            $idDefaultCheckJson=$request->input('idDefaultCheckJson');
+            $defaultChecklistJson=DefaultChecklistJson::where('id',$idDefaultCheckJson)->first();
+            $defaultChecklistJson->delete();
+        }
 
-        return view('dashboard.defaultChecklist.addDefaultChecklist',$data);
-    }
-
-    public function add(Request $request){
         $allDefaultChecklists=json_decode($request->input('allChecklists'));
+        $json=$request->input('default_checklist_json_oficial');
+        
         $defaultChecklistOrganization=new DefaultCheckListOrganization();
         
         if($request->filled('allChecklists')){
             foreach ($allDefaultChecklists as $key => $defaultChecklist) {
-                $defaultChecklistOrganization->addDefaultChecklist($defaultChecklist);
+                $defaultChecklistOrganization->addDefaultChecklist($defaultChecklist,null,$json);
             }
         }
 
@@ -79,6 +116,49 @@ class DefaultChecklistController extends Controller
         }else{
             return redirect()->route('defaultChecklist');        
         }
+    }
+
+    public function save(Request $request){
+        $allDefaultChecklists=$request->input('default_checklist_json');
+        $idDefaultCheckJson=$request->input('idDefaultCheckJson');
+        $namesChecklist=$request->input('checklist_names');
+        $lastIdIncrement=$request->input('lastIdIncrement');
+        $lastIdIncrementOption=$request->input('lastIdIncrementOption');
+
+        if($request->filled('default_checklist_json')){
+           if($request->filled('idDefaultCheckJson')){
+              $defaultChecklistJson=DefaultChecklistJson::where('id',$idDefaultCheckJson)->first();
+              $defaultChecklistJson->names=$namesChecklist;
+              $defaultChecklistJson->json=$allDefaultChecklists;
+           }else{
+                $defaultChecklistJson=new DefaultChecklistJson();
+                $defaultChecklistJson->json=$allDefaultChecklists;
+                $defaultChecklistJson->names=$namesChecklist;
+                $defaultChecklistJson->id_user=Auth::user()->id;
+                $defaultChecklistJson->lastIdIncrement=$lastIdIncrement;
+                $defaultChecklistJson->lastIdIncrementOption=$lastIdIncrementOption;
+           }
+            
+            $defaultChecklistJson->save();
+        }
+
+        if($request->filled('registerChecklist')){
+            return redirect()->route('addChecklist');
+        }else{
+            return redirect()->route('defaultChecklist');        
+        }
+    }
+
+    public function deleteDefaultCheckJson($id){
+        $defaultChecklistJson=DefaultCheckListJson::where('id',$id)->first();
+
+        if($defaultChecklistJson != null){
+            $defaultChecklistJson->delete();
+        }else{
+            return redirect()->route('defaultChecklist');
+        }
+
+        return redirect()->route('defaultChecklist');
     }
 
     public function getDefaultChecklistById($id){

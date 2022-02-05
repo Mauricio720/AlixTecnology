@@ -179,3 +179,8 @@
 
 <div class="checklistCompare"></div>
 
+<form id="uploadFileForm" action="{{route('uploadFile')}}" 
+    method="post" enctype="multipart/form-data">
+    @csrf
+</form>
+

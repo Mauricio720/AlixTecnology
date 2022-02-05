@@ -52,6 +52,7 @@
             <select class="form-control">
                 <option value="">Selecione Tipo Checklist</option>
                 <option value="0">Agrupamento</option>
+                <option value="7">Agrupamento (Dupla Escolha)</option>
                 <option value="1">Texto</option>
                 <option value="2">Upload</option>
                 <option value="3">Multiplas Escolhas</option>
@@ -70,6 +71,12 @@
             <input class="form-control" type="text" placeholder="Observação">
         </div>
         <div class="defaultChecklist__slot defaultChecklist__slot--auto">
+            <div class="btnDefault btnDefault--sm btnDuplicate d-none" title="Duplicavel">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" class="react-icons" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" style="color: black">
+                    <path fill-rule="evenodd" d="M2.854 7.146a.5.5 0 00-.708 0l-2 2a.5.5 0 10.708.708L2.5 8.207l1.646 1.647a.5.5 0 00.708-.708l-2-2zm13-1a.5.5 0 00-.708 0L13.5 7.793l-1.646-1.647a.5.5 0 00-.708.708l2 2a.5.5 0 00.708 0l2-2a.5.5 0 000-.708z" clip-rule="evenodd"></path>
+                    <path fill-rule="evenodd" d="M8 3a4.995 4.995 0 00-4.192 2.273.5.5 0 01-.837-.546A6 6 0 0114 8a.5.5 0 01-1.001 0 5 5 0 00-5-5zM2.5 7.5A.5.5 0 013 8a5 5 0 009.192 2.727.5.5 0 11.837.546A6 6 0 012 8a.5.5 0 01.501-.5z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
             <div class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais Checklist">
                 ...
             </div>
@@ -116,10 +123,17 @@
     </div>
 </form>
 
+<div id="only_one_choose_points" style="display: none;">
+    <input type="checkbox">
+    <label class="only_one_choose_label">Pontuação única (Escolha varias opções mas só irá 
+            valer a pontuação total da checklist)</label>
+</div>
+
 <div id="only_one_choose" style="display: none;">
     <input type="checkbox">
-    <label class="only_one_choose_label">Pontuação única</label>
+    <label class="only_one_choose_label">Escolha única (Escolha apenas uma opção valendo a pontuação total da checklist)</label>
 </div>
+
 <div class="defaultChecklistExibition">
     <div class="defaultChecklist__content">
         <div class="defaultChecklist__slot">

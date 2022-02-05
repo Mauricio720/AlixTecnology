@@ -68,6 +68,7 @@ class CheckListOrganization {
         foreach ($options as $key => $option) {
             $checklistOption=new ChecklistOption();
             $checklistOption->id_checklist=$idChecklist;
+            $checklistOption->id_default_checklist=$idChecklist;
             $checklistOption->id_default_checklist_option=$option->id;
             $checklistOption->points=$option->points;
             $checklistOption->pointsObtained=$option->pointsObtained;

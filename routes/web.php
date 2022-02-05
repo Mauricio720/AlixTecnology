@@ -40,12 +40,14 @@ Route::post('/edit_client',[ClientsController::class,'editClient'])->name('editC
 Route::get('/delete_client/{id}',[ClientsController::class,'deleteClient'])->name('deleteClient');
 
 Route::get('/all_default_checklist',[DefaultChecklistController::class,'index'])->name('defaultChecklist');
-Route::get('/add_default_checklist/{checklistRegister?}',[DefaultChecklistController::class,'addView'])->name('addDefaultChecklist');
+Route::get('/add_default_checklist/{checklistRegister?}/{default_checklist_json_id?}',[DefaultChecklistController::class,'addView'])->name('addDefaultChecklist');
 Route::post('/add_default_checklist',[DefaultChecklistController::class,'add'])->name('addDefaultChecklist');
+Route::get('/get_default_checklist_request/{id}',[RequestController::class,'getAllDefaultChecklist'])->name('getAllDefaultChecklist');
+Route::post('/save_default_checklist',[DefaultChecklistController::class,'save'])->name('saveDefaultChecklist');
+Route::get('/delete_default_checklist_json/{id}',[DefaultChecklistController::class,'deleteDefaultCheckJson'])->name('deleteDefaultCheckJson');
 Route::get('/get_default_checklist/{id}',[DefaultChecklistController::class,'getDefaultChecklistById'])->name('getDefaultChecklistById');
 Route::get('/delete_default_checklist/{id}',[DefaultChecklistController::class,'delete'])->name('deleteDefaultChecklist');
 
-Route::get('/get_default_checklist_request/{id}',[RequestController::class,'getAllDefaultChecklist'])->name('getAllDefaultChecklist');
 Route::get('/all_checklists/{idClient?}',[ChecklistController::class,'index'])->name('allChecklists');
 Route::get('/add_checklist/{idClient?}',[ChecklistController::class,'add'])->name('addChecklistView');
 Route::post('/add_checklist',[ChecklistController::class,'addChecklist'])->name('addChecklist');

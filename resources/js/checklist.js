@@ -130,9 +130,9 @@ function fillLayoutChecklist(checklistClone,subchecklist) {
         checklistClone.querySelector('.checklist__title').setAttribute('title',subchecklist.name);
     }
     
-    let only_one_choose="";
-    if(subchecklist.only_one_choose){
-        only_one_choose="(Pontuação única)*";
+    let only_one_choose_points="";
+    if(subchecklist.only_one_choose_points){
+        only_one_choose_points="(Pontuação única)*";
         checklistClone.querySelector('.checklistTypechecklist').style="flex:2;";
     }
 
@@ -284,13 +284,11 @@ function eventsObservationInput(element,checklist) {
 }
 
 async function uploadFile(file,checklist){
-    const formData=new FormData();
+    let form=ONE_ELEMENT('#uploadFileForm');
+    const formData=new FormData(form);
     formData.append('checklistFile',file);
    
-    const res=await fetch(BASE_URL+"/upload_file/",{
-        headers: {
-           "X-CSRF-Token": csrfToken
-        },
+    const res=await fetch(BASE_URL+"/upload_file",{
         method:'POST',
         body:formData        
     });

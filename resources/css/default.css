@@ -134,7 +134,6 @@ textarea:focus, input:focus, select:focus {
     align-items: center;
 }
 
-
 @keyframes errorBackgroundAnimation {
 	0% {background-color:  #fadddd}
 	25% {background-color: white;}

@@ -42,7 +42,11 @@
 }
 
 #only_one_choose{
-    margin-top: 10px;
+    margin-top: 15px;
+}
+
+#only_one_choose_points{
+    margin-top: 15px;
 }
 
 .only_one_choose_label{

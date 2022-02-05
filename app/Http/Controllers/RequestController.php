@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DefaultChecklistJson;
 use App\Models\User;
 use App\Util\DefaultCheckListOrganization;
 use Illuminate\Http\Request;

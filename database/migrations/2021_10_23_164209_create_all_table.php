@@ -73,6 +73,7 @@ class CreateAllTable extends Migration
 
         Schema::create('checklist_options', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
+            $table->integer('id_default_checklist_option');
             $table->integer('id_default_checklist');
             $table->integer('id_checklist');
             $table->double('points',8,2);

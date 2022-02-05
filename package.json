@@ -93,6 +93,7 @@
     "babel-eslint": "^10.1.0",
     "babel-plugin-transform-es2015-modules-strip": "^0.1.1",
     "browser-sync": "^2.26.7",
+    "browser-sync-webpack-plugin": "^2.0.1",
     "chalk": "^4.0.0",
     "clean-css-cli": "^4.3.0",
     "copyfiles": "^2.2.0",
