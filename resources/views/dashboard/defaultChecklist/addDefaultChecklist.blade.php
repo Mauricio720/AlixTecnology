@@ -20,6 +20,8 @@
         <input type="hidden" name="allChecklists" id="allChecklists" value="allChecklists"> 
         <input type="hidden" name="registerChecklist" value="{{$registerChecklist}}">
         <input type="hidden" name="default_checklist_json_oficial" id="default_checklist_json_oficial" value="{{$default_checklist_json}}">
+        <input type="hidden" name="lastIdIncrement" id="lastIdIncrementOficial" value="{{$lastIdIncrement}}">
+        <input type="hidden" name="lastIdIncrementOption" id="lastIdIncrementOptionOficial" value="{{$lastIdIncrementOption}}">
     </form>
 
     <div class="card">
@@ -32,6 +34,7 @@
                     <a href="{{$registerChecklist==""?route('defaultChecklist'):route('addChecklist')}}" class="btnDefault btnBack" title="Voltar">
                         <img src="{{asset('storage/general_icons/back.png')}}" width="16" height="16">
                     </a>
+                    
                 </div>
             </div>
         </div>

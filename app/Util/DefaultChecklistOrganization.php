@@ -7,7 +7,9 @@ use App\Models\DefaultChecklistOption;
 
 class DefaultCheckListOrganization {
 
-    public function addDefaultChecklist($defaultChecklist,$idDefaultChecklist=null,$json=null){
+    public function addDefaultChecklist($defaultChecklist,$idDefaultChecklist=null,$json=null
+        ,$lastIdIncrement=null,$lastIdIncrementOption=null){
+        
         $defaultChecklistModel=new DefaultCheckList();
         $defaultChecklistModel->idDefaultChecklist=$idDefaultChecklist;
         $defaultChecklistModel->name=$defaultChecklist->name;
@@ -24,6 +26,8 @@ class DefaultCheckListOrganization {
 
         if($idDefaultChecklist==null){
             $defaultChecklistModel->json=$json;
+            $defaultChecklistModel->last_id_increment=$lastIdIncrement;
+            $defaultChecklistModel->last_id_increment_option=$lastIdIncrementOption;
         }
         
         $defaultChecklistModel->save();
@@ -92,6 +96,8 @@ class DefaultCheckListOrganization {
         $newArray['points']=$defaultChecklist->points;
         $newArray['observation']=$defaultChecklist->observation;
         $newArray['only_one_choose']=$defaultChecklist->only_one_choose;
+        $newArray['only_one_choose_points']=$defaultChecklist->only_one_choose_points;
+        $newArray['last_id_increment']=$defaultChecklist->last_id_increment;
         $newArray['created_at']=date('d/m/Y',strtotime($defaultChecklist->created_at));
         $newArray['options']=$this->getOptions($defaultChecklist->id);
         

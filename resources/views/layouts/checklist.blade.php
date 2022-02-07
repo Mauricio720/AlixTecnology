@@ -3,7 +3,33 @@
 <link rel="stylesheet" href="{{asset('css/checklist.min.css')}}">
 
 <div class="checklist">
-    <div class="checklist__title"></div>
+    <div class="checklist__header">
+        <div class="checklist__header__slot">
+            <div class="checklist__title"></div>
+        </div>
+        <div class="checklist__header__slot checklist__header__actions">
+            <div class="checklist__header__slot align-items-center justify-content-center">
+                <div class="checklist__header--optionsContainer">
+                    <input class="d-flex checkGroupingChoice" type="radio" 
+                        name="checkGroupingChoice" value="1"/>
+                    <span class="ml-2 mr-2" for="checkradio">Sim</span>
+                    <input class="d-flex mr-1 checkGroupingChoice" type="radio" 
+                        name="checkGroupingChoice" value="2" checked/>
+                    <span class="mr-2" for="checkradio">Não</span>
+                </div>
+            </div>
+
+            <div class="checklist__header__slot justify-content-end">
+                <div class="btnDefault btnAdd btnDefault--sm d-none" title="Adicionar">
+                    +
+                </div>
+                <div class="btnDefault btnDefault--sm btnSeeMoreCheck d-none" title="Ver Mais Detalhes Checklist"
+                    data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
+                    ...
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="checklist__content">
         <div class="checklist__slot">
             <input class="form-control inputText" type="text"  placeholder="Digite o conteúdo da checklist">
@@ -17,13 +43,10 @@
         <div class="checklist__slot">
             <input style="display: block" class="form-control inputObservation" type="text" placeholder="Digite alguma observação">
         </div>
-    </div>
-    <div class="checklist__container">
-        
-    </div>
+     </div>
+    <div class="checklist__container"></div>
     <div class="alert alert-danger mt-2 d-none"></div>
     <div class="observationIcon">!</div>
- 
 </div>
 
 <div class="checklistOption" style="margin-left: 95px;">

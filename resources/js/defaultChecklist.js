@@ -1223,6 +1223,8 @@ ONE_ELEMENT('#btnFinish').addEventListener('click',()=>{
     if(allValidations(defaultChecklistArray)){
         ONE_ELEMENT('#default_checklist_json_oficial').value=JSON.stringify(defaultChecklistArray);
         ONE_ELEMENT('#allChecklists').value=JSON.stringify(defaultChecklistArray);
+        ONE_ELEMENT('#lastIdIncrementOficial').value=idIncrement;
+        ONE_ELEMENT('#lastIdIncrementOptionOficial').value=idIndentOption;
         ONE_ELEMENT('#formChecklists').submit();
     };
 });

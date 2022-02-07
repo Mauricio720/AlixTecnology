@@ -102,12 +102,14 @@ class DefaultChecklistController extends Controller
 
         $allDefaultChecklists=json_decode($request->input('allChecklists'));
         $json=$request->input('default_checklist_json_oficial');
+        $lastIdIncrement=$request->input('lastIdIncrement');
+        $lastIdIncrementOption=$request->input('lastIdIncrementOption');
         
         $defaultChecklistOrganization=new DefaultCheckListOrganization();
         
         if($request->filled('allChecklists')){
             foreach ($allDefaultChecklists as $key => $defaultChecklist) {
-                $defaultChecklistOrganization->addDefaultChecklist($defaultChecklist,null,$json);
+                $defaultChecklistOrganization->addDefaultChecklist($defaultChecklist,null,$json,$lastIdIncrement,$lastIdIncrementOption);
             }
         }
 
