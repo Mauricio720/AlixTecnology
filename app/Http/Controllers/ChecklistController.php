@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Checklist;
+use App\Models\ChecklistJson;
 use App\Models\Client;
 use App\Models\DefaultCheckList;
 use App\Util\CheckListOrganization;
 use App\Util\DefaultCheckListOrganization;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ChecklistController extends Controller
 {
     public function __construct(){
         $this->middleware('auth');
-
     }
 
     public function index(Request $request,$idClient=null){
@@ -26,14 +27,14 @@ class ChecklistController extends Controller
             ->join('users','checklists.id_user','users.id')
             ->where('id_checklist',null);
         
-        
-
         if($idClient != null){
             $queryChecklist->where('id_client',$idClient);
         }    
         
         $data['allChecklist']=$queryChecklist->orderBy('id','DESC')->paginate(10,['checklists.*','default_checklists.name as checklistName','clients.name as clientName'
         ,'users.name as userName','default_checklists.observation as observationChecklist']);
+
+        $data['allChecklistInProgress']=ChecklistJson::orderBy('id','DESC')->paginate(10);
 
         $data['nameChecklist']="";
         $data['pointsChecklist']="";
@@ -64,7 +65,6 @@ class ChecklistController extends Controller
         $data['clientName']=$clientName;
         $data['observationChecklist']=$observationChecklist;
     
-        
         if($request->filled('nameChecklist')){
             $query->where('default_checklists.name','LIKE','%'.$nameChecklist.'%');
         }
@@ -93,11 +93,33 @@ class ChecklistController extends Controller
 
     public function add(Request $request){
         $this->middleware('check.client');
-
+        
         $data=[];
         $queryClient=Client::query();
-        
-        $data['idClient']="";
+        $data['idChecklist']="";
+        $data['checklistArrayJson']="";
+        $data['lastIdIncrement']="";
+        $data['idClientToJson']="";
+        $data['idDefaultChecklist']="";
+        $data['checkjson_name']="";
+        $data['checkjson_id']="";
+        $data['groupíngArrayJson']="";
+
+        if($request->checklist_json_id != ""){
+            $idChecklistJson=intVal($request->checklist_json_id);
+            
+            $checklistJson=ChecklistJson::where('id',$idChecklistJson)->first();
+            $data['idDefaultChecklist']=$checklistJson->id_default_checklist;
+            $data['idChecklist']=$checklistJson->idChecklist;
+            $data['idClientToJson']=$checklistJson->idClient;
+            $data['checkjson_name']=$checklistJson->names;
+            $data['checkjson_id']=$idChecklistJson;
+            $data['checklistArrayJson']=$checklistJson->json;
+            $data['groupíngArrayJson']=$checklistJson->grouping_json;
+            $data['lastIdIncrement']=$checklistJson->lastIdIncrement;
+        }
+
+        $data['idClient']='';
         $idClient=$request->input(['idClient']);
         
         if($idClient!=null){
@@ -129,18 +151,88 @@ class ChecklistController extends Controller
     }
 
     public function addChecklist(Request $request){
-        $data=$request->only(['idClient','checklistArray']);
+        $data=$request->only(['idClient','checklistArray','idChecklistJson']);
         $checklistArray=json_decode($data['checklistArray']);
         $idClient=$data['idClient'];
-      
+        
+        if($request->filled('idChecklistJson')){
+            $idCheckJson=$data['idChecklistJson'];
+            $checkJson=ChecklistJson::where('id',$idCheckJson)->first();
+            $checkJson->delete();
+        }
+
         $checklistOrganization=new CheckListOrganization($idClient);
-         
+        
         if($request->filled('checklistArray')){
             $checklistOrganization->addChecklist($checklistArray);
             $checklistOrganization->deleteFilesNotUsed();
         }
 
         return redirect()->route('allChecklists');
+    }
+
+    public function save(Request $request){
+        $allChecklists=$request->input('checklistArrayJson');
+        $idCheckJson=$request->input('idCheckJson');
+        $nameChecklist=$request->input('checklist_name');
+        $lastIdIncrement=$request->input('lastIdIncrement');
+        $idClientJson=$request->input('idClientToJson');
+        $idDefaultChecklist=$request->input('idDefaultChecklist');
+        $groupíngArrayJson=$request->input('groupíngArrayJson');
+        
+        if($request->filled('checklistArrayJson')){
+            if($request->filled('idCheckJson')){
+                $checklistJson=ChecklistJson::where('id',$idCheckJson)->first();
+                $checklistJson->names=$nameChecklist;
+                $checklistJson->json=$allChecklists;
+                $checklistJson->lastIdIncrement=$lastIdIncrement;
+                $checklistJson->idClient=$idClientJson;
+                $checklistJson->id_default_checklist=$idDefaultChecklist;
+                $checklistJson->grouping_json=$groupíngArrayJson;
+            }else{
+                $checklistJson=new ChecklistJson();
+                $checklistJson->json=$allChecklists;
+                $checklistJson->names=$nameChecklist;
+                $checklistJson->id_user=Auth::user()->id;
+                $checklistJson->lastIdIncrement=$lastIdIncrement;
+                $checklistJson->idClient=$idClientJson;
+                $checklistJson->id_default_checklist=$idDefaultChecklist;
+                $checklistJson->grouping_json=$groupíngArrayJson;
+            }
+            
+            $checklistJson->save();
+        }
+
+        if($request->filled('registerChecklist')){
+            return redirect()->route('addChecklist');
+        }else{
+            return redirect()->route('allChecklists');        
+        }
+    }
+
+    public function deleteCheckJson($id){
+        $checklistJson=CheckListJson::where('id',$id)->first();
+
+        if($checklistJson != null){
+            $checklistJson->delete();
+        }else{
+            return redirect()->route('allChecklists');
+        }
+
+        return redirect()->route('allChecklists');
+    }
+
+    public function delete($id){
+        $checklist=CheckList::where('id',$id)->first();
+
+        if($checklist != null){
+            $checklistOrganization=new CheckListOrganization();
+            $checklistOrganization->deleteChecklist($checklist);
+            $checklistOrganization->deleteFilesNotUsed();
+        }
+
+        return redirect()->route('allChecklists');
+
     }
 
     public function getChecklistById($id,$historic_checklist_idClient=false){

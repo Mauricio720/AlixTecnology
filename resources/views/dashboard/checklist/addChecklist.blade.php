@@ -6,7 +6,21 @@
         method="post" id="formChecklistAdd">
         @csrf
         <input type="hidden" name="idClient" id="idClient">
+        <input type="hidden" name="idChecklistJson" value={{$checkjson_id}}>
         <input type="hidden" name="checklistArray" id="checklistArray">
+    </form>
+
+    <form style="display: none;" action="{{route('addChecklistJson')}}" enctype="multipart/form-data" 
+        method="post" id="formChecklistAddJson">
+        @csrf
+        <input type="hidden" name="idDefaultChecklist" id="idDefaultChecklist" value={{$checkjson_id}}>
+        <input type="hidden" name="idChecklist" id="idChecklist" value={{$checkjson_id}}>
+        <input type="hidden" name="checklist_name" id="checklist_name" value={{$checkjson_name}}>
+        <input type="hidden" name="idClientToJson" id="idClientToJson" value={{$idClientToJson}}>
+        <input type="hidden" name="checklistArrayJson" id="checklistArrayJson" value="{{$checklistArrayJson}}">
+        <input type="hidden" name="groupíngArrayJson" id="groupingArrayJson" value="{{$groupíngArrayJson}}">
+        <input type="hidden" name="lastIdIncrement" id="lastIdIncrement" value="{{$lastIdIncrement}}">
+
     </form>
 
     <div class="card">
@@ -63,20 +77,21 @@
                         <div class="col-6"></div>
                     </form>
                 </div>
+                
                 <div class="card-body">
                     <table class="table table-bordered">
                         <thead>
                             <th></th>
                             <th>Nome</th>
                             <th>Cnpj</th>
-                          
                         </thead>
                         <tbody>
                             @foreach($allClients as $client)
                                 <tr>
                                     <td>
                                         <input type='radio' class="clientRadio" name="clientRadio" 
-                                            value="{{$client->id}}" {{$idClient!=""?'checked':''}}>
+                                            value="{{$client->id}}" {{$idClient!=""?'checked':''}}
+                                            {{$idClientToJson!="" && $idClientToJson==$client->id?'checked':''}}>
                                     </td>
                                     <td>{{$client->name}}</td>
                                     <td>{{$client->cnpj}}</td>
@@ -136,8 +151,8 @@
                             @foreach ($allDefaultChecklist as $defaultChecklist)
                                 <tr>
                                     <td>
-                                        <input type='radio' class="defaultCheckRadio" 
-                                            name="defaultCheckRadio" value="{{$defaultChecklist->id}}">
+                                        <input type='radio' class="defaultCheckRadio" name="defaultCheckRadio" 
+                                            value="{{$defaultChecklist->id}}" {{$idDefaultChecklist!="" && $defaultChecklist->id==$idDefaultChecklist?'checked':''}}>
                                     </td>
                                     <td>{{$defaultChecklist->name}}</td>
                                     <td>{{$defaultChecklist->points}}</td>
@@ -173,11 +188,14 @@
                 <div class="card-body" id="contentChecklist"></div>
             </div>
         </div>
-        <div class="card-footer">
-            <center>
-                <input class="btn btn-success w-25" type="submit" value="Salvar" id="btnSave">
-            </center>
+        <div class="card-footer d-flex justify-content-center">
+            <button class="btn btn-info w-25 mr-1" id="btnSave">Salvar</button>
+            <button class="btn btn-success w-25"  id="btnFinish">Finalizar</button>
         </div>
+    </div>
+
+    <div class="actionsScroll">
+        <button class="btn btn-success m-1 btnScrollToBotttom">Ir Até Finalizar/Salvar</button>
     </div>
 </div>
 @endsection

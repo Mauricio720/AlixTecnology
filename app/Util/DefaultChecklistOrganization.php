@@ -92,8 +92,14 @@ class DefaultCheckListOrganization {
         $newArray['name']=$defaultChecklist->name;
         $newArray['idDefaultChecklist']=$defaultChecklist->idDefaultChecklist;
         $newArray['id_type_checklist']=$defaultChecklist->id_type_checklist;
+        $newArray['duplicate']=$defaultChecklist->duplicate;
         $newArray['percentage']=$defaultChecklist->percentage;
         $newArray['points']=$defaultChecklist->points;
+        $newArray['pointsObtained']=0;
+        $newArray['value']="";
+        $newArray['oficialObservation']="";
+        $newArray['groupingDoubleChoice']=false;
+        $newArray['files']=[];
         $newArray['observation']=$defaultChecklist->observation;
         $newArray['only_one_choose']=$defaultChecklist->only_one_choose;
         $newArray['only_one_choose_points']=$defaultChecklist->only_one_choose_points;
@@ -135,7 +141,7 @@ class DefaultCheckListOrganization {
             $newOption['name']=$option->name;
             $newOption['points']=$option->points;
             $newOption['percentage']=$option->percentage;
-            $newOption['selected']=$option->selected;
+            $newOption['selected']=false;
             $newOption['created_at']=date('d/m/Y',strtotime($option->created_at));
 
             $arrayOptions[]=$newOption;

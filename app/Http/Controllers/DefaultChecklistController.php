@@ -30,8 +30,6 @@ class DefaultChecklistController extends Controller
         return view('dashboard.defaultChecklist.allDefaultChecklist',$data);
     }
 
-   
-
     public function addView(Request $request){
         $data=[];
         

@@ -57,10 +57,34 @@ class CheckListOrganization {
         $files = Storage::allFiles('public/checklists_files');
         foreach ($files as $key => $file) {
             $file=str_replace('public/checklists_files/','',$file);
-            $checklist=Checklist::where('file_name',$file)->first();
+            $checklist=Checklist::where('file_name','LIKE','%'.$file.'%')->first();
             if($checklist==null){
                 Storage::delete('public/checklists_files/'.$file);
             }
+        }
+    }
+
+    public function deleteChecklist($checklist){
+        $checklistModel=CheckList::where('id',$checklist->id)->first();
+        $options=ChecklistOption::where('id_checklist',$checklistModel->id)->get();
+
+        if(count($options) > 0){
+            $this->deleteOptions($options);
+        }
+
+        $subchecklists=CheckList::where('id_checklist',$checklistModel->id)->get();
+        if(count($subchecklists) > 0){
+            foreach ($subchecklists as $key => $subchecklist) {
+                $this->deleteChecklist($subchecklist);
+            }
+        }
+
+        $checklistModel->delete();
+    }
+
+    private function deleteOptions($options){
+        foreach ($options as $key => $option) {
+            $option->delete();
         }
     }
 

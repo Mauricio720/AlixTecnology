@@ -14,7 +14,7 @@ class AddDuplicateToChecklistsTable extends Migration
     public function up()
     {
         Schema::table('checklists', function (Blueprint $table) {
-            $table->boolean('duplicate');
+            $table->boolean('duplicate')->nullable();;
         });
     }
 

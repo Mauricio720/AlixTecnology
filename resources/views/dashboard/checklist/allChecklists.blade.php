@@ -56,38 +56,83 @@
         </div>
 
         <div class="card-body">
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <th>Nome</th>
-                    <th>Cliente</th>
-                    <th>Pontuação</th>
-                    <th>Observação</th>
-                    <th>Usuário</th>
-                    <th>Criado</th>
-                    <th>Ações</th>
-                </thead>
-                <tbody>
-                    @foreach ($allChecklist as $checklist)
-                        <tr>
-                            <td>{{$checklist->checklistName}}</td>
-                            <td>{{$checklist->clientName}}</td>
-                            <td>
-                                {{"Pontuação Total: ".$checklist->points}}<br>
-                                {{"Pontuação Obtida: ".$checklist->pointsObtained}}
-                            </td>
-                            <td>{{$checklist->observation==""?"Não Informado":$checklist->observationChecklist}}</td>
-                            <td>{{$checklist->userName}}</td>
-                            <td>{{$checklist->created_at->format('d/m/Y H:i:s')}}</td>
-                            <td class="d-flex">
-                                <a href="{{route('getChecklistById',['id'=>$checklist->id])}}" 
-                                    class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
-                                    ...
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="card">
+                <div class="card-header">
+                    <h4>Em progresso</h4>
+                </div>   
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <th>Nomes</th>
+                            <th>Criado</th>
+                            <th>Ações</th>
+                        </thead>
+                        <tbody>
+                        @foreach ($allChecklistInProgress as $checklist)
+                            <tr>
+                                <td>{{$checklist->names}}</td>
+                                <td>{{$checklist->created_at->format('d/m/Y H:i:s')}}</td>
+                                <td class="d-flex">
+                                    <a href="{{route('addChecklist',
+                                        ['checklistRegister'=>false,'checklist_json_id'=>$checklist->id])}}" 
+                                        class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
+                                        ...
+                                    </a>
+                                    <a href="{{route('deleteCheckJson',['id'=>$checklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Checklist" 
+                                        msg="Tem certeza que deseja excluir essa checklist em progresso?">
+                                        <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4>Finalizado</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <th>Nome</th>
+                            <th>Cliente</th>
+                            <th>Pontuação</th>
+                            <th>Observação</th>
+                            <th>Usuário</th>
+                            <th>Criado</th>
+                            <th>Ações</th>
+                        </thead>
+                        <tbody>
+                            @foreach ($allChecklist as $checklist)
+                                <tr>
+                                    <td>{{$checklist->checklistName}}</td>
+                                    <td>{{$checklist->clientName}}</td>
+                                    <td>
+                                        {{"Pontuação Total: ".$checklist->points}}<br>
+                                        {{"Pontuação Obtida: ".$checklist->pointsObtained}}
+                                    </td>
+                                    <td>{{$checklist->observation==""?"Não Informado":$checklist->observationChecklist}}</td>
+                                    <td>{{$checklist->userName}}</td>
+                                    <td>{{$checklist->created_at->format('d/m/Y H:i:s')}}</td>
+                                    <td class="d-flex">
+                                        <a href="{{route('getChecklistById',['id'=>$checklist->id])}}" 
+                                            class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
+                                            ...
+                                        </a>
+                                        <a href="{{route('deleteChecklist',['id'=>$checklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Checklist" 
+                                            msg="Tem certeza que deseja excluir essa checklist?">
+                                            <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>    
+            </div>
         </div>
     </div>
 @endsection

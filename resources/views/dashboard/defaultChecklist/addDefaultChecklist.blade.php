@@ -121,6 +121,12 @@
             <button class="btn btn-success m-1 w-25 d-none" id="btnFinish">Finalizar</button>
         </div>
     </div>
+    
+    <div class="actionsScroll">
+        <button class="btn btn-success m-1 btnScrollToTop">Ir Até O Topo</button>
+        <button class="btn btn-success m-1 btnScrollToBotttom">Ir Até Finalizar/Salvar</button>
+    </div>
+
 @endsection
 
 @section('javascript')

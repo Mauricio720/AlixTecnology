@@ -41,6 +41,7 @@ function verifyInProgressDefaultChecklist(){
     }
 }
 
+
 function verifyBtnSave() {
     if(defaultChecklistArray.length > 0){
         ONE_ELEMENT('#btnSave').classList.remove('d-none');
@@ -50,6 +51,16 @@ function verifyBtnSave() {
         ONE_ELEMENT('#btnFinish').classList.add('d-none');
     }
 }
+
+ONE_ELEMENT('.btnScrollToTop').addEventListener('click',()=>{
+    let scrollPosition=ONE_ELEMENT('#btnAddDefaultCheck').getBoundingClientRect();
+    window.scrollBy(scrollPosition.x,scrollPosition.y);
+});
+
+ONE_ELEMENT('.btnScrollToBotttom').addEventListener('click',()=>{
+    let scrollPosition=ONE_ELEMENT('#btnSave').getBoundingClientRect();
+    window.scrollBy(scrollPosition.x,scrollPosition.y);
+});
 
 ONE_ELEMENT('#btnAddDefaultCheck').addEventListener('click',(e)=>{
     addDefaultChecklist(); 
@@ -76,7 +87,8 @@ function showDefaultChecklist(defaultChecklistArray) {
         verifySubchecklistsLengthBtnSeeMore(defaultChecklistClone,item);
         verifyTypeSubchecklist(defaultChecklistClone,item); 
         verifyActiveDefaultChecklist(defaultChecklistClone,item); 
-        verifyDuplicateButton(defaultChecklistClone,item)
+        verifyDuplicateButton(defaultChecklistClone,item);
+        verifyBtnScroll();
         appendDefaultChecklist(defaultChecklistClone,item); 
         setChecklistPoint(item.id);
         repeatLoopShowDefaultChecklist(item);
@@ -166,6 +178,14 @@ function verifyDuplicateButton(defaultChecklistClone,item){
     }
 }
 
+function verifyBtnScroll() {
+    if(defaultChecklistArray.length>0){
+        ONE_ELEMENT('.actionsScroll').style.display='flex';
+    }else{
+        ONE_ELEMENT('.actionsScroll').style.display='none';
+    }
+}
+
 function appendDefaultChecklist(defaultChecklistClone,item) {
     if(item.idDefaultChecklist != null){
         let defaultChecklist=ONE_ELEMENT(`#defaultCheck${item.idDefaultChecklist}`);
@@ -186,8 +206,8 @@ function downScrollNewDefaultChecklist() {
         let id=parseInt(element.closest('.defaultChecklist').getAttribute('idElement'));
       
         if(id===idIncrement){
-            let scrollPosition=element.closest('.defaultChecklist').offsetTop;
-            window.scrollTo(0,scrollPosition);
+            let scrollPosition=element.closest('.defaultChecklist').getBoundingClientRect();
+            window.scrollBy(scrollPosition.x,scrollPosition.y);
         }
     });
 }
@@ -413,6 +433,7 @@ function eventsBtnDelete() {
             eventsBtnSeeMore();
             eventsBtnDelete();
             eventsBtnAddOptions(); 
+            eventsDuplicateChecklist();
             verifyBtnSave();
 
             showSubchecklistContainerLoop(defaultChecklistArray);

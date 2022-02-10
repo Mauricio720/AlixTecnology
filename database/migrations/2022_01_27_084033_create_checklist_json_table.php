@@ -15,9 +15,13 @@ class CreateChecklistJsonTable extends Migration
     {
         Schema::create('checklist_json', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
-            $table->text('names');
+            $table->string('names');
             $table->text('json');
+            $table->text('grouping_json')->nullable();
             $table->integer('id_user');
+            $table->integer('id_default_checklist');
+            $table->integer('lastIdIncrement')->nullable();
+            $table->integer('idClient')->nullable();
             $table->timestamps();
         });
     }

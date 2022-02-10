@@ -49,13 +49,15 @@ Route::get('/get_default_checklist/{id}',[DefaultChecklistController::class,'get
 Route::get('/delete_default_checklist/{id}',[DefaultChecklistController::class,'delete'])->name('deleteDefaultChecklist');
 
 Route::get('/all_checklists/{idClient?}',[ChecklistController::class,'index'])->name('allChecklists');
-Route::get('/add_checklist/{idClient?}',[ChecklistController::class,'add'])->name('addChecklistView');
+Route::get('/add_checklist/{idClient?}/{checklist_json_id?}',[ChecklistController::class,'add'])->name('addChecklistView');
 Route::post('/add_checklist',[ChecklistController::class,'addChecklist'])->name('addChecklist');
 Route::get('/get_checklist/{id}/{historic_checklist_idClient?}',[ChecklistController::class,'getChecklistById'])->name('getChecklistById');
 Route::post('/upload_file',[RequestController::class,'uploadFile'])->name('uploadFile');
 Route::get('/historic_checklist/{idClient}',[ChecklistController::class,'historicChecklist'])->name('historicChecklist');
 Route::get('/historic_checklist_compare/{idChecklist1}/{idChecklist2}',[ChecklistController::class,'compareChecklist'])->name('compareChecklist');
-
+Route::post('/add_checklist_json}',[ChecklistController::class,'save'])->name('addChecklistJson');
+Route::get('/delete_checklist_json/{id}',[ChecklistController::class,'deleteCheckJson'])->name('deleteCheckJson');
+Route::get('/delete_checklist/{id}',[ChecklistController::class,'delete'])->name('deleteChecklist');
 
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 Auth::routes();

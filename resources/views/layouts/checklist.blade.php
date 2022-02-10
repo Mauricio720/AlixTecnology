@@ -8,6 +8,11 @@
             <div class="checklist__title"></div>
         </div>
         <div class="checklist__header__slot checklist__header__actions">
+            <div class="checklist__header__slot align-items-center justify-content-center d-none">
+                <span class="mr-1">Quantidade:</span>
+                <div class="checklist__header__quantity"></div>
+            </div>
+
             <div class="checklist__header__slot align-items-center justify-content-center">
                 <div class="checklist__header--optionsContainer">
                     <input class="d-flex checkGroupingChoice" type="radio" 
@@ -18,14 +23,10 @@
                     <span class="mr-2" for="checkradio">Não</span>
                 </div>
             </div>
-
+            
             <div class="checklist__header__slot justify-content-end">
                 <div class="btnDefault btnAdd btnDefault--sm d-none" title="Adicionar">
                     +
-                </div>
-                <div class="btnDefault btnDefault--sm btnSeeMoreCheck d-none" title="Ver Mais Detalhes Checklist"
-                    data-toggle="modal" data-target="#modalActions" data-toggle="tooltip">
-                    ...
                 </div>
             </div>
         </div>
@@ -35,7 +36,7 @@
             <input class="form-control inputText" type="text"  placeholder="Digite o conteúdo da checklist">
             <input class="form-control inputDate" type="date">
             <input class="form-control inputNumber" type="number" placeholder="Digite o valor da checklist">
-            <input class="inputFile" type="file">
+            <input class="inputFile" type="file" multiple>
         </div>
         <div class="checklist__slot checklistTypeChecklist" title=""></div>
         <div class="checklist__slot checklistPossiblePoints" title=""></div>

@@ -1,8 +1,8 @@
 .checklist,.checklistExibition,.optionsChecklistExibition{
     display: none;
     flex-direction: column;
-    min-height: 100px;
     border: 1px solid #b9b9b9;
+    mn-height: 120px;
     border-radius: 8px;
     padding: 10px;
     box-shadow: 1px 1px 1px 1px #ccc;

@@ -109,6 +109,15 @@ textarea:focus, input:focus, select:focus {
     opacity: 0.4;
 }
 
+.actionsScroll{
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    bottom: 10px;
+    left: 40px;
+    z-index: 100000;
+}
+
 .loadingSystem{
     position: fixed;
     top: 0;

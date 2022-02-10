@@ -4,10 +4,29 @@ var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas'
     ,'Dupla Escolha','Numerica','Data','Agrupamento (dupla escolha)'];
 var idIncrement=0;
 var allCloneChecklistGrouping=[];
+var checklistText=ONE_ELEMENT('.checklist');
+var checklistMultipleChoice=ONE_ELEMENT('.checklistMultiple');
+var checklistOption=ONE_ELEMENT('.checklistOption');
+var checklistJson=ONE_ELEMENT('#checklistArrayJson').value;
+
+verifyInProgressChecklist();
+
+function verifyInProgressChecklist(){
+    if(checklistJson != ''){
+        idIncrement=parseInt(ONE_ELEMENT('#lastIdIncrement').value);
+        defaultChecklistArray=JSON.parse(ONE_ELEMENT('#checklistArrayJson').value);
+        allCloneChecklistGrouping=JSON.parse(ONE_ELEMENT('#groupingArrayJson').value);
+        clientId=ONE_ELEMENT('#idClientToJson').value;
+        ONE_ELEMENT('#idClient').value=clientId;
+        ONE_ELEMENT('#cardContentChecklist').style.display='flex';
+        fillChecklistInfo(defaultChecklistArray);
+    }
+}
 
 [...ALL_ELEMENTS('.defaultCheckRadio')].forEach((element)=>{
     element.addEventListener('change',(e)=>{
         let id=e.currentTarget.value;
+        ONE_ELEMENT('#idDefaultChecklist').value=id;
         ONE_ELEMENT('#cardContentChecklist').style.display='none';
         LOADING_ELEMENT.style.display='flex';
         ONE_ELEMENT('#card-loading').append(LOADING_ELEMENT);
@@ -20,7 +39,14 @@ var allCloneChecklistGrouping=[];
     element.addEventListener('change',(e)=>{
         clientId=e.currentTarget.value;
         ONE_ELEMENT('#idClient').value=clientId;
+        ONE_ELEMENT('#idClientToJson').value=clientId;
     });
+});
+
+
+ONE_ELEMENT('.btnScrollToBotttom').addEventListener('click',()=>{
+    let scrollPosition=ONE_ELEMENT('#btnSave').getBoundingClientRect();
+    window.scrollBy(scrollPosition.x,scrollPosition.y);
 });
 
 async function requestDefaultChecklist(id) {
@@ -31,15 +57,13 @@ async function requestDefaultChecklist(id) {
     ONE_ELEMENT('#cardContentChecklist').style.display='flex';
     
     fillChecklistInfo(json);
+    verifyBtnScroll();
 }
 
 function fillChecklistInfo(defaultChecklistArrayRequest) {
     defaultChecklistArray=defaultChecklistArrayRequest;
-    defaultChecklistArray.pointsObtained=0;
-    defaultChecklistArray.value="";
-    defaultChecklistArray.oficialObservation="";
-    
     idIncrement=filterDefaultChecklistLastId(defaultChecklistArray.subchecklist);
+    
     let cardChecklist=ONE_ELEMENT('#cardContentChecklist');
     cardChecklist.querySelector('#contentChecklist').innerHTML="";
     cardChecklist.querySelector('.defaultChecklist__name').innerHTML=`Nome Checklist: ${defaultChecklistArray.name}`;
@@ -49,8 +73,10 @@ function fillChecklistInfo(defaultChecklistArrayRequest) {
         ${defaultChecklistArray.observation!==""?defaultChecklistArray.observation:'Não Informado'}`;
 
     fillChecklistsLayout(defaultChecklistArray.subchecklist);
+    fillValuesToChecklist(defaultChecklistArray.subchecklist); 
     eventsChecklists();
     updateChecklistPoint();
+    
 }
 
 const LOW=1;
@@ -83,6 +109,14 @@ function updateLayoutSituation(totalPointsDivide,pointsObtained) {
     }
 }
 
+function verifyBtnScroll() {
+    if(defaultChecklistArray !==[]){
+        ONE_ELEMENT('.actionsScroll').style.display='flex';
+    }else{
+        ONE_ELEMENT('.actionsScroll').style.display='none';
+    }
+}
+
 function clearLayoutSituation() {
     let pointsObtainedElement=ALL_ELEMENTS('.checklists__point-slot')[1];
     pointsObtainedElement.classList.remove('low');
@@ -105,21 +139,87 @@ function verifySituationPointsClient(totalPointsDivide,pointsObtained){
 
 function fillChecklistsLayout(subchecklists,checklistElement=null) {
     subchecklists.forEach((item)=>{
-        item.value="";
-        item.pointsObtained=0;
-        item.oficialObservation="";
-        
         if(checklistElement===null){
             ONE_ELEMENT('#contentChecklist').append(returnElementChecklist(item));
         }else{
             checklistElement.querySelector('.checklist__container').append(returnElementChecklist(item));
         }
-        
-        if(item.subchecklist.length){
+
+        if(item.subchecklist.length > 0){
             let checklistElement=ONE_ELEMENT(`#checklist${item.id}`);
             fillChecklistsLayout(item.subchecklist,checklistElement);
         }
     });
+}
+
+function fillValuesToChecklist(subchecklists) {
+    subchecklists.forEach((subchecklist)=>{
+        let checklistElement=ONE_ELEMENT(`#checklist${subchecklist.id}`);
+        let input="";
+        let typeChecklist=parseInt(subchecklist.id_type_checklist);
+        
+        if(typeChecklist !== 3 && typeChecklist !== 4){
+            if(typeChecklist===1){
+                input=checklistElement.querySelector('.inputText');
+            
+            }else if(typeChecklist===2){
+                input=checklistElement.querySelector('.inputFile');            
+            }else if(typeChecklist===5){
+                input=checklistElement.querySelector('.inputNumber');
+            
+            }else if(typeChecklist===6){
+                input=checklistElement.querySelector('.inputDate');
+            }
+        }else{
+            subchecklist.options.forEach((option)=>{
+                if(option.selected){
+                    console.log(option);
+                    checklistElement.querySelector(`.option${option.id}`).checked=true;
+                }
+            })
+        }
+
+        if(typeChecklist===2){
+            if(subchecklist.value !==''){
+                let title=checklistElement.querySelector('.checklist__title').innerHTML;
+                let numberFiles=subchecklist.value.split(',').length;
+                checklistElement.querySelector('.checklist__title').innerHTML=`${title}: ${numberFiles} arquivo/s selecionado/s`; 
+            }
+        }else{
+            input.value=subchecklist.value;
+        }
+        
+        let inputObservation=checklistElement.querySelector('.inputObservation');
+        inputObservation.value=subchecklist.observation;
+        
+        checklistElement.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${subchecklist.pointsObtained.toFixed(2)}`;
+        
+        if(subchecklist.id_type_checklist===7){
+            let inputRadios=checklistElement.querySelectorAll(`input[name=checkGroupingChoice${subchecklist.id}`);
+            
+            let indexCloneGrouping=allCloneChecklistGrouping.findIndex((item)=>{
+                if(item.id===subchecklist.idReferenceClone){
+                    return true;
+                }
+            });
+            
+            if(subchecklist.groupingDoubleChoice){
+                inputRadios[0].checked=true;
+                checklistElement.style.height='auto';
+            }
+            
+            if(indexCloneGrouping !== -1){
+                inputRadios[0].checked=true;
+                if(subchecklist.duplicate){
+                    checklistElement.querySelector('.checklist__header .btnAdd').classList.remove('d-none');
+                }
+            }
+        }
+
+        if(subchecklist.subchecklist.length > 0){
+            fillValuesToChecklist(subchecklist.subchecklist);
+        }
+    })
 }
 
 function returnElementChecklist(subchecklist) {
@@ -135,9 +235,6 @@ function returnElementChecklist(subchecklist) {
     return element;
 }
 
-var checklistText=ONE_ELEMENT('.checklist');
-var checklistMultipleChoice=ONE_ELEMENT('.checklistMultiple');
-var checklistOption=ONE_ELEMENT('.checklistOption');
 
 function elementInputsChecklist(subchecklist,typeChecklist) {
     let checklistClone=checklistText.cloneNode(true);
@@ -162,12 +259,16 @@ function fillLayoutChecklist(checklistClone,subchecklist) {
     checklistClone.setAttribute('idchecklist',subchecklist.id);
     checklistClone.setAttribute('id',`checklist${subchecklist.id}`);
     
-    if(subchecklist.id_type_checklist===0){
+    if(subchecklist.id_type_checklist===0 || subchecklist.id_type_checklist===7){
         checklistClone.querySelectorAll('.checklist__slot')[0].style.display='none';
     }
 
     if(subchecklist.id_type_checklist===7){
         checklistClone.querySelector('.checklist__header__actions').style.display='flex';
+        let inputRadios=checklistClone.querySelectorAll('.checkGroupingChoice');
+        inputRadios[0].setAttribute('name',`checkGroupingChoice`+subchecklist.id);
+        inputRadios[1].setAttribute('name',`checkGroupingChoice`+subchecklist.id);
+
         let indexCloneGrouping=allCloneChecklistGrouping.findIndex((item)=>{
             if(item.id===subchecklist.idReferenceClone){
                 return true;
@@ -175,11 +276,15 @@ function fillLayoutChecklist(checklistClone,subchecklist) {
         });
         
         if(indexCloneGrouping !== -1){
-            checklistClone.querySelector('.checkGroupingChoice').checked=true;;
+            inputRadios[0].checked=true;
+            checklistClone.querySelectorAll('.checklist__header__slot')[2].classList.remove('d-none');
+            checklistClone.querySelector('.checklist__header__quantity').innerHTML=subchecklist.subchecklist.length;
             checklistClone.querySelector('.checklist__header .btnAdd').classList.remove('d-none');
-            checklistClone.querySelector('.checklist__header .btnSeeMoreCheck').classList.remove('d-none');
+            
         }else{
+            inputRadios[1].checked=true;
             checklistClone.style.height='120px';
+            checklistClone.querySelectorAll('.checklist__header__slot')[2].classList.add('d-none');
         }
     }
 
@@ -226,13 +331,16 @@ function filllayoutOptions(subchecklist,checklistClone) {
             if(!subchecklist.only_one_choose){
                 checklistOptionClone.querySelector('.checklistOptionCheck').style.display='flex';
                 checklistOptionClone.querySelector('.checklistOptionCheck').setAttribute('name',`option${subchecklist.id}`);
+                checklistOptionClone.querySelector('.checklistOptionRadio').classList.add(`option${option.id}`);
             }else{
                 checklistOptionClone.querySelector('.checklistOptionRadio').style.display='flex';
                 checklistOptionClone.querySelector('.checklistOptionRadio').setAttribute('name',`option${subchecklist.id}`)
+                checklistOptionClone.querySelector('.checklistOptionRadio').classList.add(`option${option.id}`);
             }
         }else{
             checklistOptionClone.querySelector('.checklistOptionRadio').style.display='flex';
             checklistOptionClone.querySelector('.checklistOptionRadio').setAttribute('name',`option${subchecklist.id}`);
+            checklistOptionClone.querySelector('.checklistOptionRadio').classList.add(`option${option.id}`);
         }
         
         checklistOptionClone.style.display='flex';
@@ -287,30 +395,76 @@ function eventsChecklists() {
             }
         }
 
+        if(checklist.duplicate){
+            eventsDoubleChoiceGroupingDuplicate(element,checklist);
+            eventsDoubleAddChoiceGrouping(element,checklist);
+        }else{
+            eventsDoubleChoiceGrouping(element,checklist);
+        }
         eventsObservationInput(element,checklist); 
-        eventsDoubleChoiceGrouping(element,checklist);
-        eventsDoubleAddChoiceGrouping(element,checklist);
     })
 }
 
-function eventsDoubleChoiceGrouping(element,checklist) {
+
+function eventsDoubleChoiceGroupingDuplicate(element,checklist) {
     let allCheckGroupingChoice=element.querySelectorAll('.checkGroupingChoice');
     [...allCheckGroupingChoice].forEach((checkGroupingChoice)=>{
         checkGroupingChoice.addEventListener('change',(e)=>{
             let checkGrouping=e.currentTarget;
             let addBtn=element.querySelector('.checklist__header .btnAdd');
-            let btnSeeMore=element.querySelector('.checklist__header .btnSeeMoreCheck');
-
+           
             if(checkGrouping.value==='1'){
                 addGroupingChecklist(checklist);
                 addBtn.classList.remove('d-none');
-                btnSeeMore.classList.remove('d-none');
             }else{
                 clearGroupingChecklist(checklist);
+                clearPointsChecklist(checklists);
                 addBtn.classList.add('d-none');
-                btnSeeMore.classList.add('d-none');
             }
         })
+    })
+}
+
+function eventsDoubleChoiceGrouping(element,checklist){
+    let allCheckGroupingChoice=element.querySelectorAll('.checkGroupingChoice');
+    
+    [...allCheckGroupingChoice].forEach((checkGroupingChoice)=>{
+        checkGroupingChoice.addEventListener('change',(e)=>{
+            let checkGrouping=e.currentTarget;
+            
+            if(checkGrouping.value==='1'){
+                element.style.height='auto';
+                checklist.groupingDoubleChoice=true;
+            }else{
+                element.style.height='120px';
+                checklist.groupingDoubleChoice=false;
+                clearPointsChecklist(checklist);
+                fillChecklistInfo(defaultChecklistArray);
+            }
+        })
+    })
+}
+
+function clearPointsChecklist(checklist) {
+    if(checklist.idDefaultChecklist === defaultChecklistArray.id){
+        defaultChecklistArray.pointsObtained=defaultChecklistArray.pointsObtained-checklist.pointsObtained;
+    }
+    
+    checklist.pointsObtained=0;
+    
+    checklist.subchecklist.forEach((checklist)=>{
+        checklist.pointsObtained=0;
+        checklist.value='';
+        checklist.oficialObservation='';
+
+        if(checklist.options.length > 0){
+            checklist.options.forEach((option)=>{
+                option.selected=false;
+            })
+        }
+        if(checklist.subchecklist.length>0){
+            clearPointsChecklist(checklists.subchecklist);
+        }
     })
 }
 
@@ -333,6 +487,7 @@ function eventsDoubleAddChoiceGrouping(element,checklist){
             checklist.subchecklist.push(newChecklistGrouping);
 
             renameAndIncrementChecklist(checklist);
+            setChecklistPoint(checklist.id); 
             fillChecklistInfo(defaultChecklistArray);
         });
     }
@@ -347,9 +502,11 @@ function addGroupingChecklist(checklist){
     checklist.idReferenceClone=idIncrement;
     checklist.subchecklist.push(cloneChecklistGrouping);
     cloneChecklistGrouping.id_type_checklist=0;
+    cloneChecklistGrouping.idDefaultChecklist=checklist.id;
     allCloneChecklistGrouping.push(cloneChecklistGrouping);
     
     renameAndIncrementChecklist(checklist); 
+    setChecklistPoint(checklist.id); 
     fillChecklistInfo(defaultChecklistArray,true);
 }
 
@@ -366,21 +523,74 @@ function clearGroupingChecklist(checklist){
     });
     
     checklist.subchecklist.shift();
+
+    renameAndIncrementChecklist(checklist);
+    setChecklistPoint(checklist.id); 
+    fillChecklistInfo(defaultChecklistArray);
 }
 
 function renameAndIncrementChecklist(checklist) {
-    checklist.subchecklist.forEach((checklist,index)=>{
-        let names=checklist.name.split('-');
-        checklist.name=names[0]+' - '+(index+1);
+    checklist.subchecklist.forEach((checklistItem,index)=>{
+        let names=checklistItem.name.split('-');
+        checklistItem.name=names[0]+' - '+(index+1);
+        let subchecklists=[...checklistItem.subchecklist];
         
-        checklist.subchecklist.forEach((item)=>{
+        checklistItem.subchecklist=[];
+        subchecklists.forEach((item)=>{
+            let newSubCheck={...item};
             idIncrement=idIncrement+1;
-            item.id=idIncrement;
-        })
-    })
-        
+            newSubCheck.id=idIncrement;
+            newSubCheck.idDefaultChecklist=checklistItem.id;
+            checklistItem.subchecklist.push(newSubCheck);
+        });
+    });
+}
+
+function setChecklistPoint(id) {
+    let points=filterChecklist(defaultChecklistArray.subchecklist,id,{}).points;
+    let allDefaultChecklist=filterChecklist(defaultChecklistArray.subchecklist,id,{}).subchecklist;
+    let totalNumberDefaultChecklists=allDefaultChecklist.length;
+    let pointsValue=points/totalNumberDefaultChecklists;
+    let percentage= (pointsValue/points)*100;
     
- }
+    allDefaultChecklist.forEach(element => {
+        element.points=pointsValue;
+        element.percentage=percentage;
+        element.correctPercentage=true;
+        
+        if(element.options.length > 0){
+            updatePointsOptions(element.options,element.points,element); 
+        }
+    });
+}
+
+function updatePointsOptions(options,points,element) {
+    let typechecklist=element.id_type_checklist;
+    let onlyOneChoosePoints=element.onlyOneChoosePoints;
+    let onlyOneChoose=element.onlyOneChoose;
+
+    options.forEach((option)=>{
+        let numberOptions=options.length;
+        let pointsValue=points/numberOptions;
+        let percentage= (pointsValue/points)*100;
+        
+        if(typechecklist==="4"){
+            if(option.selected){
+                option.pointsValue=points;
+            }else{
+                option.pointsValue=0;
+            }
+        }else{
+            if(onlyOneChoosePoints===false && onlyOneChoose===false){
+                option.pointsValue=pointsValue;
+                option.percentage=percentage;
+                option.correctPercentage=true;
+            }else if(onlyOneChoosePoints || onlyOneChoose){
+                option.pointsValue=points;
+            }
+        }
+    })
+}
 
 function eventsChecklistsTypeInputs(element,checklist) {
     let typeChecklist=checklist.id_type_checklist;
@@ -389,11 +599,16 @@ function eventsChecklistsTypeInputs(element,checklist) {
     if(typeChecklist===2){
         inputType.addEventListener('change',(e)=>{
             let possiblePoints=checklist.points;
-            let imageFile=e.currentTarget.files[0];
+            let imagesFiles=e.currentTarget.files;
             element.querySelector('.alert').classList.add('d-none');
             
-            if(imageFile.size < 40000000){
-                uploadFile(imageFile,checklist);
+            let sizeFiles=0;
+            [...imagesFiles].forEach((file)=>{
+                sizeFiles=sizeFiles+file.size;
+            });
+
+            if(sizeFiles < 40000000){
+                uploadFile(imagesFiles,checklist);
             }else{
                 element.querySelector('.alert').classList.remove('d-none');
                 element.querySelector('.alert').innerHTML="O arquivo tem que ser menor que 40mb";
@@ -438,10 +653,12 @@ function eventsObservationInput(element,checklist) {
     })
 }
 
-async function uploadFile(file,checklist){
+async function uploadFile(files,checklist){
     let form=ONE_ELEMENT('#uploadFileForm');
     const formData=new FormData(form);
-    formData.append('checklistFile',file);
+    [...files].forEach((file)=>{
+        formData.append('checklistFile[]',file);
+    })
    
     const res=await fetch(BASE_URL+"/upload_file",{
         method:'POST',
@@ -449,15 +666,19 @@ async function uploadFile(file,checklist){
     });
     
     const json=await res.json();
-    checklist.value=json.fileName;
+    let filesNames=json.filesNames;
+
+    checklist.value=filesNames.join(',');
+    checklist.files=files;
 }
 
 function eventsChecklistsMultipleOptions(element,checklist,multiple=true) {
     let options=element.querySelectorAll('.checklistOption');
     
     [...options].forEach((option)=>{
+       
         let idOption=parseInt(option.getAttribute('idoption'));
-        let optionInput= multiple===false?option.querySelector('input[type=radio]'):option.querySelector('input[type=checkbox]');   
+        let optionInput= multiple===false || checklist.only_one_choose?option.querySelector('input[type=radio]'):option.querySelector('input[type=checkbox]');   
         
         optionInput.addEventListener('change',(e)=>{
             let index=checklist.options.findIndex((option)=>{
@@ -469,19 +690,37 @@ function eventsChecklistsMultipleOptions(element,checklist,multiple=true) {
             let option=checklist.options[index];
             let points=option.points;
             let pointsObtained=checklist.pointsObtained;
-            
+                
             if(e.currentTarget.checked){
                 checklist.pointsObtained=pointsObtained+points;
+                let countSelectedOnlyOneChoose=0;
+                
                 option.selected=true;
                 option.pointsObtained=points;
+                
                 let increment=true;
+
+                
+                checklist.options.forEach((option)=>{
+                    if(option.selected){
+                        countSelectedOnlyOneChoose++;
+                    }
+                })
+
+                if(countSelectedOnlyOneChoose>2){
+                    checklist.options.forEach((option)=>{
+                        option.selected=false;
+                    })
+
+                    option.selected=true;
+                }
                 
                 if(points===0){
                     increment=false;
                     points=checklist.points;
                 }
 
-                if(checklist.only_one_choose){
+                if(checklist.only_one_choose || checklist.only_one_choose_points){
                     checklist.pointsObtained=points;
                 }
                 
@@ -489,7 +728,14 @@ function eventsChecklistsMultipleOptions(element,checklist,multiple=true) {
                     checklist.pointsObtained=points;
                     if(increment===false){
                         checklist.pointsObtained=0;
+                        if(countSelectedOnlyOneChoose === 1){
+                            points=0;
+                        }
                     }
+                }
+
+                if(checklist.only_one_choose && countSelectedOnlyOneChoose>1){
+                    points=0;
                 }
 
                 updatePointsFatherChecklist(checklist,points,increment);
@@ -619,8 +865,8 @@ function filterDefaultChecklistLastId(defaultChecklistArray,lastId=0) {
     return finalLastId;
 }
 
-ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
-    if(verifyEmptyClient() || verifyEmptyClient()){
+ONE_ELEMENT('#btnFinish').addEventListener('click',()=>{
+    if(verifyEmptyClient() || verifyEmptyDefaultChecklist()){
         window.scrollTo(0,0);
     }else{
         ONE_ELEMENT('#checklistArray').value=JSON.stringify(defaultChecklistArray);
@@ -628,6 +874,20 @@ ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
     }
 });
 
+ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
+    if(verifyEmptyClient() || verifyEmptyDefaultChecklist()){
+        window.scrollTo(0,0);
+    }else{
+        ONE_ELEMENT('#idChecklist').value=defaultChecklistArray.id;
+        ONE_ELEMENT('#checklistArrayJson').value=JSON.stringify(defaultChecklistArray);
+        ONE_ELEMENT('#groupingArrayJson').value=JSON.stringify(allCloneChecklistGrouping);
+        ONE_ELEMENT('#checklist_name').value=defaultChecklistArray.name;
+        ONE_ELEMENT('#lastIdIncrement').value=idIncrement;
+        ONE_ELEMENT('#formChecklistAddJson').submit();
+    }
+});
+
+ 
 function verifyEmptyClient() {
     if(clientId===""){
         ONE_ELEMENT('.alert-header').classList.remove('d-none');
