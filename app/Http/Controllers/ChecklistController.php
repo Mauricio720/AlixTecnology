@@ -173,7 +173,7 @@ class ChecklistController extends Controller
 
     public function save(Request $request){
         $allChecklists=$request->input('checklistArrayJson');
-        $idCheckJson=$request->input('idCheckJson');
+        $idCheckJson=$request->input('idChecklistJson');
         $nameChecklist=$request->input('checklist_name');
         $lastIdIncrement=$request->input('lastIdIncrement');
         $idClientJson=$request->input('idClientToJson');
@@ -181,7 +181,7 @@ class ChecklistController extends Controller
         $groupíngArrayJson=$request->input('groupíngArrayJson');
         
         if($request->filled('checklistArrayJson')){
-            if($request->filled('idCheckJson')){
+            if($request->filled('idChecklistJson')){
                 $checklistJson=ChecklistJson::where('id',$idCheckJson)->first();
                 $checklistJson->names=$nameChecklist;
                 $checklistJson->json=$allChecklists;
@@ -326,7 +326,7 @@ class ChecklistController extends Controller
         $checklistOrganization=new CheckListOrganization();
         $data['checklist1']=json_encode($checklistOrganization->getChecklistById($checklist1->id));
         $data['checklist2']=json_encode($checklistOrganization->getChecklistById($checklist2->id));
-        
+       
         $data['client']=Client::where('id',$checklist1->id_client)->first();
         
         return view('dashboard.checklist.compareChecklist',$data);    

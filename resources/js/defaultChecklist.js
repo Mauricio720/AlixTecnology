@@ -635,8 +635,9 @@ function validationDefaultChecklist(defaultChecklistElement,defaultChecklistArra
 }
 
 function addDefaultChecklist(idDefaultChecklist=null) {
-    let id=idIncrement=idIncrement+1;
-    
+    idIncrement=idIncrement+1;
+    let id=idIncrement;
+
     let defaultChecklistObject={
         id,
         idDefaultChecklist,
@@ -653,18 +654,19 @@ function addDefaultChecklist(idDefaultChecklist=null) {
         duplicate:false,
         subchecklists:[]
     };
-
+    
     if(idDefaultChecklist !== null){
         let index=defaultChecklistArray.findIndex((item)=>{
             if(item.id===idDefaultChecklist){
                 return true;
             }
         });
-
+        
         if(index != -1){
             let subchecklists=[...defaultChecklistArray[index].subchecklists];
             subchecklists.push(defaultChecklistObject);
             defaultChecklistArray[index].subchecklists=subchecklists;
+           
         }else{
             let defaultChecklistChoose= filterDefaultChecklist(defaultChecklistArray,idDefaultChecklist,{});
             defaultChecklistChoose.subchecklists.push(defaultChecklistObject);
@@ -708,6 +710,7 @@ function filterDefaultChecklistNumber(defaultChecklistArray,id,numberDefaultChec
 
 function filterDefaultChecklistToDelete(defaultChecklistArray,id,itemObject) {
     let item=itemObject;
+    
     defaultChecklistArray.forEach((itemObject,index,object)=>{
         if(itemObject.id===id){
             object.splice(index, 1);
@@ -1223,7 +1226,7 @@ function verifyCorrectPercentageOptions() {
 ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
     let alertHeader=ONE_ELEMENT('.alert-header');
     alertHeader.classList.add('d-none');
-
+    
     if(allValidations(defaultChecklistArray)){
         ONE_ELEMENT('#default_checklist_json').value=JSON.stringify(defaultChecklistArray);
         let namesChecklists=[];

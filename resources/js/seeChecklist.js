@@ -1,13 +1,15 @@
 var checklist=ONE_ELEMENT('.checklistExibition');
 var checklistArray=JSON.parse(ONE_ELEMENT('#checklistArray').value);
-var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica','Data'];
+var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica','Data','Agrupamento (dupla escolha)'];
 var optionsChecklist=ONE_ELEMENT('.optionsChecklistExibition');
+var downloadChecklistItem=ONE_ELEMENT('.download__item');
 var formChecklist=ONE_ELEMENT('#formChecklistExibition');
 
 showChecklist(checklistArray.subchecklist); 
 eventsBtnSeeMore();
 eventsBtnSeeOption(); 
-eventsBtnSeeMoreCheck(); 
+eventsBtnSeeMoreCheck();
+eventFilesNames();  
 
 function showChecklist(checklistArray,checklistElement=null) {
     checklistArray.map((item)=>{
@@ -36,13 +38,15 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     checklistClone.querySelector('.checklist__title').setAttribute('title',item.name);
 
     if(item.id_type_checklist===2){
-        let linkElement=checklistClone.querySelector('.valueChecklist').querySelector('a');
+        let linkElement=checklistClone.querySelector('.checklist__download--btn');
         linkElement.style.display='block';
-        linkElement.innerHTML="Download: "+item.name;
-        linkElement.setAttribute('href',BASE_URL+"/storage/checklists_files/"+item.file_name);
+        linkElement.setAttribute('id',item.id);
+        checklistClone.querySelector('.valueChecklist').style.display='none';
     }else{
-        if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4){
+        if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4 && item.id_type_checklist!==7){
             checklistClone.querySelector('.valueChecklist').innerHTML=item.value;
+        }else if(item.id_type_checklist === 0 || item.id_type_checklist === 7){
+            checklistClone.querySelector('.checklist__slot--value').style.display='none';
         }
     }
     checklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
@@ -54,6 +58,21 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     checklistClone.querySelector('.observation').innerHTML=item.observation===""?
         'Nenhuma observação':item.observation;
     checklistClone.querySelector('.observation').setAttribute('title',item.observation);
+    
+    if(item.id_type_checklist===7){
+        renameChecklist(item);
+    }
+}
+
+function renameChecklist(checklist) {
+    if(checklist.subchecklist){
+        checklist.subchecklist.forEach((checklistItem,index)=>{
+            if(checklistItem.id_type_checklist===7){
+                checklistItem.name=`${checklistItem.name} - ${index+1}`;
+            }
+        })
+        
+    }
 }
 
 function appendOptions(item,checklistClone) {
@@ -78,17 +97,43 @@ function repeatLoopShowChecklist(item,checklistClone=null) {
     }
 }
 
+function eventFilesNames() {
+    [...ALL_ELEMENTS('.checklistContent .checklist__download--btn')].forEach((element)=>{
+        element.addEventListener('click',(e)=>{
+            let id=parseInt(e.currentTarget.getAttribute('id'));
+            let checklist=filterChecklist(checklistArray.subchecklist,id,{}); 
+            openModalFiles(checklist.file_name);
+        })
+    });
+}
+
+function openModalFiles(files) {
+    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Arquivos para download";
+    ONE_ELEMENT('#btnAddModal').style.display='none';
+    ONE_ELEMENT('#btnEditModal').style.display='none';
+
+    files.forEach((file)=>{
+        let downloadChecklistItemClone=downloadChecklistItem.cloneNode(true);
+        downloadChecklistItemClone.style.display='flex';
+        downloadChecklistItemClone.querySelector('.download__link').setAttribute('href',BASE_URL+"/storage/checklists_files/"+file);
+        downloadChecklistItemClone.querySelector('.download__link').innerHTML=file;
+        ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(downloadChecklistItemClone);
+    })
+}
+
+
 function eventsBtnSeeOption() {
     [...ALL_ELEMENTS('.checklistContent .btnOptions')].forEach((element)=>{
         element.addEventListener('click',(e)=>{
             let id=parseInt(e.currentTarget.getAttribute('id'));
             let checklist=filterChecklist(checklistArray.subchecklist,id,{}); 
-            openModal(checklist.options);
+            openModalOptions(checklist.options);
         })
     });
 }
 
-function openModal(options) {
+function openModalOptions(options) {
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Opções da checklist";
     ONE_ELEMENT('#btnAddModal').style.display='none';

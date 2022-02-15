@@ -19,7 +19,7 @@ class CheckListOrganization {
 
     public function addChecklist($checklist,$idChecklist=null){
         $checklistModel=new Checklist();
-        $checklistModel->id_default_checklist=$checklist->id;
+        $checklistModel->id_default_checklist=$checklist->idDefaultChecklistReference;
         $checklistModel->id_checklist=$idChecklist;
         $checklistModel->points=$checklist->points;
         $checklistModel->pointsObtained=$checklist->pointsObtained;
@@ -93,7 +93,7 @@ class CheckListOrganization {
             $checklistOption=new ChecklistOption();
             $checklistOption->id_checklist=$idChecklist;
             $checklistOption->id_default_checklist=$idChecklist;
-            $checklistOption->id_default_checklist_option=$option->id;
+            $checklistOption->id_default_checklist_option=$option->idDefaultOption;
             $checklistOption->points=$option->points;
             $checklistOption->pointsObtained=$option->pointsObtained;
             $checklistOption->selected=$option->selected;
@@ -117,14 +117,17 @@ class CheckListOrganization {
         $newArray['id']=$checklist->id;
         $newArray['name']=$defaultChecklist->name;
         $newArray['idDefaultChecklist']=$defaultChecklist->id;
+        $newArray['idDefaultChecklistReference']=$defaultChecklist->id;
         $newArray['id_type_checklist']=$defaultChecklist->id_type_checklist;
         $newArray['percentage']=$defaultChecklist->percentage;
         $newArray['points']=$checklist->points;
         $newArray['pointsObtained']=$checklist->pointsObtained;
-        $newArray['file_name']=$checklist->file_name;
+        $filesNames=explode(',',$checklist->file_name);
+
+        $newArray['file_name']=$filesNames;
         $newArray['value']=$checklist->value;
         $newArray['observation']=$checklist->observation;
-        $newArray['created_at']=date('d/m/Y',strtotime($checklist->created_at));
+        $newArray['created_at']=date('d/m/Y - H:i:s',strtotime($checklist->created_at));
         $newArray['options']=$this->getOptions($checklist->id);
         
         $arrayOrganization=$newArray;
@@ -154,13 +157,13 @@ class CheckListOrganization {
     private function getOptions($idChecklist){
         $arrayOptions=[];
         $checklistOptions=ChecklistOption::where('id_checklist',$idChecklist)->get();
-        
-        
+     
         foreach ($checklistOptions as $key => $option) {
             $defaultOptions=DefaultChecklistOption::where('id',$option->id_default_checklist_option)->first();
-
+            
             $newOption=[];
             $newOption['id']=$option->id;
+            $newOption['idDefaultOption']=$option->id;
             $newOption['name']=$defaultOptions->name;
             $newOption['points']=$option->points;
             $newOption['pointsObtained']=$option->pointsObtained;

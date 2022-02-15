@@ -91,6 +91,7 @@ class DefaultCheckListOrganization {
         $newArray['id']=$defaultChecklist->id;
         $newArray['name']=$defaultChecklist->name;
         $newArray['idDefaultChecklist']=$defaultChecklist->idDefaultChecklist;
+        $newArray['idDefaultChecklistReference']=$defaultChecklist->id;
         $newArray['id_type_checklist']=$defaultChecklist->id_type_checklist;
         $newArray['duplicate']=$defaultChecklist->duplicate;
         $newArray['percentage']=$defaultChecklist->percentage;
@@ -138,8 +139,10 @@ class DefaultCheckListOrganization {
         foreach ($defaultChecklistOptions as $key => $option) {
             $newOption=[];
             $newOption['id']=$option->id;
+            $newOption['idDefaultOption']=$option->id;
             $newOption['name']=$option->name;
             $newOption['points']=$option->points;
+            $newOption['pointsObtained']=0;
             $newOption['percentage']=$option->percentage;
             $newOption['selected']=false;
             $newOption['created_at']=date('d/m/Y',strtotime($option->created_at));

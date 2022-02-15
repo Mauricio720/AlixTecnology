@@ -6,14 +6,17 @@
         method="post" id="formChecklistAdd">
         @csrf
         <input type="hidden" name="idClient" id="idClient">
-        <input type="hidden" name="idChecklistJson" value={{$checkjson_id}}>
         <input type="hidden" name="checklistArray" id="checklistArray">
+        <input type="hidden" name="idChecklistJson" value={{$checkjson_id}}>
+
     </form>
 
     <form style="display: none;" action="{{route('addChecklistJson')}}" enctype="multipart/form-data" 
         method="post" id="formChecklistAddJson">
         @csrf
-        <input type="hidden" name="idDefaultChecklist" id="idDefaultChecklist" value={{$checkjson_id}}>
+        
+        <input type="hidden" name="idChecklistJson" value={{$checkjson_id}}>
+        <input type="hidden" name="idDefaultChecklist" id="idDefaultChecklist" value={{$idDefaultChecklist}}>
         <input type="hidden" name="idChecklist" id="idChecklist" value={{$checkjson_id}}>
         <input type="hidden" name="checklist_name" id="checklist_name" value={{$checkjson_name}}>
         <input type="hidden" name="idClientToJson" id="idClientToJson" value={{$idClientToJson}}>
@@ -152,7 +155,8 @@
                                 <tr>
                                     <td>
                                         <input type='radio' class="defaultCheckRadio" name="defaultCheckRadio" 
-                                            value="{{$defaultChecklist->id}}" {{$idDefaultChecklist!="" && $defaultChecklist->id==$idDefaultChecklist?'checked':''}}>
+                                            value="{{$defaultChecklist->id}}" 
+                                            {{$idDefaultChecklist!="" && $defaultChecklist->id==$idDefaultChecklist?'checked':''}}>
                                     </td>
                                     <td>{{$defaultChecklist->name}}</td>
                                     <td>{{$defaultChecklist->points}}</td>

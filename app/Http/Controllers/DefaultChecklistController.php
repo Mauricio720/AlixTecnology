@@ -129,6 +129,7 @@ class DefaultChecklistController extends Controller
            if($request->filled('idDefaultCheckJson')){
               $defaultChecklistJson=DefaultChecklistJson::where('id',$idDefaultCheckJson)->first();
               $defaultChecklistJson->names=$namesChecklist;
+              $defaultChecklistJson->lastIdIncrement=$lastIdIncrement;
               $defaultChecklistJson->json=$allDefaultChecklists;
            }else{
                 $defaultChecklistJson=new DefaultChecklistJson();
