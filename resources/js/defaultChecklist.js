@@ -1318,8 +1318,8 @@ function allValidationsLayout(item,errorNumber) {
 
     let alertHeader=ONE_ELEMENT('.alert-header');
     alertHeader.classList.remove('d-none');
-    let scrollPosition=alertHeader.offsetTop;
-    window.scrollTo(0,scrollPosition);
+    let scrollPosition=alertHeader.getBoundingClientRect();
+    window.scrollBy(scrollPosition.x,scrollPosition.y-60);
 
     alertHeader.querySelector('.alert').innerHTML=errorsDescription[errorNumber];
 

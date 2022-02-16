@@ -14,7 +14,7 @@ class AddOnlyOneChoosePointsToDefaultChecklistsTable extends Migration
     public function up()
     {
         Schema::table('default_checklists', function (Blueprint $table) {
-            $table->boolean('only_one_choose_points');
+            $table->boolean('only_one_choose_points')->nullable();
         });
     }
 

@@ -37,8 +37,8 @@ class CreateAllTable extends Migration
             $table->bigIncrements('id')->unique();
             $table->string('name',150);
             $table->integer('idDefaultChecklist')->nullable();
-            $table->float('percentage');
-            $table->double('points',8,2);
+            $table->double('percentage');
+            $table->double('points');
             $table->text('observation')->nullable();
             $table->tinyInteger('only_one_choose')->nullable();;
             $table->timestamps();
@@ -50,8 +50,8 @@ class CreateAllTable extends Migration
             $table->bigIncrements('id')->unique();
             $table->string('name',150);
             $table->integer('idDefaultChecklist')->nullable();
-            $table->float('percentage');
-            $table->double('points',8,2);
+            $table->double('percentage');
+            $table->double('points');
             $table->tinyInteger('selected');
             $table->timestamps();
         });
@@ -61,9 +61,9 @@ class CreateAllTable extends Migration
             $table->bigIncrements('id')->unique();
             $table->integer('id_default_checklist');
             $table->integer('id_checklist')->nullable();;
-            $table->string('file_name',250)->nullable();
-            $table->double('points',8,2);
-            $table->double('pointsObtained',8,2);
+            $table->string('file_name',1000)->nullable();
+            $table->double('points');
+            $table->double('pointsObtained');
             $table->string('value',250)->nullable();;
             $table->integer('id_client');
             $table->integer('id_user');
@@ -76,8 +76,8 @@ class CreateAllTable extends Migration
             $table->integer('id_default_checklist_option');
             $table->integer('id_default_checklist');
             $table->integer('id_checklist');
-            $table->double('points',8,2);
-            $table->double('pointsObtained',8,2);
+            $table->double('points');
+            $table->double('pointsObtained');
             $table->tinyInteger('selected');
             $table->timestamps();
         });

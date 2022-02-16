@@ -88,7 +88,7 @@ function fillInputsAndAttributeChecklist(checklistClone,item,checklistNumber) {
         checklistClone.querySelector('.valueChecklist').style.display='none';
     }else{
         if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4 && item.id_type_checklist!==7){
-            checklistClone.querySelector('.valueChecklist').innerHTML=item.value;
+            checklistClone.querySelector('.valueChecklist').innerHTML=item.value !==''?item.value:'Não preenchido.';
         }else if(item.id_type_checklist === 0 || item.id_type_checklist === 7){
             
             checklistClone.querySelector('.checklist__slot--value').style.display='none';

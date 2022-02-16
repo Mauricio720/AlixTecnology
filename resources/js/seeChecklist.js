@@ -38,10 +38,16 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     checklistClone.querySelector('.checklist__title').setAttribute('title',item.name);
 
     if(item.id_type_checklist===2){
-        let linkElement=checklistClone.querySelector('.checklist__download--btn');
-        linkElement.style.display='block';
-        linkElement.setAttribute('id',item.id);
-        checklistClone.querySelector('.valueChecklist').style.display='none';
+        
+        if(item.file_name.length > 0){
+            let linkElement=checklistClone.querySelector('.checklist__download--btn');
+            linkElement.style.display='block';
+            linkElement.setAttribute('id',item.id);
+            checklistClone.querySelector('.valueChecklist').style.display='none';
+        }else{
+            checklistClone.querySelector('.valueChecklist').innerHTML='Nenhum arquivo inserido';
+        }
+       
     }else{
         if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4 && item.id_type_checklist!==7){
             checklistClone.querySelector('.valueChecklist').innerHTML=item.value;
@@ -51,7 +57,7 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     }
     checklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
     checklistClone.querySelector('.typeChecklist').setAttribute('title',typeChecklistArray[item.id_type_checklist]);
-    checklistClone.querySelector('.points').innerHTML="Pontos Possiveis: "+item.points;
+    checklistClone.querySelector('.points').innerHTML="Pontos Possiveis: "+item.points.toFixed(2);
     checklistClone.querySelector('.points').setAttribute('title',item.points);
     checklistClone.querySelector('.pointsObtained').innerHTML="Pontos Obtidos: "+item.pointsObtained;
     checklistClone.querySelector('.pointsObtained').setAttribute('title',item.pointsObtained);
@@ -71,7 +77,6 @@ function renameChecklist(checklist) {
                 checklistItem.name=`${checklistItem.name} - ${index+1}`;
             }
         })
-        
     }
 }
 
@@ -178,20 +183,28 @@ function openModalChecklist(item) {
 
     formChecklist.querySelector('.nameChecklist').innerHTML=item.name;
     formChecklist.querySelector('.typeChecklist').innerHTML=typeChecklistArray[item.id_type_checklist];
+    
     if(item.id_type_checklist===2){
-        let linkElement=formChecklist.querySelector('.valueChecklist').querySelector('a');
-        linkElement.style.display='block';
-        linkElement.innerHTML="Download: "+item.name;
-        linkElement.setAttribute('href',BASE_URL+"/storage/checklists_files/"+item.file_name);
+        formChecklist.querySelector('.valueChecklist').style.height='auto';
+        if(item.file_name.length > 0){
+            item.file_name.forEach((file)=>{
+                let linkElement=formChecklist.querySelector('.valueChecklist').querySelector('a').cloneNode(true);
+                linkElement.style.display='block';
+                linkElement.innerHTML="Download: "+item.name;
+                linkElement.setAttribute('href',BASE_URL+"/storage/checklists_files/"+file);
+                formChecklist.querySelector('.valueChecklist').append(linkElement);
+            })
+        }
     }else{
         if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4){
+            formChecklist.querySelector('.valueChecklist').style.display='flex';
             formChecklist.querySelector('.valueChecklist').innerHTML=item.value;
         }else{
             formChecklist.querySelector('.valueChecklist').closest('.form-group').style.display="none";
         }
     }
-    formChecklist.querySelector('.pointsChecklist').innerHTML="Pontos: "+item.points;
-    formChecklist.querySelector('.pointsObtainedChecklist').innerHTML=item.pointsObtained;
+    formChecklist.querySelector('.pointsChecklist').innerHTML="Pontos: "+item.points.toFixed(2);
+    formChecklist.querySelector('.pointsObtainedChecklist').innerHTML="Pontos Obtidos: "+item.pointsObtained.toFixed(2);
     formChecklist.querySelector('.observationChecklist').innerHTML=item.observation===""?
         'Nenhuma observação':item.observation;
 

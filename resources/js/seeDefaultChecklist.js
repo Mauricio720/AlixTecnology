@@ -32,9 +32,9 @@ function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
     defaultChecklistClone.querySelector('.nameChecklist').setAttribute('title',item.name);
     defaultChecklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
     defaultChecklistClone.querySelector('.typeChecklist').setAttribute('title',"Tipo: "+typeChecklistArray[item.id_type_checklist]);
-    defaultChecklistClone.querySelector('.pointsPercentage').innerHTML=item.percentage+"%";
+    defaultChecklistClone.querySelector('.pointsPercentage').innerHTML=item.percentage.toFixed(2)+"%";
     defaultChecklistClone.querySelector('.pointsPercentage').setAttribute('title',item.percentage+"%");
-    defaultChecklistClone.querySelector('.points').innerHTML="Pontos: "+item.points;
+    defaultChecklistClone.querySelector('.points').innerHTML="Pontos: "+item.points.toFixed(2);
     defaultChecklistClone.querySelector('.points').setAttribute('title',item.points);
     defaultChecklistClone.querySelector('.observation').innerHTML=item.observation===""?
         'Nenhuma observação':item.observation;

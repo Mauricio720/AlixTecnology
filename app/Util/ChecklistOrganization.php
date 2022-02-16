@@ -122,8 +122,8 @@ class CheckListOrganization {
         $newArray['percentage']=$defaultChecklist->percentage;
         $newArray['points']=$checklist->points;
         $newArray['pointsObtained']=$checklist->pointsObtained;
-        $filesNames=explode(',',$checklist->file_name);
-
+        $filesNames=$checklist->file_name !=''?explode(',',$checklist->file_name):[];
+        
         $newArray['file_name']=$filesNames;
         $newArray['value']=$checklist->value;
         $newArray['observation']=$checklist->observation;
