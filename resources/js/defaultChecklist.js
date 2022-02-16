@@ -615,9 +615,9 @@ function validationDefaultChecklist(defaultChecklistElement,defaultChecklistArra
         isOK=false;
     }
 
-    if(defaultChecklistArray.correctPercentage===false){
-        isOK=false;
-    }
+    /*if(defaultChecklistArray.correctPercentage===false){
+         console.log(isOK);
+    }*/
 
     if(inputsChecklist[2].value==""){
         inputsChecklist[2].classList.add('input-danger');
@@ -631,6 +631,7 @@ function validationDefaultChecklist(defaultChecklistElement,defaultChecklistArra
         }
     }
 
+   
     return isOK;
 }
 
