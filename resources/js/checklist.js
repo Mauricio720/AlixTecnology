@@ -194,38 +194,57 @@ function fillValuesToChecklist(subchecklists) {
         
         checklistElement.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${subchecklist.pointsObtained.toFixed(2)}`;
         
-        if(subchecklist.id_type_checklist===7){
-            let inputRadios=checklistElement.querySelectorAll(`input[name=checkGroupingChoice${subchecklist.id}`);
-            
-            let indexCloneGrouping=allCloneChecklistGrouping.findIndex((item)=>{
-                if(item.id===subchecklist.idReferenceClone){
-                    return true;
-                }
-            });
-            
-            if(subchecklist.groupingDoubleChoice){
-                inputRadios[0].checked=true;
-                checklistElement.style.height='auto';
-            }
-            
-            if(indexCloneGrouping !== -1){
-                inputRadios[0].checked=true;
-                
-                if(subchecklist.duplicate){
-                    checklistElement.querySelector('.checklist__header .btnAdd').classList.remove('d-none');
-                    subchecklist.subchecklist.forEach((subcheck)=>{
-                        ONE_ELEMENT(`#checklist${subcheck.id}`).querySelector('.checklist__header__actions').style.display='flex';
-                        ONE_ELEMENT(`#checklist${subcheck.id}`).querySelector('.checklist__header--optionsContainer').style.display='none';
-                        ONE_ELEMENT(`#checklist${subcheck.id}`).querySelector('.btnDelete').classList.remove('d-none');;
-                    })
-                }
-            }
+        if(subchecklist.duplicate && subchecklist.id_type_checklist!==7){
+            checklistElement.querySelector('.checklist__header__actions').style.display='flex';
+            checklistElement.querySelector('.checklist__header--optionsContainer').style.display='none';
+            checklistElement.querySelector('.checklist__header .btnAdd').classList.remove('d-none');
+        }
 
-            if(subchecklist.subchecklist.length===0){
-                inputRadios[1].checked=true;
-                checklistElement.style.height='120px';
-                checklistElement.querySelectorAll('.checklist__header__slot')[2].classList.add('d-none');
-                checklistElement.querySelector('.checklist__header .btnAdd').classList.add('d-none');
+        if(subchecklist.duplicate){
+            if(subchecklist.id_type_checklist===7){
+                let inputRadios=checklistElement.querySelectorAll(`input[name=checkGroupingChoice${subchecklist.id}`);
+                
+                let indexCloneGrouping=allCloneChecklistGrouping.findIndex((item)=>{
+                    if(item.id===subchecklist.idReferenceClone){
+                        return true;
+                    }
+                });
+                
+                if(subchecklist.groupingDoubleChoice){
+                    inputRadios[0].checked=true;
+                    checklistElement.style.height='auto';
+                }
+                
+                if(indexCloneGrouping !== -1){
+                    inputRadios[0].checked=true;
+                    
+                    if(subchecklist.duplicate){
+                        subchecklist.subchecklist.forEach((subcheck)=>{
+                            ONE_ELEMENT(`#checklist${subcheck.id}`).querySelector('.checklist__header__actions').style.display='flex';
+                            ONE_ELEMENT(`#checklist${subcheck.id}`).querySelector('.checklist__header--optionsContainer').style.display='none';
+                            ONE_ELEMENT(`#checklist${subcheck.id}`).querySelector('.btnDelete').classList.remove('d-none');;
+                        })
+                    }
+                }
+
+                if(subchecklist.subchecklist.length===0){
+                    inputRadios[1].checked=true;
+                    checklistElement.style.height='120px';
+                    checklistElement.querySelectorAll('.checklist__header__slot')[2].classList.add('d-none');
+                    checklistElement.querySelector('.checklist__header .btnAdd').classList.add('d-none');
+                }
+            }else{
+                let indexCloneGrouping=allCloneChecklistGrouping.findIndex((item)=>{
+                    if(item.id===subchecklist.idReferenceClone){
+                        return true;
+                    }
+                });
+                
+                if(indexCloneGrouping != -1){
+                    checklistElement.style.height='auto';
+                }else{
+                    checklistElement.style.height='120px';
+                }
             }
         }
 
@@ -261,8 +280,9 @@ function elementInputsChecklist(subchecklist,typeChecklist) {
 
 function elementMultipleChoiceChecklist(subchecklist) {
     let checklistClone=checklistMultipleChoice.cloneNode(true);
+    
     fillLayoutChecklist(checklistClone,subchecklist) 
-    filllayoutOptions(subchecklist,checklistClone);
+    fillLayoutOptions(subchecklist,checklistClone);
     
     return checklistClone;
 }
@@ -300,11 +320,27 @@ function fillLayoutChecklist(checklistClone,subchecklist) {
             checklistClone.querySelectorAll('.checklist__header__slot')[2].classList.add('d-none');
         }
 
+        if(!subchecklist.duplicate){
+            if(subchecklist.pointsObtained !== 0){
+                inputRadios[0].checked=true;
+                checklistClone.style.height='auto';
+                checklistClone.querySelector('.checklist__header__quantity').style.display='none';
+                checklistClone.querySelectorAll('.checklist__header__slot')[2].classList.remove('d-none');
+            }
+        }
+        
+
         if(subchecklist.subchecklist.length===0){
             inputRadios[1].checked=true;
             checklistClone.style.height='120px';
             checklistClone.querySelectorAll('.checklist__header__slot')[2].classList.add('d-none');
         }
+    }
+    
+    if(subchecklist.duplicateSubchecklist){
+        checklistClone.querySelector('.checklist__header--optionsContainer').style.display='none';
+        checklistClone.querySelector('.checklist__header__actions').style.display='flex';
+        checklistClone.querySelector('.checklist__header__actions .btnDelete').classList.remove('d-none');;
     }
 
     if(subchecklist.id_type_checklist===3 || subchecklist.id_type_checklist===4){
@@ -339,7 +375,7 @@ function fillLayoutChecklist(checklistClone,subchecklist) {
     }
 }
 
-function filllayoutOptions(subchecklist,checklistClone) {
+function fillLayoutOptions(subchecklist,checklistClone) {
     let options=subchecklist.options;
 
     options.forEach((option)=>{
@@ -531,40 +567,54 @@ function eventsDoubleAddChoiceGrouping(element,checklist){
                 }
             })
 
-            let newChecklistGrouping=JSON.parse(JSON.stringify(allCloneChecklistGrouping[indexReferenceClone]));
-            idIncrement=idIncrement+1;
-            newChecklistGrouping.id=idIncrement;
-            newChecklistGrouping.id_type_checklist=0;
-            checklist.subchecklist.push(newChecklistGrouping);
-            
-            renameAndIncrementChecklist(checklist);
-            setChecklistPoint(checklist.id);
-            
-            let totalChecklistPoints=0;
-            checklist.subchecklist.forEach((item)=>{
-                let totalPointsObtainedSubchecklist=0;
-                setChecklistPoint(item.id);
+            if(allCloneChecklistGrouping.length > 0 && indexReferenceClone !== -1){
+                let newChecklistGrouping=JSON.parse(JSON.stringify(allCloneChecklistGrouping[indexReferenceClone]));
+                idIncrement=idIncrement+1;
                 
-                if(item.id_type_checklist===7 || item.id_type_checklist===0){
-                    item.subchecklist.forEach((subchecklist)=>{
-                        totalPointsObtainedSubchecklist+=subchecklist.pointsObtained;
-                        totalChecklistPoints+=subchecklist.pointsObtained;
-                    }); 
+                newIdCheck=idIncrement;
+                
+                newChecklistGrouping.id=idIncrement;
+                newChecklistGrouping.id_type_checklist=0;
+                newChecklistGrouping.duplicate=false;
+                newChecklistGrouping.duplicateSubchecklist=true;
+              
+                checklist.subchecklist.push(newChecklistGrouping);
+                updateIncrementChecklist(checklist);
+                setChecklistPoint(checklist.id);
+                
+                let totalChecklistPoints=0;
+                checklist.subchecklist.forEach((item)=>{
+                    let totalPointsObtainedSubchecklist=0;
+                    setChecklistPoint(item.id);
                     
-                    item.pointsObtained=totalPointsObtainedSubchecklist;
-                }
-            });
-            
-            checklist.pointsObtained=totalChecklistPoints;
+                    if(item.id_type_checklist===7 || item.id_type_checklist===0){
+                        item.subchecklist.forEach((subchecklist)=>{
+                            totalPointsObtainedSubchecklist+=subchecklist.pointsObtained;
+                            totalChecklistPoints+=subchecklist.pointsObtained;
+                            setChecklistPoint(subchecklist.id);
+                        }); 
+                        
+                        item.pointsObtained=totalPointsObtainedSubchecklist;
+                    }
+                });
+                
+                checklist.pointsObtained=totalChecklistPoints;
+                
+                updatePointsFatherChecklist(checklist,totalChecklistPoints,false);
 
-            let totalPoints=0;
-            defaultChecklistArray.subchecklist.forEach((checklist)=>{
-                totalPoints+=checklist.pointsObtained;
-            });
 
-            defaultChecklistArray.pointsObtained=totalPoints;
-           
-            fillChecklistInfo(defaultChecklistArray);
+                let totalPoints=0;
+                console.log(defaultChecklistArray.subchecklist);
+                defaultChecklistArray.subchecklist.forEach((checklist)=>{
+                    totalPoints+=checklist.pointsObtained;
+                });
+
+    
+                defaultChecklistArray.pointsObtained=totalPoints;
+                fillChecklistInfo(defaultChecklistArray);
+            }else{
+                addGroupingChecklist(checklist);
+            }
         });
     }
 }
@@ -616,7 +666,7 @@ function eventsDoubleDeleteChoiceGrouping(element,checklist){
             });
 
             defaultChecklistArray.pointsObtained=totalPoints;
-            renameAndIncrementChecklist(checklistFather); 
+            updateIncrementChecklist(checklistFather); 
             fillChecklistInfo(defaultChecklistArray);
         });
     }
@@ -634,11 +684,13 @@ function addGroupingChecklist(checklist){
     cloneChecklist.id=idIncrement;
     cloneChecklist.id_type_checklist=0;
     cloneChecklist.idDefaultChecklist=checklist.id;
-   
+    cloneChecklist.duplicateSubchecklist=true;
+    cloneChecklist.duplicate=false;
+
     checklist.idReferenceClone=definityGroupingCloneChecklist.id;
     checklist.subchecklist.push(cloneChecklist);
 
-    renameAndIncrementChecklist(cloneChecklist); 
+    updateIncrementChecklist(cloneChecklist); 
     setChecklistPoint(cloneChecklist.id);
     fillChecklistInfo(defaultChecklistArray,true);
     ONE_ELEMENT(`#checklist${cloneChecklist.id}`).querySelector('.btnDelete').classList.remove('d-none');
@@ -664,7 +716,7 @@ function clearGroupingChecklist(checklist){
 
     allCloneChecklistGrouping.splice(index,1);
     
-    renameAndIncrementChecklist(checklist);
+    updateIncrementChecklist(checklist);
     checklist.subchecklist.forEach((item)=>{
         setChecklistPoint(item.id);
     })
@@ -672,48 +724,57 @@ function clearGroupingChecklist(checklist){
     fillChecklistInfo(defaultChecklistArray);
 }
 
-function renameAndIncrementChecklist(checklist) {
+function updateIncrementChecklist(checklist) {
     checklist.subchecklist.forEach((checklistItem,index)=>{
-        if(checklistItem.id_type_checklist === 0){
+        let subchecklists=JSON.parse(JSON.stringify(checklistItem.subchecklist));
+        if(checklistItem.id_type_checklist === 0 && checklistItem.duplicateSubchecklist){
             let names=checklistItem.name.split('-');
             checklistItem.name=names[0]+' - '+(index+1);
         }
-
-        let subchecklists=JSON.parse(JSON.stringify(checklistItem.subchecklist));
-       
         checklistItem.subchecklist=[];
         checklistItem.idDefaultChecklist=checklist.id;
-
-        subchecklists.forEach((item)=>{
-            let newSubCheck=JSON.parse(JSON.stringify(item));
-            idIncrement=idIncrement+1;
-            newSubCheck.id=idIncrement;
-            newSubCheck.idDefaultChecklist=checklistItem.id;
-            
-            if(newSubCheck.options.length > 0){
-                let optionsClone=JSON.parse(JSON.stringify(newSubCheck.options));
-                newSubCheck.options=[];
+        
+        if(subchecklists.length > 0){
+            subchecklists.forEach((item)=>{
+                let newSubCheck=JSON.parse(JSON.stringify(item));
+                idIncrement=idIncrement+1;
+                newSubCheck.id=idIncrement;
+                newSubCheck.idDefaultChecklist=checklistItem.id;
                 
-                optionsClone.forEach((option)=>{
-                    let newOption=JSON.parse(JSON.stringify(option));
-                    idIncrement=idIncrement+1;
-                    newOption.id=idIncrement;
-                    newSubCheck.options.push(newOption);
-                });
-            }
+                if(newSubCheck.options.length > 0){
+                    let optionsClone=JSON.parse(JSON.stringify(newSubCheck.options));
+                    newSubCheck.options=[];
+                    
+                    optionsClone.forEach((option)=>{
+                        let newOption=JSON.parse(JSON.stringify(option));
+                        idIncrement=idIncrement+1;
+                        newOption.id=idIncrement;
+                        newSubCheck.options.push(newOption);
+                    });
+                }
+                
+                if(newSubCheck.subchecklist.length > 0){
+                    updateIncrementChecklist(newSubCheck);
+                   
+                }
 
-            checklistItem.subchecklist.push(newSubCheck);
-        });
+                checklistItem.subchecklist.push(newSubCheck);
+            });
+        }
     });
-    
 }
 
 function setChecklistPoint(id) {
-    let points=filterChecklist(defaultChecklistArray.subchecklist,id,{}).points;
+    let checklist=filterChecklist(defaultChecklistArray.subchecklist,id,{});
+    let points=checklist.points;
     let allDefaultChecklist=filterChecklist(defaultChecklistArray.subchecklist,id,{}).subchecklist;
     let totalNumberDefaultChecklists=allDefaultChecklist.length;
     let pointsValue=points/totalNumberDefaultChecklists;
     let percentage= (pointsValue/points)*100;
+    
+    if(checklist.pointsObtained !== 0){
+        checklist.pointsObtained=pointsValue;
+    }
 
     allDefaultChecklist.forEach(element => {
         if(element.pointsObtained != 0){
@@ -722,7 +783,6 @@ function setChecklistPoint(id) {
             }
         }
         
-
         element.points=pointsValue;
         element.percentage=percentage;
         element.correctPercentage=true;
@@ -745,10 +805,18 @@ function setChecklistPoint(id) {
             }
         }
 
-        element.subchecklist.forEach((item)=>{
-           setChecklistPoint(item.id);
-        })
-
+        let numberSubchecklist=element.subchecklist.length;
+        if(numberSubchecklist > 0){
+            let newPoints=element.points/numberSubchecklist;
+            let percentage= (newPoints/element.points)*100;
+            
+            element.subchecklist.forEach((item)=>{
+                item.points=newPoints;
+                item.percentage=percentage;
+                setChecklistPoint(item.id);
+            })
+        }
+        
     });
 }
 
@@ -968,8 +1036,6 @@ function eventsChecklistsMultipleOptions(element,checklist,multiple=true) {
                     updatePointsFatherChecklist(checklist,points,false);
                     element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
                 }
-
-
             }
         });
     })

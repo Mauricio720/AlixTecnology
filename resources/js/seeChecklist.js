@@ -38,7 +38,6 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     checklistClone.querySelector('.checklist__title').setAttribute('title',item.name);
 
     if(item.id_type_checklist===2){
-        
         if(item.file_name.length > 0){
             let linkElement=checklistClone.querySelector('.checklist__download--btn');
             linkElement.style.display='block';
@@ -51,8 +50,6 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     }else{
         if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4 && item.id_type_checklist!==7){
             checklistClone.querySelector('.valueChecklist').innerHTML=item.value;
-        }else if(item.id_type_checklist === 0 || item.id_type_checklist === 7){
-            checklistClone.querySelector('.checklist__slot--value').style.display='none';
         }
     }
     checklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];

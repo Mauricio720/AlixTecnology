@@ -100,6 +100,7 @@ class DefaultCheckListOrganization {
         $newArray['value']="";
         $newArray['oficialObservation']="";
         $newArray['groupingDoubleChoice']=false;
+        $newArray['duplicateSubchecklist']=false;
         $newArray['files']=[];
         $newArray['observation']=$defaultChecklist->observation;
         $newArray['only_one_choose']=$defaultChecklist->only_one_choose;
