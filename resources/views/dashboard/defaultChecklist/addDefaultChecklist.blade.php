@@ -130,7 +130,6 @@
 @endsection
 
 @section('javascript')
-<script type="module" src="{{ asset('js/layoutFunctions.min.js') }}" defer></script>
-
-    <script type="module" src="{{ asset('js/defaultChecklist.min.js') }}" defer></script>
+    
+    <script src="{{ asset('js/defaultChecklist.min.js') }}" defer></script>
 @endsection

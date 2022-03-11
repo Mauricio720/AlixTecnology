@@ -48,7 +48,7 @@ ONE_ELEMENT('.btnScrollToBotttom').addEventListener('click',()=>{
 ONE_ELEMENT('#btnAddDefaultCheck').addEventListener('click',(e)=>{
     checklistSave=false;
     addDefaultChecklist(); 
-    ONE_ELEMENT('.checklistContent').innerHTML="";
+    clearContent();
     showDefaultChecklist(defaultChecklistArray);
     allEventsInAddChecklist();
     eventsBtnDelete();
@@ -82,6 +82,7 @@ function showDefaultChecklist(defaultChecklistArray) {
         repeatLoopShowDefaultChecklist(item,checklistSave);
     });
 }
+
 
 function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
     defaultChecklistClone.setAttribute('idElement',item.id);
@@ -224,7 +225,7 @@ function eventCloneDefaultChecklist(){
             idIndentOption=parseInt(defaultCheckInfo.getAttribute('lastidincrementoption'));
             checklistSave=false;
             
-            ONE_ELEMENT('.checklistContent').innerHTML="";
+            clearContent();
             showDefaultChecklist(defaultChecklistArray);
             allEventsInAddChecklist(true);
             eventsBtnDelete();
@@ -258,7 +259,7 @@ function eventAddChecklist(addBtnElement,id,inProgress=false){
     
     addBtnElement.addEventListener('click',()=>{
         if(validationDefaultChecklist(checklistToValidate,defaultChecklist)){
-            ONE_ELEMENT('.checklistContent').innerHTML="";
+            clearContent();
             addDefaultChecklist(id); 
             setActiveDefaultChecklist(defaultChecklist);
             showDefaultChecklist(defaultChecklistArray);
@@ -293,7 +294,6 @@ function setActiveDefaultChecklist(defaultChecklist){
     defaultChecklist.active=true;
 }
 
-
 function uniqueEventInputChecklistName(elementChecklist,defaultChecklist) {
     elementChecklist.querySelectorAll('input')[0].addEventListener('keyup',(e)=>{
         let value=e.currentTarget.value;
@@ -308,8 +308,8 @@ function uniqueEventInputPointingPercentage(elementChecklist,defaultChecklist) {
     });
 }
 
-function calcPointing(e,defaultChecklist) {
-    let value=parseFloat(e.currentTarget.value);
+function calcPointing(event,defaultChecklist) {
+    let value=parseFloat(event.currentTarget.value);
     defaultChecklist.percentage=value;
 
     let defaultChecklistFather=filterDefaultChecklist(defaultChecklistArray,defaultChecklist.idDefaultChecklist,{});
@@ -505,7 +505,7 @@ function eventsBtnAddOptions() {
             let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
             let type=defaultChecklist.typechecklist;
             let points=defaultChecklist.points;
-            console.log(type);
+            
             if(type==="3"){
                 openModalMultipleChoose(points,id);  
             }
@@ -825,45 +825,69 @@ var allOptions=[];
 var pointsModal=0;
 var onlyOneChoosePoints=false;
 var onlyOneChoose=false;
+var onlyOneChoosePointsInputElement=null;
+var onlyOneChooseInputElement=null;
 
 function openModalMultipleChoose(points,id) {
-    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (multiplas escolhas)"
-    +" Pontuação Checklist "+parseFloat(points).toFixed(2);
-    
-    let only_one_choose_points_input=ONE_ELEMENT('#only_one_choose_points').cloneNode(true);
-    only_one_choose_points_input.style.display='block';
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(only_one_choose_points_input);
-
-    let only_one_choose_input=ONE_ELEMENT('#only_one_choose').cloneNode(true);
-    only_one_choose_input.style.display='block';
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(only_one_choose_input);
-
     pointsModal=points;
-    let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
-    modalHeader.style.display="none";
+
+    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+    modalLayoutOptionsMultiple(points);
+    let modalHeader=modalLayoutRemoveHeader();
     
     removeEventsModal();
     removeInputDanger();
-
-    ONE_ELEMENT('#btnAddModal').style.display='block';
-    ONE_ELEMENT('#btnEditModal').style.display='block';
-
+    modalBtnsBlock();
+    
     allOptions=[];
     let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
 
-    verifyOnlyOneChoose(defaultChecklist,only_one_choose_input);
-    verifyOnlyOneChoosePoints(defaultChecklist,only_one_choose_points_input);
+    verifyOnlyOneChoose(defaultChecklist,onlyOneChooseInputElement);
+    verifyOnlyOneChoosePoints(defaultChecklist,onlyOneChoosePointsInputElement);
     eventOnlyOneChoose(defaultChecklist); 
     eventOnlyOneChoosePoints(defaultChecklist); 
     
-    if(defaultChecklist.options.length>0){
-        allOptions=defaultChecklist.options;
-    }
+    verifyOptionsChecklist(defaultChecklist);
     
     fillLayoutOptionsDefaultChecklist(true,onlyOneChoose,onlyOneChoosePoints);
     eventsMultipleChoose();
 
+    eventModalAddBtn(modalHeader);
+    eventModalEditBtn(modalHeader,defaultChecklist);
+   
+}
+
+function modalLayoutOptionsMultiple(points){
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (multiplas escolhas)"
+    +" Pontuação Checklist "+parseFloat(points).toFixed(2);
+
+    onlyOneChoosePointsInputElement=ONE_ELEMENT('#only_one_choose_points').cloneNode(true);
+    onlyOneChoosePointsInputElement.style.display='block';
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(onlyOneChoosePointsInputElement);
+
+    onlyOneChooseInputElement=ONE_ELEMENT('#only_one_choose').cloneNode(true);
+    onlyOneChooseInputElement.style.display='block';
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(onlyOneChooseInputElement);
+}
+
+function modalBtnsBlock(){
+    ONE_ELEMENT('#btnAddModal').style.display='block';
+    ONE_ELEMENT('#btnEditModal').style.display='block';
+}
+
+function modalLayoutRemoveHeader(){
+    let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
+    modalHeader.style.display="none";
+    return modalHeader;
+}
+
+function verifyOptionsChecklist(defaultChecklist){
+    if(defaultChecklist.options.length>0){
+        allOptions=defaultChecklist.options;
+    }
+}
+
+function eventModalAddBtn(modalHeader){
     ONE_ELEMENT('#btnAddModal').addEventListener('click',()=>{
         modalHeader.style.display="none";
         removeInputDanger();
@@ -871,7 +895,9 @@ function openModalMultipleChoose(points,id) {
         fillLayoutOptionsDefaultChecklist(true,onlyOneChoose,onlyOneChoosePoints);
         eventsMultipleChoose();
     });
+}
 
+function eventModalEditBtn(modalHeader,defaultChecklist){
     ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
         if(verifyEmptyOptionName()){
             errorDoubleChooseOptions(modalHeader);
@@ -903,108 +929,152 @@ function verifyPercentageOptions() {
     return isOk;
 }
 
-function verifyOnlyOneChoose(defaultChecklist,only_one_choose_input){
+function verifyOnlyOneChoose(defaultChecklist,onlyOneChooseInputElement){
     if(defaultChecklist.onlyOneChoose){
         onlyOneChoose=true;
-        only_one_choose_input.querySelector('input').checked=true;
+        onlyOneChooseInputElement.querySelector('input').checked=true;
     }else{
         onlyOneChoose=false;
-        only_one_choose_input.querySelector('input').checked=false;
+        onlyOneChooseInputElement.querySelector('input').checked=false;
     }
 }
 
-function verifyOnlyOneChoosePoints(defaultChecklist,only_one_choose_points_input){
+function verifyOnlyOneChoosePoints(defaultChecklist,onlyOneChoosePointsInputElement){
     if(defaultChecklist.onlyOneChoosePoints){
         onlyOneChoosePoints=true;
-        only_one_choose_points_input.querySelector('input').checked=true;
+        onlyOneChoosePointsInputElement.querySelector('input').checked=true;
     }else{
         onlyOneChoosePoints=false;
-        only_one_choose_points_input.querySelector('input').checked=false;
+        onlyOneChoosePointsInputElement.querySelector('input').checked=false;
     }
 }
 
 function eventOnlyOneChoose(defaultChecklist) {
     ONE_ELEMENT('#only_one_choose').querySelector('input').addEventListener('change',(e)=>{
         if(e.currentTarget.checked){
-            defaultChecklist.onlyOneChoose=true;
-            onlyOneChoose=true;
-            defaultChecklist.onlyOneChoosePoints=false;
-            onlyOneChoosePoints=false;
-            ONE_ELEMENT('#only_one_choose_points').querySelector('input').checked=false;
+            onlyOneChooseChecked(defaultChecklist)
         }else{
-            defaultChecklist.onlyOneChoose=false;
-            onlyOneChoose=false;
+            onlyOneChooseNotChecked(defaultChecklist);
         }
-
-        ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-        allOptions=[];
-        if(defaultChecklist.options.length>0){
-            defaultChecklist.options=[];
-        }
+    
+        clearModalContent();
+        clearOptions(defaultChecklist);
+        
     });
+}
+
+function onlyOneChooseChecked(defaultChecklist){
+    defaultChecklist.onlyOneChoose=true;
+    onlyOneChoose=true;
+    defaultChecklist.onlyOneChoosePoints=false;
+    onlyOneChoosePoints=false;
+    ONE_ELEMENT('#only_one_choose_points').querySelector('input').checked=false;
+}
+
+function onlyOneChooseNotChecked(defaultChecklist){
+    defaultChecklist.onlyOneChoose=false;
+    onlyOneChoose=false;
+}
+
+function clearOptions(defaultChecklist){
+    allOptions=[];
+    if(defaultChecklist.options.length>0){
+        defaultChecklist.options=[];
+    }
 }
 
 function eventOnlyOneChoosePoints(defaultChecklist) {
     ONE_ELEMENT('#only_one_choose_points').querySelector('input').addEventListener('change',(e)=>{
         if(e.currentTarget.checked){
-            defaultChecklist.onlyOneChoosePoints=true;
-            onlyOneChoosePoints=true;
-            defaultChecklist.onlyOneChoose=false;
-            onlyOneChoose=false;
-            ONE_ELEMENT('#only_one_choose').querySelector('input').checked=false;
+            onlyOneChoosePointsChecked(defaultChecklist);
         }else{
-            defaultChecklist.onlyOneChoosePoints=false;
-            onlyOneChoosePoints=false;
+            onlyOneChoosePointsNotChecked(defaultChecklist);
         }
         
-        ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-        allOptions=[];
-        if(defaultChecklist.options.length>0){
-            defaultChecklist.options=[];
-        }
+        clearModalContent();
+        clearOptions(defaultChecklist);
     });
 }
 
-function openModalDoubleChoose(points,id) {
-    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (dupla escolha) "
-    +" Pontuação Checklist "+parseFloat(points).toFixed(2);
-    pointsModal=points;
+function onlyOneChoosePointsChecked(defaultChecklist){
+    defaultChecklist.onlyOneChoosePoints=true;
+    onlyOneChoosePoints=true;
+    defaultChecklist.onlyOneChoose=false;
+    onlyOneChoose=false;
+    ONE_ELEMENT('#only_one_choose').querySelector('input').checked=false;
+}
 
-    let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
-    modalHeader.style.display="none";
+function onlyOneChoosePointsNotChecked(defaultChecklist){
+    defaultChecklist.onlyOneChoosePoints=false;
+    onlyOneChoosePoints=false;
+}
+
+
+function clearOptions(defaultChecklist){
+    allOptions=[];
+    if(defaultChecklist.options.length>0){
+        defaultChecklist.options=[];
+    }
+}
+
+var modalHeader=null;
+
+function openModalDoubleChoose(points,id) {
+    clearModalContent();
+    modalLayoutOptionsDoubleChoose(points);
     
     removeEventsModal();
     removeInputDanger();
     
     allOptions=[];
-    let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
-    if(defaultChecklist.options.length>0){
-        allOptions=defaultChecklist.options;
-      
-    }else{
-        addNewsOptionEmpty()
-    }
+    verifyDefaultChecklistOptions(id);
     
     fillLayoutOptionsDefaultChecklist();
     eventsDoubleChoose(); 
+    modalBtnsDoubleChooseBlock();
+}
+
+function modalLayoutOptionsDoubleChoose(points){
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Adicione as opções (dupla escolha) "
+    +" Pontuação Checklist "+parseFloat(points).toFixed(2);
+    pointsModal=points;
+
+    modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
+    modalHeader.style.display="none";
+}
+
+function modalBtnsDoubleChooseBlock(){
     ONE_ELEMENT('#btnAddModal').style.display='none';
     ONE_ELEMENT('#btnEditModal').style.display='block';
+}
 
+function verifyDefaultChecklistOptions(id){
+    let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
+
+    if(defaultChecklist.options.length>0){
+        allOptions=defaultChecklist.options;
+    }else{
+        addNewsOptionEmpty()
+    }
+}
+
+function eventModalBtnEdit(){
     ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
         if(verifyEmptyOptionName()){
             errorDoubleChooseOptions(modalHeader);
-        
         }else if(verifyEmptyOptionsArray()){
-            modalHeader.style.display='block';
-            modalHeader.querySelector('.alert').innerHTML="Adicione pelo menos uma opção!";
-        
+            showErrorModalDoubleChoose();
         }else{
             removeInputDanger();
             addOption(defaultChecklist); 
             ONE_ELEMENT('#modalActions .close').click();
         }
     });
+}
+
+function showErrorModalDoubleChoose(){
+    modalHeader.style.display='block';
+    modalHeader.querySelector('.alert').innerHTML="Adicione pelo menos uma opção!";
 }
 
 function removeEventsModal() {
@@ -1080,37 +1150,46 @@ function addOption(defaultChecklist) {
 
 function addNewsOptionEmpty(multiple=false) {
     if(multiple===false){
-        for (let index = 0; index < 2; index++) {
-            let option={
-                id:index,
-                nameOption:'',
-                pointsValue:'',
-                percentage:50,
-                selected:false
-            };
-
-            if(index===0){
-                option.pointsValue=pointsModal;
-                option.selected=true;
-            }else{
-                option.pointsValue=0;
-                option.selected=false;
-            }
-    
-            allOptions.push(option);
-        }
+        addOptionsDoubleChoose();
      }else{
-        idIndentOption++;
+        addOptionsMultipleOptions();
+     }
+}
+
+function addOptionsDoubleChoose(){
+    for (let index = 0; index < 2; index++) {
         let option={
-            id:idIndentOption,
+            id:index,
             nameOption:'',
             pointsValue:'',
             percentage:50,
-            correctPercentage:true,
             selected:false
         };
+
+        if(index===0){
+            option.pointsValue=pointsModal;
+            option.selected=true;
+        }else{
+            option.pointsValue=0;
+            option.selected=false;
+        }
+
         allOptions.push(option);
-     }
+    }
+}
+
+function addOptionsMultipleOptions(){
+    idIndentOption++;
+    let option={
+        id:idIndentOption,
+        nameOption:'',
+        pointsValue:'',
+        percentage:50,
+        correctPercentage:true,
+        selected:false
+    };
+
+    allOptions.push(option);
 }
 
 function fillLayoutOptionsDefaultChecklist(multipleChoose=false,only_one_choose=false,only_one_choose_points=false){
@@ -1118,45 +1197,71 @@ function fillLayoutOptionsDefaultChecklist(multipleChoose=false,only_one_choose=
     
     allOptions.forEach((option)=>{
         let optionsDefaultChecklistClone=optionsDefaultChecklist.cloneNode(true);
-        optionsDefaultChecklistClone.querySelectorAll('input')[0].value=option.nameOption;
-        optionsDefaultChecklistClone.querySelectorAll('input')[2].disabled=true;
-        optionsDefaultChecklistClone.style.display='flex';
-        optionsDefaultChecklistClone.setAttribute('idOption',option.id);
 
-        if(option.selected){
-            optionsDefaultChecklistClone.querySelectorAll('input')[2].value=option.pointsValue.toFixed(2);
-            optionsDefaultChecklistClone.querySelector('.btnChoose').classList.remove('btnDisabled');
-        }else{
-            optionsDefaultChecklistClone.querySelector('.btnChoose').classList.add('btnDisabled');
-        }
-
+        fillLayoutOptionClone(optionsDefaultChecklistClone,option);
+        fillLayoutOptionSelected(optionsDefaultChecklistClone,option);
+       
         if(multipleChoose){
-            optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="block";
-            optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="block";
-            optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="none";
-
-            if(only_one_choose===false && only_one_choose_points===false){
-                optionsDefaultChecklistClone.querySelectorAll('input')[2].value=calcPercentageEquals()[0].toFixed(2); 
-                optionsDefaultChecklistClone.querySelectorAll('input')[1].value=calcPercentageEquals()[1].toFixed(2); 
-                option.pointsValue=calcPercentageEquals()[0];
-                option.percentage=calcPercentageEquals()[1];
-            }else{
-                optionsDefaultChecklistClone.querySelectorAll('input')[2].value=pointsModal.toFixed(2); 
-                optionsDefaultChecklistClone.querySelectorAll('input')[1].
-                    closest('.defaultChecklist__slot').style.display='none'; 
-                option.pointsValue=pointsModal;
-                option.percentage=calcPercentageEquals()[1];
-            }
-          
+            showBtnsOptionsInMultipleModal(optionsDefaultChecklistClone);
+            verifyChecksInputsSelectedInMultipleOptionsModal(optionsDefaultChecklistClone);
         }else{
-            optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="none";
-            optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="block";
-            optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="none";
+            showBtnsOptionsInDoubleChooseModal(optionsDefaultChecklistClone);
         }
 
         optionsDefaultChecklistClone.setAttribute('id',`optionDefaultChecklist${option.id}`);
         ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(optionsDefaultChecklistClone);
     })
+}
+
+function fillLayoutOptionClone(optionsDefaultChecklistClone,option){
+    optionsDefaultChecklistClone.querySelectorAll('input')[0].value=option.nameOption;
+    optionsDefaultChecklistClone.querySelectorAll('input')[2].disabled=true;
+    optionsDefaultChecklistClone.style.display='flex';
+    optionsDefaultChecklistClone.setAttribute('idOption',option.id);
+}
+
+function fillLayoutOptionSelected(optionsDefaultChecklistClone,option){
+    if(option.selected){
+        optionsDefaultChecklistClone.querySelectorAll('input')[2].value=option.pointsValue.toFixed(2);
+        optionsDefaultChecklistClone.querySelector('.btnChoose').classList.remove('btnDisabled');
+    }else{
+        optionsDefaultChecklistClone.querySelector('.btnChoose').classList.add('btnDisabled');
+    }
+}
+
+function showBtnsOptionsInMultipleModal(optionsDefaultChecklistClone){
+    optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="block";
+    optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="block";
+    optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="none";
+}
+
+function showBtnsOptionsInDoubleChooseModal(optionsDefaultChecklistClone){
+    optionsDefaultChecklistClone.querySelectorAll('.defaultChecklist__slot')[1].style.display="none";
+    optionsDefaultChecklistClone.querySelector('.btnChoose').style.display="block";
+    optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="none";
+}
+
+function setValuesCalcPercentageOptions(optionsDefaultChecklistClone){
+    optionsDefaultChecklistClone.querySelectorAll('input')[2].value=calcPercentageEquals()[0].toFixed(2); 
+    optionsDefaultChecklistClone.querySelectorAll('input')[1].value=calcPercentageEquals()[1].toFixed(2); 
+    option.pointsValue=calcPercentageEquals()[0];
+    option.percentage=calcPercentageEquals()[1];
+}
+
+function verifyChecksInputsSelectedInMultipleOptionsModal(optionsDefaultChecklistClone){
+    if(only_one_choose===false && only_one_choose_points===false){
+        setValuesCalcPercentageOptions(optionsDefaultChecklistClone)
+    }else{
+        setValuesInOptions(optionsDefaultChecklistClone,option)
+    }
+}
+
+function setValuesInOptions(optionsDefaultChecklistClone,option){
+    optionsDefaultChecklistClone.querySelectorAll('input')[2].value=pointsModal.toFixed(2); 
+    optionsDefaultChecklistClone.querySelectorAll('input')[1].
+        closest('.defaultChecklist__slot').style.display='none'; 
+    option.pointsValue=pointsModal;
+    option.percentage=calcPercentageEquals()[1];
 }
 
 function eventsDoubleChoose() {
@@ -1167,24 +1272,29 @@ function eventsDoubleChoose() {
 }
 
 function uniqueEventsBtnChoose(element) {
-    element.querySelector('.btnChoose').addEventListener('click',(e)=>{
+    element.querySelector('.btnChoose').addEventListener('click',()=>{
         clearSelected(allOptions);
 
         let id=parseInt(element.getAttribute('idOption'));
-        let index=allOptions.findIndex((item)=>{
-            if(item.id===id){
-                return true;
-            }
-        });
+        let index=findIndexOption(id);
 
-        allOptions[index].selected=true;
-        allOptions[index].pointsValue=pointsModal;
-
-        ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+        setOptionSelectedAndValue(index);
+        clearModalContent();
         
         fillLayoutOptionsDefaultChecklist();
         eventsDoubleChoose()
     });
+}
+
+
+
+function setOptionSelectedAndValue(index){
+    allOptions[index].selected=true;
+    allOptions[index].pointsValue=pointsModal;
+}
+
+function clearModalContent(){
+    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
 }
 
 function eventsMultipleChoose() {
@@ -1218,47 +1328,55 @@ function deleteOption(id) {
 function uniqueEventOptionName(element) {
     element.querySelectorAll('input')[0].addEventListener('input',(e)=>{
         let id=parseInt(element.getAttribute('idOption'));
-        let index=allOptions.findIndex((item)=>{
-            if(item.id===id){
-                return true;
-            }
-        });
+        let index=findIndexOption(id)
 
         allOptions[index].nameOption=e.currentTarget.value;
     });
 
     element.querySelectorAll('input')[0].addEventListener('focus',(e)=>{
-        e.currentTarget.classList.remove('input-danger')
+        removeInputDangerOption(event);
     })
 }
 
 function uniqueEventInputPercentage(element) {
     element.querySelectorAll('input')[1].addEventListener('input',(e)=>{
         let id=parseInt(element.getAttribute('idOption'));
-        let index=allOptions.findIndex((item)=>{
-            if(item.id===id){
-                return true;
-            }
-        });
+        let index=findIndexOption(id);
 
         allOptions[index].percentage;
-        calcNewValuePercentage(e,allOptions[index]);
+        calcNewValuePercentage(e.currentTarget.value,allOptions[index]);
     });
 }
 
-function calcNewValuePercentage(e,optionsDefaultChecklist) {
-    let value=parseFloat(e.currentTarget.value);
+function removeInputDangerOption(event){
+    event.currentTarget.classList.remove('input-danger')
+}
+
+function findIndexOption(id){
+    let index=allOptions.findIndex((item)=>{
+        if(item.id===id){
+            return true;
+        }
+    });
+
+    return index;
+}
+
+function calcNewValuePercentage(valueOption,optionsDefaultChecklist) {
+    let value=parseFloat(valueOption);
     optionsDefaultChecklist.percentage=value;
 
     let totalPoints=pointsModal;
-
     let newPoints=(value/100)*totalPoints;
     optionsDefaultChecklist.pointsValue=newPoints;
     
+    setValueInOption(newPoints,optionsDefaultChecklist);
+    verifyCorrectPercentageOptions();
+}
+
+function setValueInOption(newPoints,optionsDefaultChecklist){
     let optionsDefaultChecklistElement=ONE_ELEMENT(`#optionDefaultChecklist${optionsDefaultChecklist.id}`);
     optionsDefaultChecklistElement.querySelectorAll('input')[2].value=newPoints.toFixed(2);
-
-    verifyCorrectPercentageOptions();
 }
 
 function calcPercentageEquals() {
@@ -1270,23 +1388,34 @@ function calcPercentageEquals() {
 }
 
 function verifyCorrectPercentageOptions() {
+    let totalPoint=getTotalPointsOptions();
+   
+    if(totalPoint != pointsModal){
+        setOptionsCorrectPercentage(false);
+    }else{
+        setOptionsCorrectPercentage(true);
+    }
+    
+    layoutCorrectPercentageOptions();
+   
+}
+
+function getTotalPointsOptions(){
     let totalPoint=0;
     allOptions.forEach(option => {
         totalPoint+=parseFloat(option.pointsValue);
     });
 
+    return totalPoint;
+}
 
-    if(totalPoint != pointsModal){
-        allOptions.forEach(option => {
-            option.correctPercentage=false;
-        })
-       
-    }else{
-        allOptions.forEach(option => {
-            option.correctPercentage=true;
-        })
-    }
-    
+function setOptionsCorrectPercentage(correct){
+    allOptions.forEach(option => {
+        option.correctPercentage=correct;
+    })
+}
+
+function layoutCorrectPercentageOptions(){
     allOptions.forEach(item =>{
         if(item.correctPercentage===false){
             let defaultChecklistElement=ONE_ELEMENT(`#optionDefaultChecklist${item.id}`);
@@ -1298,37 +1427,200 @@ function verifyCorrectPercentageOptions() {
     })
 }
 
-
+var namesChecklists=[];
 ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
-    let alertHeader=ONE_ELEMENT('.alert-header');
-    alertHeader.classList.add('d-none');
-    
+    showAlertHeader();
     if(allValidations(defaultChecklistArray)){
-        ONE_ELEMENT('#default_checklist_json').value=JSON.stringify(defaultChecklistArray);
-        let namesChecklists=[];
-        defaultChecklistArray.forEach((item)=>{
-            namesChecklists.push(item.name);
-        })
-        
-        ONE_ELEMENT('#checklist_names').value=namesChecklists.join(',');
-        ONE_ELEMENT('#lastIdIncrement').value=idIncrement;
-        ONE_ELEMENT('#lastIdIncrementOption').value=idIndentOption;
+        setChecklistNamesSave();
+        setInfoInInputsFormsSave();
         ONE_ELEMENT('#formChecklistsJson').submit();
     };
 });
 
+function setChecklistNamesSave(){
+    defaultChecklistArray.forEach((item)=>{
+        namesChecklists.push(item.name);
+    })
+}
+
+function setInfoInInputsFormsSave(){
+    ONE_ELEMENT('#default_checklist_json').value=JSON.stringify(defaultChecklistArray);
+    ONE_ELEMENT('#checklist_names').value=namesChecklists.join(',');
+    ONE_ELEMENT('#lastIdIncrement').value=idIncrement;
+    ONE_ELEMENT('#lastIdIncrementOption').value=idIndentOption;
+}
+
 ONE_ELEMENT('#btnFinish').addEventListener('click',()=>{
-    let alertHeader=ONE_ELEMENT('.alert-header');
-    alertHeader.classList.add('d-none');
+    showAlertHeader();
     if(allValidations(defaultChecklistArray)){
-        ONE_ELEMENT('#default_checklist_json_oficial').value=JSON.stringify(defaultChecklistArray);
-        ONE_ELEMENT('#allChecklists').value=JSON.stringify(defaultChecklistArray);
-        ONE_ELEMENT('#lastIdIncrementOficial').value=idIncrement;
-        ONE_ELEMENT('#lastIdIncrementOptionOficial').value=idIndentOption;
+        setInfoInInputsFormsFinish();
         ONE_ELEMENT('#formChecklists').submit();
     };
 });
 
+function setInfoInInputsFormsFinish(){
+    ONE_ELEMENT('#default_checklist_json_oficial').value=JSON.stringify(defaultChecklistArray);
+    ONE_ELEMENT('#allChecklists').value=JSON.stringify(defaultChecklistArray);
+    ONE_ELEMENT('#lastIdIncrementOficial').value=idIncrement;
+    ONE_ELEMENT('#lastIdIncrementOptionOficial').value=idIndentOption;
+}
+
+function showAlertHeader(){
+    let alertHeader=ONE_ELEMENT('.alert-header');
+    alertHeader.classList.remove('d-none');
+}
+
+function goToAlertHeader(){
+    let alertHeader=ONE_ELEMENT('.alert-header');
+    let scrollPosition=alertHeader.getBoundingClientRect();
+    window.scrollBy(scrollPosition.x,scrollPosition.y-60);
+}
+
+function allValidations(defaultChecklistArray) {
+    let itemError=[];
+    let errorNumber=[];
+    let isOk=false;
+    let thereIsErrors=0;
+
+    defaultChecklistArray.forEach((item)=>{
+        verifyEmptyInputsInValidation(item,errorNumber);
+        verifyTypeChecklistInValidation(item,errorNumber);
+        verifyCorrectPercentageInValidation(item,errorNumber);
+        verifyAgroupingDefaultChecklistWithouChildreenInValidation(item,errorNumber);
+        verifyEmptyAndPercentageOptionsInValidation(item,errorNumber);
+        verifyDoubleOptionWithoutTwoOptions(item,errorNumber);
+
+        isOk=verifyIfThereErrors(thereIsErrors,errorNumber);
+        if(isOk===false){
+            itemError=item;
+        }
+        setLayoutValidationIfThereErrors(errorNumber,item,itemError);
+       
+        if(isOk){
+            if(item.subchecklists.length>0){
+                isOk=allValidations(item.subchecklists);
+            }
+        }
+    });
+
+    return isOk;
+}
+
+
+function verifyIfThereErrors(thereIsErrors,errorNumber){
+    let isOk=false;
+    
+    if(thereIsErrors===0){
+        if(errorNumber.length===0){
+            isOk=true;
+        }else{
+            isOk=false;
+            thereIsErrors++;
+        }
+    }
+
+    return isOk;
+}
+
+function setLayoutValidationIfThereErrors(errorNumber,item,itemError){
+    if(errorNumber != [] && itemError.id===item.id){
+        errorNumber.forEach((error)=>{
+            allValidationsLayout(item,error);
+        });
+        
+        errorNumber=[];
+    }
+}
+
+function verifyEmptyInputsInValidation(item,errorNumber){
+    let isOk=true;
+    
+    if(item.name==="" || item.percentage==="" ||  item.points===""){
+        errorNumber.push(ERROR_EMPTY_INPUTS);
+        isOk=false;
+    }
+
+    return isOk;
+}
+
+function verifyTypeChecklistInValidation(item,errorNumber){
+    let isOk=true;
+
+    if(item.typechecklist === "" && item.idDefaultChecklist !== null){
+        errorNumber.push(ERROR_SELECT_VALUE);
+        isOk=false;
+    }
+
+    return isOk;
+}
+
+function verifyCorrectPercentageInValidation(item,errorNumber){
+    let isOk=true;
+
+    if(item.correctPercentage===false){
+        errorNumber.push(ERROR_PERCENTAGE);
+        isOk=false;
+    }
+
+    return isOk;
+}
+
+function verifyAgroupingDefaultChecklistWithouChildreenInValidation(item,errorNumber){
+    let isOk=true;
+
+    if(item.idDefaultChecklist === null){
+        if(item.subchecklists.length===0){
+            errorNumber.push(ERROR_SUBCHECKLIST_FATHER);
+            isOk=false;
+        }
+    }
+
+    if(item.typechecklist==="0" || item.typechecklist==="7"){
+        if(item.subchecklists.length===0){
+            errorNumber.push(ERROR_GROUPING);
+            isOk=false;
+        }
+    }
+
+    return isOk;
+}
+
+
+function verifyEmptyAndPercentageOptionsInValidation(item,errorNumber){
+    let isOk=true;
+
+    if(item.typechecklist==="3"){
+        let numberOptions=item.options.length;
+        if(numberOptions < 1){
+            errorNumber.push(ERROR_EMPTY_OPTIONS);
+            isOk=false;
+        }
+
+        item.options.forEach((option)=>{
+            if(option.correctPercentage===false){
+                errorNumber.push(ERROR_OPTIONS_PERCETAGE);
+                isOk=false;
+            }
+        })
+    }
+
+    return isOk;
+}
+
+//Em teoria, só irá parar nessa validação se alguem baguçar o front pelo inspecionar
+function verifyDoubleOptionWithoutTwoOptions(item,errorNumber){
+    let isOk=true;
+
+    if(item.typechecklist==="4"){
+        let numberOptions=item.options.length;
+        if(numberOptions !=2){
+            errorNumber.push(ERROR_EMPTY_DOUBLE_OPTIONS);
+            isOk=false;
+        }
+    }
+
+    return isOk;
+}
 
 const ERROR_EMPTY_INPUTS=1;
 const ERROR_SELECT_VALUE=2;
@@ -1344,7 +1636,6 @@ const ERROR_GROUPING=8;
     ser causado se alguém bagunçar o front pelo inspecionar*/ 
 
 function allValidationsLayout(item,errorNumber) {
-
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${item.id}`);
     let errorsDescription=[
         '',
@@ -1358,20 +1649,18 @@ function allValidationsLayout(item,errorNumber) {
         'Há checklists do tipo (agrupamento) que precisam ter pelo menos uma subchecklist!'
     ];
 
+    verifyErrorAndAddDanger(errorNumber,defaultChecklistElement);
+    showAlertHeader()
+    goToAlertHeader();
+
+    let alertHeader=ONE_ELEMENT('.alert-header');
+    alertHeader.querySelector('.alert').innerHTML=errorsDescription[errorNumber];
+}
+
+
+function verifyErrorAndAddDanger(errorNumber,defaultChecklistElement){
     if(errorNumber === ERROR_EMPTY_INPUTS){
-        let inputs=defaultChecklistElement.querySelectorAll('input');
-        
-        if(inputs[0].value===""){
-            inputs[0].classList.add('input-danger');
-        }
-        
-        if(inputs[1].value==="" && item.idDefaultChecklist!==null){
-            inputs[1].classList.add('input-danger');
-        }
-        
-        if(inputs[2].value===""){
-            inputs[2].classList.add('input-danger');
-        }
+        verifyInpusWithEmptyValue(defaultChecklistElement);
     }
 
     if(errorNumber===ERROR_SELECT_VALUE){
@@ -1391,99 +1680,17 @@ function allValidationsLayout(item,errorNumber) {
     if(errorNumber===ERROR_GROUPING){
         defaultChecklistElement.querySelector('.btnAddDefaultChecklist').classList.add('input-danger');
     }
-
-    let alertHeader=ONE_ELEMENT('.alert-header');
-    alertHeader.classList.remove('d-none');
-    let scrollPosition=alertHeader.getBoundingClientRect();
-    window.scrollBy(scrollPosition.x,scrollPosition.y-60);
-
-    alertHeader.querySelector('.alert').innerHTML=errorsDescription[errorNumber];
-
 }
 
-function allValidations(defaultChecklistArray) {
-    let itemError="";
-    let errorNumber=[];
-    let isOk=false;
-    let thereIsErrors=0;
+function verifyInpusWithEmptyValue(defaultChecklistElement){
+    let inputs=defaultChecklistElement.querySelectorAll('input');
+    for (let index = 0; index < 3; index++) {
+        setDangerInputsInValidation(inputs[index]);
+    }
+}
 
-
-    defaultChecklistArray.forEach((item)=>{
-        if(item.name==="" || item.percentage==="" ||  item.points===""){
-            errorNumber.push(ERROR_EMPTY_INPUTS);
-            itemError=item;
-        }
-        
-        if(item.typechecklist === "" && item.idDefaultChecklist !== null){
-            errorNumber.push(ERROR_SELECT_VALUE);
-            itemError=item;
-        }
-        
-        if(item.correctPercentage===false){
-            errorNumber.push(ERROR_PERCENTAGE);
-            itemError=item;
-        }
-
-        if(item.idDefaultChecklist === null){
-            if(item.subchecklists.length===0){
-                errorNumber.push(ERROR_SUBCHECKLIST_FATHER);
-                itemError=item;
-            }
-        }
-
-        if(item.typechecklist==="0" || item.typechecklist==="7"){
-            if(item.subchecklists.length===0){
-                errorNumber.push(ERROR_GROUPING);
-                itemError=item;
-            }
-        }
-
-        if(item.typechecklist==="3"){
-            let numberOptions=item.options.length;
-            if(numberOptions < 1){
-                errorNumber.push(ERROR_EMPTY_OPTIONS);
-                itemError=item;
-            }
-
-            item.options.forEach((option)=>{
-                if(option.correctPercentage===false){
-                    errorNumber.push(ERROR_OPTIONS_PERCETAGE);
-                    itemError=item;
-                }
-            })
-        }
-
-        if(item.typechecklist==="4"){
-            let numberOptions=item.options.length;
-            if(numberOptions !=2){
-                errorNumber.push(ERROR_EMPTY_DOUBLE_OPTIONS);
-                itemError=item;
-            }
-        }
-
-        if(thereIsErrors===0){
-            if(errorNumber.length===0){
-                isOk=true;
-            }else{
-                isOk=false;
-                thereIsErrors++;
-            }
-        }
-
-        if(errorNumber != [] && itemError.id===item.id){
-            errorNumber.forEach((error)=>{
-                allValidationsLayout(item,error);
-            });
-            
-            errorNumber=[];
-        }
-
-        if(isOk){
-            if(item.subchecklists.length>0){
-                isOk=allValidations(item.subchecklists);
-            }
-        }
-    });
-
-    return isOk;
+function setDangerInputsInValidation(input){
+    if(input.value===""){
+        input.classList.add('input-danger');
+    }
 }

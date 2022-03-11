@@ -30,6 +30,7 @@ function showChecklist(checklistArray,checklistElement=null) {
     });
 }
 
+/*
 function fillInputsAndAttributeChecklist(checklistClone,item) {
     checklistClone.setAttribute('idElement',item.id);
     checklistClone.setAttribute('id',"check"+item.id);
@@ -65,7 +66,7 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     if(item.id_type_checklist===7){
         renameChecklist(item);
     }
-}
+}*/
 
 function renameChecklist(checklist) {
     if(checklist.subchecklist){
