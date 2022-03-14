@@ -9,9 +9,6 @@
           
           <div class="modal-header modal-error-header" style="display: none">
             <div class="alert alert-danger alert-dismissible fade show text-center">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
                 <div class="modal-error-content"></div>
             </div>
           </div>

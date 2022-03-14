@@ -39,6 +39,10 @@ class CheckListOrganization {
         }else{
             $checklistModel->value=$checklist->value;
         }
+
+        if($checklistModel->typechecklist=="8"){
+            $checklistModel->big_smaller=$checklist->biggerSmaller;
+        }
         
         $checklistModel->save();
 

@@ -106,7 +106,7 @@ class DefaultChecklistController extends Controller
         $defaultChecklistOrganization=new DefaultCheckListOrganization();
         
         if($request->filled('allChecklists')){
-            foreach ($allDefaultChecklists as $key => $defaultChecklist) {
+            foreach ($allDefaultChecklists as $defaultChecklist) {
                 $defaultChecklistOrganization->addDefaultChecklist($defaultChecklist,null,$json,$lastIdIncrement,$lastIdIncrementOption);
             }
         }

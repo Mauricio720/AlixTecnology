@@ -48,6 +48,11 @@
         <div class="defaultChecklist__slot">
             <input class="form-control" type="text" placeholder="Digite o nome da checklist">
         </div>
+
+        <div class="defaultChecklist__slot" style="display: none">
+            <input class="form-control" type="number" placeholder="Digite o valor maior/menor que...">
+        </div>
+
         <div class="defaultChecklist__slot">
             <select class="form-control">
                 <option value="">Selecione Tipo Checklist</option>
@@ -59,6 +64,7 @@
                 <option value="4">Dupla Escolha (Ex: Sim ou Não)</option>
                 <option value="5">Numerica</option>
                 <option value="6">Data</option>
+                <option value="8">Maior que/Menor que</option>
             </select>
         </div>
         
@@ -132,6 +138,11 @@
 <div id="only_one_choose" style="display: none;">
     <input type="checkbox">
     <label class="only_one_choose_label">Escolha única (Escolha apenas uma opção valendo a pontuação total da checklist)</label>
+</div>
+
+<div id="only_one_distinct_percentage" style="display: none;">
+    <input type="checkbox">
+    <label class="only_one_choose_label">Porcentagem Distinta (Defina porcentagens com pesos diferentes para cada opção)</label>
 </div>
 
 <div class="defaultChecklistExibition">

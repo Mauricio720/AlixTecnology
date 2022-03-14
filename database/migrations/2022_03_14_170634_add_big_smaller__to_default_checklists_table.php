@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddLastIdIncrementToDefaultChecklistsTable extends Migration
+class AddBigSmallerToDefaultChecklistsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class AddLastIdIncrementToDefaultChecklistsTable extends Migration
     public function up()
     {
         Schema::table('default_checklists', function (Blueprint $table) {
-            $table->integer('last_id_increment')->nullable();
-            $table->integer('last_id_increment_option')->nullable();
+            $table->double('big_smaller')->nullable();
         });
     }
 
@@ -27,8 +26,7 @@ class AddLastIdIncrementToDefaultChecklistsTable extends Migration
     public function down()
     {
         Schema::table('default_checklists', function (Blueprint $table) {
-            $table->dropColumn('last_id_increment');
-            $table->dropColumn('last_id_increment_option');
+            $table->dropColumn('big_smaller');
         });
     }
 }

@@ -89,9 +89,9 @@ function fillInputsAndAttributeDefaultChecklist(defaultChecklistClone,item) {
     defaultChecklistClone.setAttribute('id',"defaultCheck"+item.id);
     
     defaultChecklistClone.querySelectorAll('input')[0].value=item.name;
-    defaultChecklistClone.querySelectorAll('input')[1].value=parseFloat(item.percentage).toFixed(2); 
-    defaultChecklistClone.querySelectorAll('input')[2].value=parseFloat(item.points).toFixed(2);
-    defaultChecklistClone.querySelectorAll('input')[3].value=item.observation;
+    defaultChecklistClone.querySelectorAll('input')[2].value=parseFloat(item.percentage).toFixed(2); 
+    defaultChecklistClone.querySelectorAll('input')[3].value=parseFloat(item.points).toFixed(2);
+    defaultChecklistClone.querySelectorAll('input')[4].value=item.observation;
 }
 
 function verifyIdDefaultNullSelectDisabled(defaultChecklistClone,item) {
@@ -106,24 +106,28 @@ function verifyIdDefaultNullSelectDisabled(defaultChecklistClone,item) {
 
 function verifyIdDefaultNullInputDanger(defaultChecklistClone,item) {
     if(item.idDefaultChecklist !== null){
-        defaultChecklistClone.querySelectorAll('input')[1].disabled=false;
-        defaultChecklistClone.querySelectorAll('input')[2].disabled=true;
+        defaultChecklistClone.querySelectorAll('input')[2].disabled=false;
+        defaultChecklistClone.querySelectorAll('input')[3].disabled=true;
     }
 }
 
 function verifyCorrectPercentageInputDanger(defaultChecklistClone,item) {
     if(item.correctPercentage){
-        defaultChecklistClone.querySelectorAll('input')[2].classList.remove('input-danger');
+        defaultChecklistClone.querySelectorAll('input')[3].classList.remove('input-danger');
     }else{
-        defaultChecklistClone.querySelectorAll('input')[2].classList.add('input-danger');
+        defaultChecklistClone.querySelectorAll('input')[3].classList.add('input-danger');
     }
 }
 
 function verifySubchecklists(defaultChecklistClone,item) {
     if(item.subchecklists.length===0 && item.idDefaultChecklist === null){
-        defaultChecklistClone.querySelectorAll('input')[2].disabled=false;
+        defaultChecklistClone.querySelectorAll('input')[3].disabled=false;
     }else{
-        defaultChecklistClone.querySelectorAll('input')[2].disabled=true;
+        if(item.typechecklist === '0' || item.typechecklist === '7'){
+            defaultChecklistClone.querySelectorAll('input')[3].disabled=false;
+        }else{
+            defaultChecklistClone.querySelectorAll('input')[3].disabled=true;
+        }
     }
 }
 
@@ -144,9 +148,6 @@ function verifyTypeSubchecklist(defaultChecklistClone,item) {
 
     if(item.typechecklist==="0" || item.typechecklist==="7"){
         defaultChecklistClone.querySelector('.btnAddDefaultChecklist').style.display="block";
-    }
-
-    if(item.typechecklist==="0" || item.typechecklist==="7"){
         if(item.idDefaultChecklist != ''){
             defaultChecklistClone.querySelector('.btnDuplicate').classList.remove("d-none");
         }
@@ -231,7 +232,6 @@ function eventCloneDefaultChecklist(){
             eventsBtnDelete();
             verifyBtnSave();
             showSubchecklistContainerLoop(defaultChecklistArray);
-            
         })
     })
 }
@@ -246,9 +246,13 @@ function allEventsInAddChecklist(inProgress=false){
         uniqueEventInputChecklistName(elementChecklist,defaultChecklist); 
         uniqueEventInputPointingPercentage(elementChecklist,defaultChecklist); 
         uniqueEventPointingNumber(elementChecklist,defaultChecklist);
+        if(defaultChecklist.idDefaultChecklist !== null){
+            uniqueEventInputPointingAgrouping(elementChecklist,defaultChecklist); 
+        }
         uniqueEventObservation(elementChecklist,defaultChecklist); 
         uniqueEventFocusInputDanger(elementChecklist,defaultChecklist); 
         uniqueEventTypeChecklist(elementChecklist,defaultChecklist); 
+        uniqueEventBiggerSmaller(elementChecklist,defaultChecklist);
     });
 }
 
@@ -302,24 +306,46 @@ function uniqueEventInputChecklistName(elementChecklist,defaultChecklist) {
 }
 
 function uniqueEventInputPointingPercentage(elementChecklist,defaultChecklist) {
-    elementChecklist.querySelectorAll('input')[1].addEventListener('input',(e)=>{
-        idDefaultChecklistFather=calcPointing(e,defaultChecklist); 
+    elementChecklist.querySelectorAll('input')[2].addEventListener('input',(e)=>{
+        idDefaultChecklistFather=calcPointing(e.currentTarget.value,defaultChecklist); 
         verifyCorrectPercentage(idDefaultChecklistFather);
     });
 }
 
-function calcPointing(event,defaultChecklist) {
-    let value=parseFloat(event.currentTarget.value);
+function uniqueEventInputPointingAgrouping(elementChecklist,defaultChecklist) {
+    elementChecklist.querySelectorAll('input')[3].addEventListener('input',(e)=>{
+        let valuePercentage=calcPointAgrouping(e.currentTarget.value,defaultChecklist)
+        idDefaultChecklistFather=calcPointing(valuePercentage,defaultChecklist); 
+        verifyCorrectPercentage(idDefaultChecklistFather);
+    });
+}
+
+function calcPointAgrouping(value,defaultChecklist){
+    let valuePoints=parseFloat(value);
+    let defaultChecklistFather=filterDefaultChecklist(defaultChecklistArray,defaultChecklist.idDefaultChecklist,{});
+    let totalPoints=defaultChecklistFather.points;
+    
+    let percentage=(valuePoints*100)/totalPoints;
+    
+    let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklist.id}`);
+    defaultChecklistElement.querySelectorAll('input')[2].value=percentage;
+    
+    return percentage;
+
+}
+
+function calcPointing(value,defaultChecklist) {
+    let valuePercentage=parseFloat(value);
     defaultChecklist.percentage=value;
 
     let defaultChecklistFather=filterDefaultChecklist(defaultChecklistArray,defaultChecklist.idDefaultChecklist,{});
     let totalPoints=defaultChecklistFather.points;
 
-    let newPoints=(value/100)*totalPoints;
+    let newPoints=(valuePercentage/100)*totalPoints;
     defaultChecklist.points=newPoints;
     
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklist.id}`);
-    defaultChecklistElement.querySelectorAll('input')[2].value=parseFloat(newPoints).toFixed(2);
+    defaultChecklistElement.querySelectorAll('input')[3].value=parseFloat(newPoints).toFixed(2);
     
     if(defaultChecklist.subchecklists.length>0){
         let pointsSubchecklist=newPoints/defaultChecklist.subchecklists.length;
@@ -331,10 +357,22 @@ function calcPointing(event,defaultChecklist) {
     return defaultChecklistFather.id;
 }
 
+function getSubchecklistValues(defaultChecklist){
+    let numberChecklist=0;
+    
+    defaultChecklist.subchecklists.forEach((item)=>{
+        if(item.percentage >0){
+            numberChecklist++;
+        }
+    })
+
+    return numberChecklist;
+}
+
 function updatedSubchecklistPoints(id,pointsSubchecklist) {
     let defaultChecklistSubchecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklistSubchecklist.id}`);
-    defaultChecklistElement.querySelectorAll('input')[2].value=parseFloat(pointsSubchecklist).toFixed(2);
+    defaultChecklistElement.querySelectorAll('input')[3].value=parseFloat(pointsSubchecklist).toFixed(2);
 
     if(defaultChecklistSubchecklist.subchecklists.length > 0){
         let newPointsSubchecklist=pointsSubchecklist/defaultChecklistSubchecklist.subchecklists.length;
@@ -345,25 +383,33 @@ function updatedSubchecklistPoints(id,pointsSubchecklist) {
 }
 
 function uniqueEventPointingNumber(elementChecklist,defaultChecklist) {
-    elementChecklist.querySelectorAll('input')[2].addEventListener('input',(e)=>{
+    elementChecklist.querySelectorAll('input')[3].addEventListener('input',(e)=>{
         let value=e.currentTarget.value;
         defaultChecklist.points=value;
         defaultChecklist.percentage=100;
-        elementChecklist.querySelectorAll('input')[1].value=100;
+        elementChecklist.querySelectorAll('input')[2].value=100;
     });
 }
 
 function uniqueEventObservation(elementChecklist,defaultChecklist) {
-    elementChecklist.querySelectorAll('input')[3].addEventListener('keyup',(e)=>{
+    elementChecklist.querySelectorAll('input')[4].addEventListener('keyup',(e)=>{
         let value=e.currentTarget.value;
         defaultChecklist.observation=value;
     });
 }
 
+function uniqueEventBiggerSmaller(elementChecklist,defaultChecklist){
+    elementChecklist.querySelectorAll('input')[1].addEventListener('keyup',(e)=>{
+        let value=e.currentTarget.value;
+        defaultChecklist.biggerSmaller=value;
+    });
+}
+
+
 function uniqueEventFocusInputDanger(elementChecklist) {
     eventFocusInputsDangerValidation(0,elementChecklist);
-    eventFocusInputsDangerValidation(2,elementChecklist);
     eventFocusInputsDangerValidation(3,elementChecklist);
+    eventFocusInputsDangerValidation(4,elementChecklist);
 }
 
 function eventFocusInputsDangerValidation(index,elementChecklist){
@@ -384,7 +430,8 @@ function uniqueEventTypeChecklist(elementChecklist,defaultChecklist) {
         elementChecklist.querySelector('select').addEventListener('change',(e)=>{
             let value=e.currentTarget.value;
             let selectElement=e.currentTarget;
-
+            
+            setDisableInputInEventsSelected(value,elementChecklist);
             setTypeChecklist(value,defaultChecklist);
             clearOptionsToDefaultChecklist(defaultChecklist)
             removeDangerValidationLayout(selectElement);
@@ -418,8 +465,21 @@ function verifyTypeChecklist(valueSelect,selectElement){
     }else{
         changeLayoutBtnsVisibleInEventsAddOptions(false,selectElement);
     }
+
+    if(valueSelect==='8'){
+        selectElement.closest('.defaultChecklist').querySelectorAll('.defaultChecklist__slot')[1].style.display='flex';
+    }else{
+        selectElement.closest('.defaultChecklist').querySelectorAll('.defaultChecklist__slot')[1].style.display='none';
+    }
 }
 
+function setDisableInputInEventsSelected(value,elementChecklist){
+    if(value==='0' || value==='7'){
+        elementChecklist.querySelectorAll('input')[3].disabled=false;
+    }else{
+        elementChecklist.querySelectorAll('input')[3].disabled=true;
+    }
+}
 
 function changeLayoutBtnsVisibleInEventsAddAndDuplicate(visible,selectElement){
     if(visible){
@@ -450,23 +510,23 @@ function eventsBtnSeeMore() {
 
 function eventsDuplicateChecklist(){
     [...ALL_ELEMENTS('.checklistContent .btnDuplicate')].forEach((element)=>{
-        element.addEventListener('click',()=>{
+        element.addEventListener('click',(e)=>{
             let id=getIdToDefaultChecklist(element);
             let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
-            verifyDuplicate(defaultChecklist);
+            let btnDuplicate=e.currentTarget;
+            verifyDuplicate(defaultChecklist,btnDuplicate);
         })
     });
 }
 
-function verifyDuplicate(defaultChecklist){
+function verifyDuplicate(defaultChecklist,btnDuplicate){
     defaultChecklist.duplicate=!defaultChecklist.duplicate;
     if(defaultChecklist.duplicate){
-        e.currentTarget.style.backgroundColor='#00b800';
+        btnDuplicate.style.backgroundColor='#00b800';
     }else{
-        e.currentTarget.style.backgroundColor='transparent';
+        btnDuplicate.style.backgroundColor='transparent';
     }
 }
-
 
 function eventsBtnDelete() {
     [...ALL_ELEMENTS('.checklistContent .btnDelete')].forEach((element)=>{
@@ -588,7 +648,6 @@ function verifyCorrectPercentage(idDefaultChecklistFather) {
         allDefaultChecklist.forEach(element => {
             element.correctPercentage=false;
         })
-       
     }else{
         allDefaultChecklist.forEach(element => {
             element.correctPercentage=true;
@@ -598,10 +657,10 @@ function verifyCorrectPercentage(idDefaultChecklistFather) {
     allDefaultChecklist.forEach(item =>{
         if(item.correctPercentage===false){
             let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${item.id}`);
-            defaultChecklistElement.querySelectorAll('input')[2].classList.add('input-danger');
+            defaultChecklistElement.querySelectorAll('input')[3].classList.add('input-danger');
         }else{
             let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${item.id}`);
-            defaultChecklistElement.querySelectorAll('input')[2].classList.remove('input-danger');
+            defaultChecklistElement.querySelectorAll('input')[3].classList.remove('input-danger');
         }
     })
 }
@@ -662,7 +721,7 @@ function validationDefaultChecklist(defaultChecklistElement,defaultChecklistArra
     removeValidationsLayout(defaultChecklistElement,inputsChecklist,selectChecklist);
     
     isOK=addLayoutDangerValidationInputs(0,inputsChecklist,selectChecklist);
-    isOK=addLayoutDangerValidationInputs(2,inputsChecklist,selectChecklist);
+    isOK=addLayoutDangerValidationInputs(3,inputsChecklist,selectChecklist);
     
     return isOK;
 }
@@ -671,7 +730,7 @@ function removeValidationsLayout(defaultChecklistElement,inputsChecklist,selectC
     ONE_ELEMENT('.alert-header').classList.add('d-none');
     defaultChecklistElement.classList.remove('input-danger');
     inputsChecklist[0].classList.remove('input-danger');
-    inputsChecklist[2].classList.remove('input-danger');
+    inputsChecklist[3].classList.remove('input-danger');
 
     if(selectChecklist !== null){
         selectChecklist.classList.remove('input-danger');
@@ -682,7 +741,7 @@ function addLayoutDangerValidationInputs(index,inputsChecklist,selectChecklist){
     let isOK=true;
     
     if(inputsChecklist[index].value==""){
-        inputsChecklist[0].classList.add('input-danger');
+        inputsChecklist[index].classList.add('input-danger');
         isOK=false;
     }
 
@@ -707,6 +766,7 @@ function newDefaultChecklistObject(id,idDefaultChecklist){
         id,
         idDefaultChecklist,
         name:"",
+        biggerSmaller:'',
         typechecklist:"",
         percentage:"",
         active:false,
@@ -716,6 +776,7 @@ function newDefaultChecklistObject(id,idDefaultChecklist){
         options:[],
         onlyOneChoose:false,
         onlyOneChoosePoints:false,
+        onlyDistinctPercentage:false,
         duplicate:false,
         subchecklists:[]
     };
@@ -748,7 +809,7 @@ function addSubchecklists(index,defaultChecklistObject,idDefaultChecklist){
         subchecklists.push(defaultChecklistObject);
         defaultChecklistArray[index].subchecklists=subchecklists;
     }else{
-        let defaultChecklistChoose= filterDefaultChecklist(defaultChecklistArray,idDefaultChecklist,{});
+        let defaultChecklistChoose=filterDefaultChecklist(defaultChecklistArray,idDefaultChecklist,{});
         defaultChecklistChoose.subchecklists.push(defaultChecklistObject);
     }
 }
@@ -825,6 +886,7 @@ var allOptions=[];
 var pointsModal=0;
 var onlyOneChoosePoints=false;
 var onlyOneChoose=false;
+var onlyOneDistinctPercentage=false;
 var onlyOneChoosePointsInputElement=null;
 var onlyOneChooseInputElement=null;
 
@@ -841,17 +903,17 @@ function openModalMultipleChoose(points,id) {
     
     allOptions=[];
     let defaultChecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
-
+    
     verifyOnlyOneChoose(defaultChecklist,onlyOneChooseInputElement);
     verifyOnlyOneChoosePoints(defaultChecklist,onlyOneChoosePointsInputElement);
+    verifyOnlyOneChoosePoints(defaultChecklist,onlyOneDistinctPercentage)
     eventOnlyOneChoose(defaultChecklist); 
     eventOnlyOneChoosePoints(defaultChecklist); 
-    
+    eventDistinctPercentage(defaultChecklist);
     verifyOptionsChecklist(defaultChecklist);
+    fillLayoutOptionsDefaultChecklist(true);
     
-    fillLayoutOptionsDefaultChecklist(true,onlyOneChoose,onlyOneChoosePoints);
     eventsMultipleChoose();
-
     eventModalAddBtn(modalHeader);
     eventModalEditBtn(modalHeader,defaultChecklist);
    
@@ -868,6 +930,10 @@ function modalLayoutOptionsMultiple(points){
     onlyOneChooseInputElement=ONE_ELEMENT('#only_one_choose').cloneNode(true);
     onlyOneChooseInputElement.style.display='block';
     ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(onlyOneChooseInputElement);
+
+    onlyOneDistinctPercentage=ONE_ELEMENT('#only_one_distinct_percentage').cloneNode(true);
+    onlyOneDistinctPercentage.style.display='block';
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").append(onlyOneDistinctPercentage);
 }
 
 function modalBtnsBlock(){
@@ -878,12 +944,13 @@ function modalBtnsBlock(){
 function modalLayoutRemoveHeader(){
     let modalHeader=ONE_ELEMENT('#modalActions .modal-error-header');
     modalHeader.style.display="none";
+    
     return modalHeader;
 }
 
 function verifyOptionsChecklist(defaultChecklist){
     if(defaultChecklist.options.length>0){
-        allOptions=defaultChecklist.options;
+        allOptions=JSON.parse(JSON.stringify(defaultChecklist.options));
     }
 }
 
@@ -892,13 +959,14 @@ function eventModalAddBtn(modalHeader){
         modalHeader.style.display="none";
         removeInputDanger();
         addNewsOptionEmpty(true);
-        fillLayoutOptionsDefaultChecklist(true,onlyOneChoose,onlyOneChoosePoints);
+        fillLayoutOptionsDefaultChecklist(true);
         eventsMultipleChoose();
     });
 }
 
 function eventModalEditBtn(modalHeader,defaultChecklist){
     ONE_ELEMENT('#btnEditModal').addEventListener('click',()=>{
+
         if(verifyEmptyOptionName()){
             errorDoubleChooseOptions(modalHeader);
         
@@ -949,6 +1017,16 @@ function verifyOnlyOneChoosePoints(defaultChecklist,onlyOneChoosePointsInputElem
     }
 }
 
+function verifyOnlyOneChoosePoints(defaultChecklist,onlyOneDistinctPercentage){
+    if(defaultChecklist.onlyOneDistinctPercentage){
+        onlyOneDistinctPercentage=true;
+        onlyOneChoosePointsInputElement.querySelector('input').checked=true;
+    }else{
+        onlyOneChoosePoints=false;
+        onlyOneDistinctPercentage.querySelector('input').checked=false;
+    }
+}
+
 function eventOnlyOneChoose(defaultChecklist) {
     ONE_ELEMENT('#only_one_choose').querySelector('input').addEventListener('change',(e)=>{
         if(e.currentTarget.checked){
@@ -959,15 +1037,19 @@ function eventOnlyOneChoose(defaultChecklist) {
     
         clearModalContent();
         clearOptions(defaultChecklist);
-        
     });
 }
 
 function onlyOneChooseChecked(defaultChecklist){
     defaultChecklist.onlyOneChoose=true;
     onlyOneChoose=true;
+
     defaultChecklist.onlyOneChoosePoints=false;
     onlyOneChoosePoints=false;
+    
+    defaultChecklist.onlyDistinctPercentage=false;
+    onlyOneDistinctPercentage=false;
+    
     ONE_ELEMENT('#only_one_choose_points').querySelector('input').checked=false;
 }
 
@@ -978,6 +1060,7 @@ function onlyOneChooseNotChecked(defaultChecklist){
 
 function clearOptions(defaultChecklist){
     allOptions=[];
+    
     if(defaultChecklist.options.length>0){
         defaultChecklist.options=[];
     }
@@ -999,8 +1082,13 @@ function eventOnlyOneChoosePoints(defaultChecklist) {
 function onlyOneChoosePointsChecked(defaultChecklist){
     defaultChecklist.onlyOneChoosePoints=true;
     onlyOneChoosePoints=true;
+
     defaultChecklist.onlyOneChoose=false;
     onlyOneChoose=false;
+    
+    defaultChecklist.onlyDistinctPercentage=false;
+    onlyOneDistinctPercentage=false;
+
     ONE_ELEMENT('#only_one_choose').querySelector('input').checked=false;
 }
 
@@ -1009,7 +1097,6 @@ function onlyOneChoosePointsNotChecked(defaultChecklist){
     onlyOneChoosePoints=false;
 }
 
-
 function clearOptions(defaultChecklist){
     allOptions=[];
     if(defaultChecklist.options.length>0){
@@ -1017,8 +1104,40 @@ function clearOptions(defaultChecklist){
     }
 }
 
-var modalHeader=null;
+function eventDistinctPercentage(defaultChecklist){
+    ONE_ELEMENT('#only_one_distinct_percentage').querySelector('input').addEventListener('change',(e)=>{
+        if(e.currentTarget.checked){
+            onlyOneDistinctPercentageCheck(defaultChecklist);
+        }else{
+            onlyOneDistinctPercentageNotCheck(defaultChecklist);
+        }
+    
+        clearModalContent();
+        clearOptions(defaultChecklist);
+    });
+}
 
+function onlyOneDistinctPercentageCheck(defaultChecklist) {
+    defaultChecklist.onlyDistinctPercentage=true;
+    onlyOneDistinctPercentage=true;
+    
+    defaultChecklist.onlyOneChoosePoints=false;
+    onlyOneChoosePoints=false;
+    
+    defaultChecklist.onlyOneChoose=false;
+    onlyOneChoose=false;
+
+    ONE_ELEMENT('#only_one_choose').querySelector('input').checked=false;
+    ONE_ELEMENT('#only_one_choose_points').querySelector('input').checked=false;
+}
+
+function onlyOneDistinctPercentageNotCheck(defaultChecklist) {
+    defaultChecklist.distinctPercentage=false;
+    onlyOneDistinctPercentage=true;
+}
+
+
+var modalHeader=null;
 function openModalDoubleChoose(points,id) {
     clearModalContent();
     modalLayoutOptionsDoubleChoose(points);
@@ -1054,7 +1173,7 @@ function verifyDefaultChecklistOptions(id){
     if(defaultChecklist.options.length>0){
         allOptions=defaultChecklist.options;
     }else{
-        addNewsOptionEmpty()
+        addNewsOptionEmpty();
     }
 }
 
@@ -1080,6 +1199,7 @@ function showErrorModalDoubleChoose(){
 function removeEventsModal() {
     let btnAdd=ONE_ELEMENT('#btnAddModal').cloneNode(true);
     let btnEdit=ONE_ELEMENT('#btnEditModal').cloneNode(true);
+
     ONE_ELEMENT('#modalActions').querySelector(".modal-footer").innerHTML="";
     ONE_ELEMENT('#modalActions').querySelector(".modal-footer").append(btnAdd);
     ONE_ELEMENT('#modalActions').querySelector(".modal-footer").append(btnEdit);
@@ -1151,9 +1271,9 @@ function addOption(defaultChecklist) {
 function addNewsOptionEmpty(multiple=false) {
     if(multiple===false){
         addOptionsDoubleChoose();
-     }else{
+    }else{
         addOptionsMultipleOptions();
-     }
+    }
 }
 
 function addOptionsDoubleChoose(){
@@ -1180,6 +1300,7 @@ function addOptionsDoubleChoose(){
 
 function addOptionsMultipleOptions(){
     idIndentOption++;
+    
     let option={
         id:idIndentOption,
         nameOption:'',
@@ -1192,7 +1313,7 @@ function addOptionsMultipleOptions(){
     allOptions.push(option);
 }
 
-function fillLayoutOptionsDefaultChecklist(multipleChoose=false,only_one_choose=false,only_one_choose_points=false){
+function fillLayoutOptionsDefaultChecklist(multipleChoose=false){
     ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
     
     allOptions.forEach((option)=>{
@@ -1203,7 +1324,7 @@ function fillLayoutOptionsDefaultChecklist(multipleChoose=false,only_one_choose=
        
         if(multipleChoose){
             showBtnsOptionsInMultipleModal(optionsDefaultChecklistClone);
-            verifyChecksInputsSelectedInMultipleOptionsModal(optionsDefaultChecklistClone);
+            verifyChecksInputsSelectedInMultipleOptionsModal(optionsDefaultChecklistClone,option);
         }else{
             showBtnsOptionsInDoubleChooseModal(optionsDefaultChecklistClone);
         }
@@ -1241,16 +1362,16 @@ function showBtnsOptionsInDoubleChooseModal(optionsDefaultChecklistClone){
     optionsDefaultChecklistClone.querySelector('.btnDeleteChoose').style.display="none";
 }
 
-function setValuesCalcPercentageOptions(optionsDefaultChecklistClone){
+function setValuesCalcPercentageOptions(optionsDefaultChecklistClone,option){
     optionsDefaultChecklistClone.querySelectorAll('input')[2].value=calcPercentageEquals()[0].toFixed(2); 
     optionsDefaultChecklistClone.querySelectorAll('input')[1].value=calcPercentageEquals()[1].toFixed(2); 
     option.pointsValue=calcPercentageEquals()[0];
     option.percentage=calcPercentageEquals()[1];
 }
 
-function verifyChecksInputsSelectedInMultipleOptionsModal(optionsDefaultChecklistClone){
-    if(only_one_choose===false && only_one_choose_points===false){
-        setValuesCalcPercentageOptions(optionsDefaultChecklistClone)
+function verifyChecksInputsSelectedInMultipleOptionsModal(optionsDefaultChecklistClone,option){
+    if(onlyOneChoose===false && onlyOneChoosePoints===false){
+        setValuesCalcPercentageOptions(optionsDefaultChecklistClone,option)
     }else{
         setValuesInOptions(optionsDefaultChecklistClone,option)
     }
@@ -1286,8 +1407,6 @@ function uniqueEventsBtnChoose(element) {
     });
 }
 
-
-
 function setOptionSelectedAndValue(index){
     allOptions[index].selected=true;
     allOptions[index].pointsValue=pointsModal;
@@ -1310,7 +1429,7 @@ function uniqueEventDeleteOption(element) {
         let id=parseInt(element.getAttribute('idOption'));
         deleteOption(id); 
         ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-        fillLayoutOptionsDefaultChecklist(true,onlyOneChoose);
+        fillLayoutOptionsDefaultChecklist(true);
         eventsMultipleChoose();
     });
 }
@@ -1397,7 +1516,6 @@ function verifyCorrectPercentageOptions() {
     }
     
     layoutCorrectPercentageOptions();
-   
 }
 
 function getTotalPointsOptions(){
@@ -1649,7 +1767,7 @@ function allValidationsLayout(item,errorNumber) {
         'Há checklists do tipo (agrupamento) que precisam ter pelo menos uma subchecklist!'
     ];
 
-    verifyErrorAndAddDanger(errorNumber,defaultChecklistElement);
+    verifyErrorAndAddDanger(errorNumber,defaultChecklistElement,item);
     showAlertHeader()
     goToAlertHeader();
 
@@ -1658,9 +1776,9 @@ function allValidationsLayout(item,errorNumber) {
 }
 
 
-function verifyErrorAndAddDanger(errorNumber,defaultChecklistElement){
+function verifyErrorAndAddDanger(errorNumber,defaultChecklistElement,item){
     if(errorNumber === ERROR_EMPTY_INPUTS){
-        verifyInpusWithEmptyValue(defaultChecklistElement);
+        verifyInpusWithEmptyValue(defaultChecklistElement,item);
     }
 
     if(errorNumber===ERROR_SELECT_VALUE){
@@ -1682,11 +1800,17 @@ function verifyErrorAndAddDanger(errorNumber,defaultChecklistElement){
     }
 }
 
-function verifyInpusWithEmptyValue(defaultChecklistElement){
+function verifyInpusWithEmptyValue(defaultChecklistElement,item){
     let inputs=defaultChecklistElement.querySelectorAll('input');
-    for (let index = 0; index < 3; index++) {
-        setDangerInputsInValidation(inputs[index]);
+        
+    setDangerInputsInValidation(inputs[0]);
+    
+    if(item.typechecklist==='8'){
+        setDangerInputsInValidation(inputs[1]);
     }
+    
+    setDangerInputsInValidation(inputs[2]);
+    setDangerInputsInValidation(inputs[3]);
 }
 
 function setDangerInputsInValidation(input){

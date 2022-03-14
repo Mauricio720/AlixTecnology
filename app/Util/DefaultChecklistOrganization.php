@@ -22,6 +22,12 @@ class DefaultCheckListOrganization {
         if($defaultChecklist->typechecklist=="3"){
             $defaultChecklistModel->only_one_choose=$defaultChecklist->onlyOneChoose;
             $defaultChecklistModel->only_one_choose_points=$defaultChecklist->onlyOneChoosePoints;
+            $defaultChecklistModel->distinct_percentage=$defaultChecklist->onlyOneDistinctPercentage;
+        }
+        
+        if($defaultChecklist->typechecklist=="8"){
+            echo $defaultChecklist->biggerSmaller;
+            $defaultChecklistModel->big_smaller=$defaultChecklist->biggerSmaller;
         }
 
         if($idDefaultChecklist==null){

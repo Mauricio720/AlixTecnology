@@ -7,6 +7,10 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'AddArrayJsonToDefaultChecklistsTable' => $baseDir . '/database/migrations/2022_02_03_181615_add_array_json_to_default_checklists_table.php',
+    'AddBigSmallerToChecklistsTable' => $baseDir . '/database/migrations/2022_03_14_170829_add_big_smaller__to_checklists_table.php',
+    'AddBigSmallerToDefaultChecklistsTable' => $baseDir . '/database/migrations/2022_03_14_170634_add_big_smaller__to_default_checklists_table.php',
+    'AddDistinctToChecklistsTable' => $baseDir . '/database/migrations/2022_03_14_180238_add_distinct_to_checklists_table.php',
+    'AddDistinctToDefaultChecklistsTable' => $baseDir . '/database/migrations/2022_03_14_180107_add_distinct_to_default_checklists_table.php',
     'AddDuplicateToChecklistsTable' => $baseDir . '/database/migrations/2022_02_03_103343_add_duplicate_to_checklists_table.php',
     'AddDuplicateToDefaultChecklistTable' => $baseDir . '/database/migrations/2022_02_03_102700_add_duplicate_to_default_checklist_table.php',
     'AddLastIdIncrementToDefaultChecklistsTable' => $baseDir . '/database/migrations/2022_02_04_163444_add_last_id_increment__to_default_checklists_table.php',
@@ -38,6 +42,7 @@ return array(
     'App\\Http\\Middleware\\TrustProxies' => $baseDir . '/app/Http/Middleware/TrustProxies.php',
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Models\\Checklist' => $baseDir . '/app/Models/Checklist.php',
+    'App\\Models\\ChecklistJson' => $baseDir . '/app/Models/ChecklistJson.php',
     'App\\Models\\ChecklistOption' => $baseDir . '/app/Models/ChecklistOption.php',
     'App\\Models\\Client' => $baseDir . '/app/Models/Client.php',
     'App\\Models\\DefaultCheckList' => $baseDir . '/app/Models/DefaultCheckList.php',

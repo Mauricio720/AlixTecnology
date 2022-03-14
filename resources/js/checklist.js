@@ -1,7 +1,7 @@
 var clientId="";
 var defaultChecklistArray=[];
 var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas'
-    ,'Dupla Escolha','Numerica','Data','Agrupamento (dupla escolha)'];
+    ,'Dupla Escolha','Numerica','Data','Agrupamento (dupla escolha)','Maior que/Menor que'];
 var idIncrement=0;
 var allCloneChecklistGrouping=[];
 var checklistText=ONE_ELEMENT('.checklist');

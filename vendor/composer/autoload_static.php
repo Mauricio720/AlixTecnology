@@ -599,6 +599,10 @@ class ComposerStaticInit43fae358cdbe6ac0a47c929ba4171da6
 
     public static $classMap = array (
         'AddArrayJsonToDefaultChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_03_181615_add_array_json_to_default_checklists_table.php',
+        'AddBigSmallerToChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_03_14_170829_add_big_smaller__to_checklists_table.php',
+        'AddBigSmallerToDefaultChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_03_14_170634_add_big_smaller__to_default_checklists_table.php',
+        'AddDistinctToChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_03_14_180238_add_distinct_to_checklists_table.php',
+        'AddDistinctToDefaultChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_03_14_180107_add_distinct_to_default_checklists_table.php',
         'AddDuplicateToChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_03_103343_add_duplicate_to_checklists_table.php',
         'AddDuplicateToDefaultChecklistTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_03_102700_add_duplicate_to_default_checklist_table.php',
         'AddLastIdIncrementToDefaultChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_04_163444_add_last_id_increment__to_default_checklists_table.php',
@@ -630,6 +634,7 @@ class ComposerStaticInit43fae358cdbe6ac0a47c929ba4171da6
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Models\\Checklist' => __DIR__ . '/../..' . '/app/Models/Checklist.php',
+        'App\\Models\\ChecklistJson' => __DIR__ . '/../..' . '/app/Models/ChecklistJson.php',
         'App\\Models\\ChecklistOption' => __DIR__ . '/../..' . '/app/Models/ChecklistOption.php',
         'App\\Models\\Client' => __DIR__ . '/../..' . '/app/Models/Client.php',
         'App\\Models\\DefaultCheckList' => __DIR__ . '/../..' . '/app/Models/DefaultCheckList.php',
