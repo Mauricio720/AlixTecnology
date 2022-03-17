@@ -62,7 +62,6 @@ class DefaultChecklistController extends Controller
     }
 
     private function filterDefaultChecklist($request,$data){
-     
         $query=DefaultCheckList::query();
             
         $nameChecklist=$request->input('nameChecklist');

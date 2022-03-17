@@ -679,6 +679,7 @@ function updatePointsOptions(options,points,element) {
                 option.pointsValue=pointsValue;
                 option.percentage=percentage;
                 option.correctPercentage=true;
+            
             }else if(onlyOneChoosePoints || onlyOneChoose){
                 option.pointsValue=points;
             }

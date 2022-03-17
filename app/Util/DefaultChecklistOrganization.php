@@ -26,7 +26,7 @@ class DefaultCheckListOrganization {
         }
         
         if($defaultChecklist->typechecklist=="8"){
-            $defaultChecklistModel->big_smaller=$defaultChecklist->biggerSmaller;
+           $defaultChecklistModel->big_smaller=$defaultChecklist->biggerSmaller;
         }
 
         if($idDefaultChecklist==null){
@@ -103,6 +103,7 @@ class DefaultCheckListOrganization {
         $newArray['points']=$defaultChecklist->points;
         $newArray['pointsObtained']=0;
         $newArray['value']="";
+        $newArray['big_smaller']=$defaultChecklist->big_smaller;
         $newArray['oficialObservation']="";
         $newArray['groupingDoubleChoice']=false;
         $newArray['duplicateSubchecklist']=false;
@@ -110,6 +111,7 @@ class DefaultCheckListOrganization {
         $newArray['observation']=$defaultChecklist->observation;
         $newArray['only_one_choose']=$defaultChecklist->only_one_choose;
         $newArray['only_one_choose_points']=$defaultChecklist->only_one_choose_points;
+        $newArray['distinct_percentage']=$defaultChecklist->distinct_percentage;
         $newArray['last_id_increment']=$defaultChecklist->last_id_increment;
         $newArray['created_at']=date('d/m/Y',strtotime($defaultChecklist->created_at));
         $newArray['options']=$this->getOptions($defaultChecklist->id);
