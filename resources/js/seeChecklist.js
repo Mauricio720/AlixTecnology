@@ -1,15 +1,18 @@
 var checklist=ONE_ELEMENT('.checklistExibition');
 var checklistArray=JSON.parse(ONE_ELEMENT('#checklistArray').value);
-var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica','Data','Agrupamento (dupla escolha)'];
+var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica'
+,'Data','Agrupamento (dupla escolha)'];
 var optionsChecklist=ONE_ELEMENT('.optionsChecklistExibition');
 var downloadChecklistItem=ONE_ELEMENT('.download__item');
 var formChecklist=ONE_ELEMENT('#formChecklistExibition');
+var carrousel=ONE_ELEMENT('#carousel');
 
 showChecklist(checklistArray.subchecklist); 
+
 eventsBtnSeeMore();
-eventsBtnSeeOption(); 
 eventsBtnSeeMoreCheck();
 eventFilesNames();  
+eventBtnPrint();
 
 function showChecklist(checklistArray,checklistElement=null) {
     checklistArray.map((item)=>{
@@ -30,7 +33,7 @@ function showChecklist(checklistArray,checklistElement=null) {
     });
 }
 
-/*
+
 function fillInputsAndAttributeChecklist(checklistClone,item) {
     checklistClone.setAttribute('idElement',item.id);
     checklistClone.setAttribute('id',"check"+item.id);
@@ -40,21 +43,26 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
 
     if(item.id_type_checklist===2){
         if(item.file_name.length > 0){
-            let linkElement=checklistClone.querySelector('.checklist__download--btn');
-            linkElement.style.display='block';
-            linkElement.setAttribute('id',item.id);
-            checklistClone.querySelector('.valueChecklist').style.display='none';
+            checklistClone.style.height='auto';
+            fillPicturesAndDocumentsModal(checklistClone,item.file_name);
         }else{
+            checklistClone.querySelector('.valueChecklist').classList.remove('d-none');
             checklistClone.querySelector('.valueChecklist').innerHTML='Nenhum arquivo inserido';
         }
        
     }else{
         if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4 && item.id_type_checklist!==7){
             checklistClone.querySelector('.valueChecklist').innerHTML=item.value;
+        }else{
+            if(item.value === ''){
+                let slotValueDiv=checklistClone.querySelector('.checklist__slot--value');
+                if(slotValueDiv !==null){
+                    slotValueDiv.style.display='none';
+                }
+            }
         }
     }
-    checklistClone.querySelector('.typeChecklist').innerHTML="Tipo: "+typeChecklistArray[item.id_type_checklist];
-    checklistClone.querySelector('.typeChecklist').setAttribute('title',typeChecklistArray[item.id_type_checklist]);
+   
     checklistClone.querySelector('.points').innerHTML="Pontos Possiveis: "+item.points.toFixed(2);
     checklistClone.querySelector('.points').setAttribute('title',item.points);
     checklistClone.querySelector('.pointsObtained').innerHTML="Pontos Obtidos: "+item.pointsObtained;
@@ -66,7 +74,92 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
     if(item.id_type_checklist===7){
         renameChecklist(item);
     }
-}*/
+}
+
+function fillPicturesAndDocumentsModal(checklistClone,files){
+    let picturesCarrousel=checklistClone.querySelector('.picturesCarrousel');
+    picturesCarrousel.style.display='flex';
+    let pictureItem=picturesCarrousel.querySelectorAll('.picture')[0].cloneNode(true);
+    picturesCarrousel.innerHTML='';
+    
+    files.forEach((file,index)=>{
+        let picture=pictureItem.cloneNode(true);
+        let img=picture.querySelector('img');
+        
+        if(verifyImgs(file)){
+            picture.setAttribute('href',`${BASE_URL}/storage/checklists_files/${file}`);
+            img.setAttribute('src',`${BASE_URL}/storage/checklists_files/${file}`);
+        }else{
+            img.setAttribute('src',`${BASE_URL}/storage/general_icons/file.png`);
+            picture.setAttribute('href',`${BASE_URL}/storage/general_icons/${file}`);
+        }
+
+        picture.setAttribute('key',index);
+        picturesCarrousel.append(picture);
+    });
+
+    eventPictureShowModal(picturesCarrousel,files);
+}
+
+function eventPictureShowModal(picturesCarrousel,files){
+    let allPictures=[...picturesCarrousel.querySelectorAll('.picture')];
+
+    allPictures.forEach((picture)=>{
+        picture.addEventListener('click',(e)=>{
+            let key=parseInt(e.currentTarget.getAttribute('key'));
+            openModalFiles(files,key);
+        })
+    })
+}
+
+function openModalFiles(files,key) {
+    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
+    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Clique para baixar";
+    ONE_ELEMENT('#btnAddModal').style.display='none';
+    ONE_ELEMENT('#btnEditModal').style.display='none';
+    
+    ONE_ELEMENT('#modalActions .modal-body').append(carrousel);
+
+    let carouselItem=carrousel.querySelector('.carousel-item').cloneNode(true);
+    let carouselInner=carrousel.querySelector('.carousel-inner');
+    carouselInner.innerHTML='';
+
+    files.forEach((file,index) => {
+        let carouselImg=carouselItem.cloneNode(true);
+        if(verifyImgs(file)){
+            carouselImg.querySelector('img').setAttribute('src',`${BASE_URL}/storage/checklists_files/${file}`);
+            carouselImg.setAttribute('href',`${BASE_URL}/storage/checklists_files/${file}`);
+        }else{
+            carouselImg.querySelector('img').setAttribute('src',`${BASE_URL}/storage/general_icons/file.png`);
+            carouselImg.setAttribute('href',`${BASE_URL}/storage/checklists_files/${file}`);
+        }
+        
+        carouselInner.append(carouselImg);
+        if(index===key){
+            carouselImg.classList.add('active');
+        }else{
+            carouselImg.classList.remove('active');
+        }
+    }); 
+
+    carrousel.classList.remove('d-none');
+}
+
+
+function verifyImgs(file){
+    let ext=file.split('.')[1];
+    let extArray=['jpg','jpeg','png','gif','svg'];
+
+    let result=extArray.find((item)=>{
+        return item===ext;
+    });
+
+    if(result !== undefined){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 function renameChecklist(checklist) {
     if(checklist.subchecklist){
@@ -80,8 +173,16 @@ function renameChecklist(checklist) {
 
 function appendOptions(item,checklistClone) {
     if(item.options.length > 0){
-        checklistClone.querySelector('.btnOptions').style.display='block';
-        checklistClone.querySelector('.btnOptions').setAttribute('id',item.id);
+        item.options.forEach((option)=>{
+            let optionsChecklistClone=optionsChecklist.cloneNode(true);
+            optionsChecklistClone.querySelector('.optionName').innerHTML=option.name;
+            optionsChecklistClone.querySelector('.optionSelected').innerHTML=option.selected?'Sim':'Não';
+            optionsChecklistClone.querySelector('.optionPointsObtained').innerHTML=option.pointsObtained;
+            optionsChecklistClone.querySelector('.optionPoints').innerHTML=option.points;
+            optionsChecklistClone.style.display='flex';
+            checklistClone.style.height='auto';
+            checklistClone.querySelector('.checklist__container').append(optionsChecklistClone);
+        })
     }
 }
 
@@ -110,47 +211,18 @@ function eventFilesNames() {
     });
 }
 
-function openModalFiles(files) {
-    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Arquivos para download";
-    ONE_ELEMENT('#btnAddModal').style.display='none';
-    ONE_ELEMENT('#btnEditModal').style.display='none';
+function eventBtnPrint(){
+    ONE_ELEMENT('#btnPrint').addEventListener('click',()=>{
+        [...ALL_ELEMENTS('.checklistContent .btnSeeMore')].forEach((element)=>{
+            if(element.style.display==='block'){
+                let elementChecklist=element.closest('.checklistExibition');
+                if(!elementChecklist.classList.contains('active')){
+                    showSubchecklistContainer(elementChecklist);
+                }
+            }
+        });
 
-    files.forEach((file)=>{
-        let downloadChecklistItemClone=downloadChecklistItem.cloneNode(true);
-        downloadChecklistItemClone.style.display='flex';
-        downloadChecklistItemClone.querySelector('.download__link').setAttribute('href',BASE_URL+"/storage/checklists_files/"+file);
-        downloadChecklistItemClone.querySelector('.download__link').innerHTML=file;
-        ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(downloadChecklistItemClone);
-    })
-}
-
-
-function eventsBtnSeeOption() {
-    [...ALL_ELEMENTS('.checklistContent .btnOptions')].forEach((element)=>{
-        element.addEventListener('click',(e)=>{
-            let id=parseInt(e.currentTarget.getAttribute('id'));
-            let checklist=filterChecklist(checklistArray.subchecklist,id,{}); 
-            openModalOptions(checklist.options);
-        })
-    });
-}
-
-function openModalOptions(options) {
-    ONE_ELEMENT('#modalActions').querySelector(".modal-body").innerHTML="";
-    ONE_ELEMENT("#modalActions").querySelector(".modal-title").innerHTML="Opções da checklist";
-    ONE_ELEMENT('#btnAddModal').style.display='none';
-    ONE_ELEMENT('#btnEditModal').style.display='none';
-
-    options.forEach((option)=>{
-        let optionsChecklistClone=optionsChecklist.cloneNode(true);
-        optionsChecklistClone.querySelector('.optionName').innerHTML=option.name;
-        optionsChecklistClone.querySelector('.optionSelected').innerHTML=option.selected?'Sim':'Não';
-        optionsChecklistClone.querySelector('.optionPointsObtained').innerHTML=option.pointsObtained;
-        optionsChecklistClone.querySelector('.optionPoints').innerHTML=option.points;
-        optionsChecklistClone.style.display='flex';
-        
-        ONE_ELEMENT('#modalActions').querySelector(".modal-body").append(optionsChecklistClone);
+        window.print();
     })
 }
 
@@ -183,24 +255,41 @@ function openModalChecklist(item) {
     formChecklist.querySelector('.typeChecklist').innerHTML=typeChecklistArray[item.id_type_checklist];
     
     if(item.id_type_checklist===2){
-        formChecklist.querySelector('.valueChecklist').style.height='auto';
+        formChecklist.querySelector('.valueChecklist').style.display='none';
         if(item.file_name.length > 0){
-            item.file_name.forEach((file)=>{
-                let linkElement=formChecklist.querySelector('.valueChecklist').querySelector('a').cloneNode(true);
-                linkElement.style.display='block';
-                linkElement.innerHTML="Download: "+item.name;
-                linkElement.setAttribute('href',BASE_URL+"/storage/checklists_files/"+file);
-                formChecklist.querySelector('.valueChecklist').append(linkElement);
-            })
-        }
-    }else{
-        if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4){
-            formChecklist.querySelector('.valueChecklist').style.display='flex';
-            formChecklist.querySelector('.valueChecklist').innerHTML=item.value;
+            let picturesCarrousel=formChecklist.querySelector('.picturesCarrousel');
+            picturesCarrousel.style.display='flex';
+            let pictureItem=picturesCarrousel.querySelectorAll('.picture')[0].cloneNode(true);
+            picturesCarrousel.innerHTML='';
+            picturesCarrousel.style.maxWidth='initial';
+
+            item.file_name.forEach((file,index)=>{
+                    let picture=pictureItem.cloneNode(true);
+                    let img=picture.querySelector('img');
+                    
+                    if(verifyImgs(file)){
+                        picture.setAttribute('href',`${BASE_URL}/storage/checklists_files/${file}`);
+                        img.setAttribute('src',`${BASE_URL}/storage/checklists_files/${file}`);
+                    }else{
+                        img.setAttribute('src',`${BASE_URL}/storage/general_icons/file.png`);
+                        picture.setAttribute('href',`${BASE_URL}/storage/general_icons/${file}`);
+                    }
+
+                    picture.setAttribute('key',index);
+                    picturesCarrousel.append(picture);
+                    eventPictureShowModal(picturesCarrousel,item.file_name);
+
+                });
+            }
         }else{
-            formChecklist.querySelector('.valueChecklist').closest('.form-group').style.display="none";
+            if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4){
+                formChecklist.querySelector('.valueChecklist').style.display='flex';
+                formChecklist.querySelector('.valueChecklist').innerHTML=item.value;
+            }else{
+                formChecklist.querySelector('.valueChecklist').closest('.form-group').style.display="none";
+            }
         }
-    }
+
     formChecklist.querySelector('.pointsChecklist').innerHTML="Pontos: "+item.points.toFixed(2);
     formChecklist.querySelector('.pointsObtainedChecklist').innerHTML="Pontos Obtidos: "+item.pointsObtained.toFixed(2);
     formChecklist.querySelector('.observationChecklist').innerHTML=item.observation===""?
@@ -218,8 +307,8 @@ function showSubchecklistContainer(elementChecklist){
     
     if(!elementChecklist.classList.contains('active')){
         let totalDefaultChecklist=elementChecklist.querySelectorAll('.checklistContent .checklistExibition').length;
-        let margin=35*totalDefaultChecklist;
-        let heightTotal=100+(100*totalDefaultChecklist)+margin;
+        let margin=45*totalDefaultChecklist;
+        let heightTotal=100+getTotalHeight(elementChecklist)+margin;
             
         elementChecklist.style.height=`${heightTotal}px`;
         elementChecklist.classList.add('active');
@@ -229,6 +318,17 @@ function showSubchecklistContainer(elementChecklist){
         elementChecklist.classList.remove('active');
         checklist.active=false;
     }
+}
+
+function getTotalHeight(elementChecklist){
+    let totalHeight=0;
+
+    elementChecklist.querySelectorAll('.checklistContent .checklistExibition').forEach((checklist)=>{
+        let height=checklist.offsetHeight;
+        totalHeight+=height;
+    })
+
+    return totalHeight;
 }
 
 function showSubchecklistContainerLoop(checklistArray) {

@@ -104,6 +104,13 @@
         <div class="form-control valueChecklist">
             <a href="http://" download="" style="display: none;"></a>
         </div>
+
+        <div class="picturesCarrousel">
+            <a href="./" download class="picture" data-toggle="modal" 
+                data-target="#modalActions" data-toggle="tooltip" >
+                <img src="{{asset('storage/checklists_files/3b917484f5e2754b094112d6fc26ebda.jpg')}}">
+            </a>
+        </div>
     </div>
 
     <div class="form-group">
@@ -138,20 +145,15 @@
     </div>
     <div class="checklist__content">
         <div class="checklist__slot checklist__slot--value">
-            <div class="form-control valueChecklist"></div>
-            <div class="checklist__download--btn btnDefault btnDefault--sm" style="display: none"
-                data-toggle="modal" data-target="#modalActions" data-toggle="tooltip" title="download">
-                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" 
-                    class="react-icons" height="90%" width="100%" xmlns="http://www.w3.org/2000/svg" 
-                    style="color: black;"><path d="M505.7 661a8 8 0 0 0 12.6 0l112-141.7c4.1-5.2.4-12.9-6.3-12.9h-74.1V168c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v338.3H400c-6.7 0-10.4 7.7-6.3 12.9l112 141.8zM878 626h-60c-4.4 0-8 3.6-8 8v154H214V634c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v198c0 17.7 14.3 32 32 32h684c17.7 0 32-14.3 32-32V634c0-4.4-3.6-8-8-8z"></path>
-                </svg>
+            <div class="form-control valueChecklist d-none"></div>
+            <div class="picturesCarrousel">
+                <a href="./" download class="picture" data-toggle="modal" 
+                    data-target="#modalActions" data-toggle="tooltip" >
+                    <img src="{{asset('storage/checklists_files/3b917484f5e2754b094112d6fc26ebda.jpg')}}">
+                </a>
             </div>
         </div>
         
-        <div class="checklist__slot">
-            <div class="form-control typeChecklist" title=""></div>
-        </div>
-
         <div class="checklist__slot">
             <div class="form-control points" title=""></div>
         </div>

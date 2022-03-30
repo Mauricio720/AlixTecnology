@@ -79,7 +79,7 @@
                                         class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
                                         ...
                                     </a>
-                                    <a href="{{route('deleteDefaultCheckJson',['id'=>$defaultChecklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
+                                    <a href="{{route('deleteDefaultCheckJson',['id'=>$defaultChecklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Checklist" 
                                         msg="Tem certeza que deseja excluir essa checklist padrão em progresso?">
                                         <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
                                     </a>
@@ -116,7 +116,7 @@
                                         class="btnDefault btnDefault--sm btnSeeMore" title="Ver Mais">
                                         ...
                                     </a>
-                                    <a href="{{route('deleteDefaultChecklist',['id'=>$defaultChecklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Usuário" 
+                                    <a href="{{route('deleteDefaultChecklist',['id'=>$defaultChecklist->id])}}" class="btnDefault btnDefault--sm btnDelete" title="Deletar Checklist" 
                                         msg="Tem certeza que deseja excluir essa checklist padrão?">
                                         <img src="{{asset('storage/general_icons/delete.png')}}" width="16" height="16">
                                     </a>

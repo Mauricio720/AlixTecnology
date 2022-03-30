@@ -208,5 +208,7 @@
     <script>
         var csrfToken="{{csrf_token()}}"; 
     </script>
-    <script src="{{ asset('js/checklist.min.js') }}" defer></script>
+    
+    <script src="https://unpkg.com/js-big-decimal@1.3.1/dist/web/js-big-decimal.min.js"></script>
+    <script  src="{{ asset('js/checklist.min.js') }}" defer></script>
 @endsection

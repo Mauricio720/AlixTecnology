@@ -44,6 +44,8 @@ class ChecklistController extends Controller
 
         if($request->hasAny(['nameChecklist','pointsChecklist','pointsObtained','clientName','observationChecklist'])){
             $data=$this->filterChecklist($request,$data);
+            $data['allChecklistInProgress']=ChecklistJson::orderBy('id','DESC')->paginate(10);
+
         }
         return view('dashboard.checklist.allChecklists',$data);
     }
@@ -242,7 +244,7 @@ class ChecklistController extends Controller
         $data['historic_checklist_idClient']=$historic_checklist_idClient;
         $data['checklist']=CheckList::where('id',$id)->first();
         $data['defaultChecklist']=DefaultCheckList::where('id',$data['checklist']->id_default_checklist)->first();
-
+        $data['client']=Client::where('id',$data['checklist']->id_client)->first();
         return view('dashboard.checklist.seeChecklist',$data);
     }
     
@@ -260,12 +262,14 @@ class ChecklistController extends Controller
         $data['client']=Client::where('id',$idClient)->first();
 
         $data['allChecklist']=CheckList::join('default_checklists','checklists.id_default_checklist','default_checklists.id')    
-            ->join('clients','checklists.id_client','clients.id')->where('id_checklist',null)
+            ->join('clients','checklists.id_client','clients.id')
+            ->orderBy('id','DESC')
+            ->where('id_checklist',null)
             ->where('clients.id',$idClient)
             ->whereYear('checklists.created_at',date('Y'))
             ->where('idDefaultChecklist',null)->paginate(10,['checklists.*','default_checklists.name as checklistName',
-            'clients.name as clientName','default_checklists.observation as observationChecklist']);;
-
+            'clients.name as clientName','default_checklists.observation as observationChecklist']);
+            
         $data['year']=date('Y');
 
         $data['startDate']="";
@@ -291,6 +295,7 @@ class ChecklistController extends Controller
             $data['finalDate']=$finalDate;
             $yearStartDate=date('Y',strtotime($startDate));
             $yearFinalDate=date('Y',strtotime($finalDate));
+            
             if($yearStartDate==$yearFinalDate){
                 $data['year']=date('Y',strtotime($startDate));    
             }else{

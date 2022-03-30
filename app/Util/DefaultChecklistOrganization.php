@@ -4,6 +4,7 @@ namespace App\Util;
 
 use App\Models\DefaultCheckList;
 use App\Models\DefaultChecklistOption;
+use Mockery\Undefined;
 
 class DefaultCheckListOrganization {
 
@@ -19,10 +20,14 @@ class DefaultCheckListOrganization {
         $defaultChecklistModel->observation=$defaultChecklist->observation;
         $defaultChecklistModel->duplicate=$defaultChecklist->duplicate;
         
+        
         if($defaultChecklist->typechecklist=="3"){
             $defaultChecklistModel->only_one_choose=$defaultChecklist->onlyOneChoose;
             $defaultChecklistModel->only_one_choose_points=$defaultChecklist->onlyOneChoosePoints;
-            $defaultChecklistModel->distinct_percentage=$defaultChecklist->onlyDistinctPercentage;
+            
+            if(isset($defaultChecklist->onlyDistinctPercentage)){
+                $defaultChecklistModel->distinct_percentage=$defaultChecklist->onlyDistinctPercentage;
+            }
         }
         
         if($defaultChecklist->typechecklist=="8"){

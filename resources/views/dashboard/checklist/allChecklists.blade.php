@@ -108,11 +108,11 @@
                         <tbody>
                             @foreach ($allChecklist as $checklist)
                                 <tr>
-                                    <td>{{$checklist->checklistName}}</td>
+                                    <td style="max-width:200px;">{{$checklist->checklistName}}</td>
                                     <td>{{$checklist->clientName}}</td>
                                     <td>
-                                        {{"Pontuação Total: ".$checklist->points}}<br>
-                                        {{"Pontuação Obtida: ".$checklist->pointsObtained}}
+                                        {{"Pontuação Total: ".number_format($checklist->points,2,',','.')}}<br>
+                                        {{"Pontuação Obtida: ".number_format($checklist->pointsObtained,2,',','.')}}
                                     </td>
                                     <td>{{$checklist->observation==""?"Não Informado":$checklist->observationChecklist}}</td>
                                     <td>{{$checklist->userName}}</td>

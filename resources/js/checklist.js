@@ -215,9 +215,9 @@ function setInfoToChecklist(checklistClone,subchecklist){
     checklistClone.querySelector('.checklistTypechecklist').innerHTML=`${typeChecklistArray[subchecklist.id_type_checklist]}${big_smaller_value}`;
     checklistClone.querySelector('.checklistTypechecklist').setAttribute('title',`${typeChecklistArray[subchecklist.id_type_checklist]}`);
     checklistClone.querySelector('.checklistPossiblePoints').innerHTML=`Pontos: ${subchecklist.points.toFixed(2)}`;
-    checklistClone.querySelector('.checklistPossiblePoints').setAttribute('title',subchecklist.points.toFixed(2));
+    checklistClone.querySelector('.checklistPossiblePoints').setAttribute('title',subchecklist.points);
     checklistClone.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${subchecklist.pointsObtained.toFixed(2)}`;
-    checklistClone.querySelector('.checklistPoints').setAttribute('title',subchecklist.pointsObtained.toFixed(2));
+    checklistClone.querySelector('.checklistPoints').setAttribute('title',subchecklist.pointsObtained);
 }
 
 function setObservationChecklist(checklistClone,subchecklist){
@@ -314,15 +314,16 @@ function fillValuesToChecklist(subchecklists) {
         checklistElement.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${subchecklist.pointsObtained.toFixed(2)}`;
         headerLayoutInChecklistValues(subchecklist,checklistElement);
 
-        if(subchecklist.duplicate){
-            if(subchecklist.id_type_checklist===7){
-                groupingDoubleChoiceChecklistLayout(checklistElement,subchecklist);
-                duplicateSubchecklistHeaderAndActions(checklistElement,subchecklist);
-                layoutValuesChecklistWithoutSubchecklist(checklistElement,subchecklist)
-            }else{
-                layoutHeighChecklist(checklistElement,subchecklist);
-            }
+        if(subchecklist.id_type_checklist===7){
+            groupingDoubleChoiceChecklistLayout(checklistElement,subchecklist);
+            duplicateSubchecklistHeaderAndActions(checklistElement,subchecklist);
+            layoutValuesChecklistWithoutSubchecklist(checklistElement,subchecklist)
         }
+
+        if(subchecklist.duplicate){
+            layoutHeighChecklist(checklistElement,subchecklist);
+        }
+
 
         if(subchecklist.subchecklist.length > 0){
             fillValuesToChecklist(subchecklist.subchecklist);
@@ -595,46 +596,64 @@ function eventNormalInputs(inputType,checklist,element){
     inputType.addEventListener('input',(e)=>{
         let possiblePoints=checklist.points;
         let text=e.currentTarget.value;
-        let increment=false;
-        
-        if(checklist.id_type_checklist===8){
-            increment=verifyBigSmaller(checklist,text,possiblePoints);
-        }else{
-            increment=verifyEmptyInput(checklist,text,possiblePoints);
-        }
-        
-        element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
-        updatePointsFatherChecklist(checklist,possiblePoints,increment);
         checklist.value=text;
+        
+        let increment=false;
+        let isBigger=false;
+
+        if(checklist.id_type_checklist===8){
+            isBigger=verifyBigSmaller(checklist,text);
+        }else{
+            increment=verifyEmptyInput(text);
+        }
+      
+        if(checklist.id_type_checklist===8){
+            if(isBigger){
+                if(checklist.pointsObtained === 0){
+                    checklist.pointsObtained=possiblePoints;
+                    updatePointsFatherChecklist(checklist,possiblePoints,true);        
+                }
+            }else{
+                if(checklist.pointsObtained > 0){
+                    checklist.pointsObtained=0;
+                    updatePointsFatherChecklist(checklist,possiblePoints,false);        
+                }
+            }
+        }else{
+            if(increment && checklist.pointsObtained===0){
+                checklist.pointsObtained=possiblePoints;
+                updatePointsFatherChecklist(checklist,possiblePoints,increment);
+            }
+
+            if(increment===false && checklist.pointsObtained>0){
+                checklist.pointsObtained=0;
+                updatePointsFatherChecklist(checklist,possiblePoints,increment);
+            }
+        }
+
+        element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
     });
 }
 
-function verifyEmptyInput(checklist,text,possiblePoints){
+function verifyEmptyInput(text){
     let increment=true;
 
-    if(text!==""){
-        checklist.pointsObtained=possiblePoints;
-    }else{
+    if(text===""){
         increment=false;
-        checklist.pointsObtained=0;
     }
 
     return increment;
 }
 
-function verifyBigSmaller(checklist,points,possiblePoints){
-    let increment=true;
+function verifyBigSmaller(checklist,points){
+    let isBigger=true;
     let bigSmallerValue=checklist.big_smaller;
 
-    if(points > bigSmallerValue){
-        checklist.pointsObtained=possiblePoints;
-
-    }else{
-        increment=false;
-        checklist.pointsObtained=0;
+    if(points < bigSmallerValue){
+        isBigger=false;
     }
 
-    return increment;
+    return isBigger;
 }
 
 function eventUploadEvent(inputType,checklist,element){
@@ -739,6 +758,8 @@ function getTypeOption(multiple,only_one_choose,distinct_percentage,option){
 }
 
 function eventOptionIsChecked(checklist,option,points,pointsObtained,multiple,element){
+    let oldPoints=checklist.pointsObtained;
+    
     checklist.pointsObtained=pointsObtained+points;
     setZeroInOptions(checklist);
     
@@ -749,15 +770,17 @@ function eventOptionIsChecked(checklist,option,points,pointsObtained,multiple,el
     let increment=true;
     
     setSelectedFalseWhenIsOnlyOneChoose(countSelectedOnlyOneChoose,checklist);
-    
+
     if(points===0){
         increment=false;
-        points=checklist.points;
+        if(checklist.distinct_percentage===false || checklist.distinct_percentage===null){
+            points=checklist.points;
+        }
     }
     
     samePointToOnlyOneChecklist(checklist,points);
-    zeroPointsOptions(checklist,multiple,increment,countSelectedOnlyOneChoose,points);
-    points=setSelectedFalseWhenIsOnlyOneChooseAndZeroPoints(checklist,countSelectedOnlyOneChoose,option,points);
+    points=zeroPointsOptions(checklist,multiple,increment,countSelectedOnlyOneChoose,points);
+    points=setSelectedFalseWhenIsOnlyOneChooseAndZeroPoints(checklist,countSelectedOnlyOneChoose,option,points,oldPoints);
     updatePointsFatherChecklist(checklist,points,increment);
 
     element.querySelector('.checklistPoints').innerHTML=`Pontos Obtidos: ${checklist.pointsObtained.toFixed(2)}`;
@@ -810,11 +833,21 @@ function setSelectedFalseWhenIsOnlyOneChoose(countSelectedOnlyOneChoose,checklis
     }
 }
 
-function setSelectedFalseWhenIsOnlyOneChooseAndZeroPoints(checklist,countSelectedOnlyOneChoose,option,points){
+function setSelectedFalseWhenIsOnlyOneChooseAndZeroPoints(checklist,countSelectedOnlyOneChoose,option,points,oldPoints=0){
     let finalPoints=points;
     
     if(checklist.only_one_choose && countSelectedOnlyOneChoose>1){
         finalPoints=0;
+        checklist.options.forEach((optionItem)=>{
+            optionItem.selected=false;
+        });
+
+        option.selected=true;
+    }
+
+    if(checklist.distinct_percentage && countSelectedOnlyOneChoose>1){
+        updatePointsFatherChecklist(checklist,oldPoints,false);
+        finalPoints=checklist.pointsObtained;
         checklist.options.forEach((optionItem)=>{
             optionItem.selected=false;
         });
@@ -835,6 +868,8 @@ function zeroPointsOptions(checklist,multiple,increment,countSelectedOnlyOneChoo
             }
         }
     }
+
+    return points;
 }
 
 function eventOptionIsNotChecked(checklist,option,points,pointsObtained,multiple,element){
@@ -886,7 +921,6 @@ function updatePointsFatherChecklist(checklist,points,increment=true) {
         updateLayoutChecklistMaster(total);
     }else{
         let checklistFather=filterChecklist(defaultChecklistArray.subchecklist,id,{});
-        
         if(checklistFather!==null){
             if(increment){
                 checklistFather.pointsObtained+=points;
@@ -913,7 +947,6 @@ function updatePointsChecklistMaster(subchecklist,points=0) {
     let total=points;
     subchecklist.forEach((subchecklistItem)=>{
         if(subchecklistItem.idDefaultChecklist===defaultChecklistArray.id){
-            
             total+=subchecklistItem.pointsObtained;
             if(subchecklistItem.subchecklist.length>0){
                 total=updatePointsChecklistMaster(subchecklistItem.subchecklist,total); 
@@ -947,8 +980,8 @@ function verifyIfIsMultipleChecklistToEvent(typeChecklist){
 }
 
 function eventsDoubleChoiceGroupingDuplicate(element,checklist) {
-    let allCheckGroupingChoice=element.querySelectorAll('.checkGroupingChoice');
-    
+    let allCheckGroupingChoice=element.querySelector('.checklist__header__actions').querySelectorAll('.checkGroupingChoice');
+   
     [...allCheckGroupingChoice].forEach((checkGroupingChoice)=>{
         checkGroupingChoice.addEventListener('change',(e)=>{
             let checkGrouping=e.currentTarget;
@@ -1068,7 +1101,7 @@ function setEmptyValueChecklist(checklist){
 function eventsDoubleAddChoiceGrouping(element,checklist){
     let addBtn=element.querySelector('.checklist__header .btnAdd');
     if(addBtn !== null){
-        addBtn.addEventListener('click',(e)=>{
+        addBtn.addEventListener('click',()=>{
             let idReferenceClone=checklist.idReferenceClone;
             let indexReferenceClone=getIdReference(idReferenceClone);
 
@@ -1081,14 +1114,14 @@ function eventsDoubleAddChoiceGrouping(element,checklist){
                 updateIncrementChecklist(checklist);
                 setChecklistPoint(checklist.id);
                 
-                let totalChecklistPoints=setPointToAgrouping(checklist,true);
+                let totalChecklistPoints=setPointToAgrouping(checklist);
                 checklist.pointsObtained=totalChecklistPoints;
-                
-                updatePointsFatherChecklist(checklist,totalChecklistPoints,false);
+
+                updatePointsToFather(checklist);
 
                 let totalPoints=getPointsObtained();
                 defaultChecklistArray.pointsObtained=totalPoints;
-                
+
                 fillChecklistInfo(defaultChecklistArray);
             }else{
                 addGroupingChecklist(checklist);
@@ -1097,12 +1130,26 @@ function eventsDoubleAddChoiceGrouping(element,checklist){
     }
 }
 
+function updatePointsToFather(checklist){
+    let checklistFather=filterChecklist(defaultChecklistArray.subchecklist,checklist.idDefaultChecklist,{});
+   
+    if(checklistFather!==null){
+        let totalChecklistPoints=setPointToAgrouping(checklistFather);
+        checklistFather.pointsObtained=totalChecklistPoints;
+        
+        if(checklistFather.idDefaultChecklist !== null){
+            updatePointsToFather(checklistFather); 
+        }
+    }
+}
+
 function setInfoAndPushNewChecklist(newChecklistGrouping,checklist){
     newChecklistGrouping.id=idIncrement;
     newChecklistGrouping.id_type_checklist=0;
     newChecklistGrouping.duplicate=false;
     newChecklistGrouping.duplicateSubchecklist=true;
-    
+    newChecklistGrouping.oficialObservation='';
+
     checklist.subchecklist.push(newChecklistGrouping);
 }
 
@@ -1111,17 +1158,24 @@ function eventsDoubleDeleteChoiceGrouping(element,checklist){
     if(deleteBtn !== null){
         deleteBtn.addEventListener('click',(e)=>{
             let checklistFather=filterChecklist(defaultChecklistArray.subchecklist,checklist.idDefaultChecklist,{});
-            
             deleteChecklist(checklistFather,checklist);
-            setChecklistPoint(checklistFather.id);
             
-            let totalPoints=getPointsObtained();
-            let totalChecklistPoints=setPointToAgrouping(checklistFather);;
-            
+            let totalChecklistPoints=setPointToAgrouping(checklistFather);
             checklistFather.pointsObtained=totalChecklistPoints;
+
+            updateIncrementChecklist(checklistFather);
+            setChecklistPoint(checklistFather.id);
+
+            if(defaultChecklistArray.id !== checklistFather.idDefaultChecklist){
+                updatePointsToFather(checklistFather);
+            }else{
+                let totalChecklistPoints=setPointToAgrouping(checklistFather);
+                checklistFather.pointsObtained=totalChecklistPoints;
+            }
+
+            let totalPoints=getPointsObtained();
             defaultChecklistArray.pointsObtained=totalPoints;
-            
-            updateIncrementChecklist(checklistFather); 
+
             fillChecklistInfo(defaultChecklistArray);
         });
     }
@@ -1154,33 +1208,24 @@ function findIndexToDeleteChecklist(checklistFather,checkItem){
     return index;
 }
 
-function setPointToAgrouping(checklist,thereIsSubchecklist=false){
+function setPointToAgrouping(checklist){
     let totalChecklistPoints=0;
-    
     checklist.subchecklist.forEach((item)=>{
         let totalPointsObtainedSubchecklist=0;
-        setChecklistPoint(item.id);
-        
-        if(thereIsSubchecklist===false){
-            if(item.id_type_checklist===7 || item.id_type_checklist===0){
-                totalChecklistPoints=getPointsAgrouping(item)[1];
-                totalPointsObtainedSubchecklist=getPointsAgrouping(item)[0];
-                item.pointsObtained=totalPointsObtainedSubchecklist;
-            }
-        }else{
+
+        if(item.id_type_checklist===7 || item.id_type_checklist===0){
             item.subchecklist.forEach((subchecklist)=>{
-                totalPointsObtainedSubchecklist=getPointsAgrouping(subchecklist)[1];
-                totalChecklistPoints=getPointsAgrouping(subchecklist)[0];
-                setChecklistPoint(subchecklist.id);
+                totalPointsObtainedSubchecklist+=subchecklist.pointsObtained;
             }); 
             
             item.pointsObtained=totalPointsObtainedSubchecklist;
         }
-    });
 
+        totalChecklistPoints+=item.pointsObtained;
+    });
+    
     return totalChecklistPoints;
 }
-
 
 function getPointsAgrouping(item){
     let totalPointsObtainedSubchecklist=0;
@@ -1206,7 +1251,7 @@ function getIdReference(idReferenceClone){
 
 function getPointsObtained(){
     let totalPoints=0;
-    
+
     defaultChecklistArray.subchecklist.forEach((checklist)=>{
         totalPoints+=checklist.pointsObtained;
     });
@@ -1216,18 +1261,21 @@ function getPointsObtained(){
 
 
 function addGroupingChecklist(checklist){
-    let cloneChecklist={...checklist};
+    let cloneChecklist=JSON.parse(JSON.stringify(checklist));
     definityGroupingCloneChecklist=definityGroupingChecklist(checklist);
     
     checklist.subchecklist=[];
     fillChecklistGrouping(cloneChecklist,checklist);
     
     checklist.idReferenceClone=definityGroupingCloneChecklist.id;
+    cloneChecklist.name=cloneChecklist.name+' - 1';
+    cloneChecklist.oficialObservation='';
     checklist.subchecklist.push(cloneChecklist);
-
+    
     updateIncrementChecklist(cloneChecklist); 
     setChecklistPoint(cloneChecklist.id);
     fillChecklistInfo(defaultChecklistArray,true);
+    
     ONE_ELEMENT(`#checklist${cloneChecklist.id}`).querySelector('.btnDelete').classList.remove('d-none');
 }
 
@@ -1263,8 +1311,10 @@ function clearGroupingChecklist(checklist){
     checklist.subchecklist.forEach((item)=>{
         setChecklistPoint(item.id);
     })
-     
+
+    updatePointsFatherChecklist(checklist,checklist.points,false);  
     fillChecklistInfo(defaultChecklistArray);
+    
 }
 
 function getIndexToGroupingChecklist(checklistOriginal){
@@ -1337,16 +1387,23 @@ function setIncrementToOptions(newSubCheck){
     }
 }
 
+
 function setChecklistPoint(id) {
     let checklist=filterChecklist(defaultChecklistArray.subchecklist,id,{});
     let points=checklist.points;
     let allDefaultChecklist=filterChecklist(defaultChecklistArray.subchecklist,id,{}).subchecklist;
+    
     let totalNumberDefaultChecklists=allDefaultChecklist.length;
-    let pointsValue=points/totalNumberDefaultChecklists;
+    let pointsValue=0;
+    
+    if(totalNumberDefaultChecklists>0){
+        pointsValue=points/totalNumberDefaultChecklists;;
+    }
+    
     let percentage= (pointsValue/points)*100;
     
     if(checklist.pointsObtained !== 0){
-        checklist.pointsObtained=pointsValue;
+        checklist.pointsObtained=points;
     }
 
     setSubchecklistPoint(allDefaultChecklist,percentage,pointsValue);
@@ -1356,7 +1413,7 @@ function setSubchecklistPoint(allDefaultChecklist,percentage,pointsValue){
     allDefaultChecklist.forEach(checklist => {
         verifyPointsSubchecklistZero(checklist,pointsValue);
         fillInfoPointToChecklist(checklist,pointsValue,percentage);
-       
+        
         if(checklist.options.length > 0){
             updatePointsOptions(checklist.options,checklist.points,checklist); 
         }
@@ -1375,13 +1432,16 @@ function setSubchecklistPoint(allDefaultChecklist,percentage,pointsValue){
 function verifyPointsSubchecklistZero(checklist,pointsValue){
     if(checklist.pointsObtained != 0){
         if(checklist.id_type_checklist!==7 && checklist.id_type_checklist!==0){
-            checklist.pointsObtained=pointsValue;    
+           checklist.pointsObtained=pointsValue;    
         }
     }
 }
 
 function fillInfoPointToChecklist(checklist,pointsValue,percentage){
     checklist.points=pointsValue;
+    if(checklist.pointsObtained !== 0){
+        checklist.pointsObtained=pointsValue;
+    }
     checklist.percentage=percentage;
     checklist.correctPercentage=true;
 }
@@ -1392,6 +1452,18 @@ function repeatPointsUpdate(checklist,numberSubchecklist){
     
     checklist.subchecklist.forEach((item)=>{
         item.points=newPoints;
+        if(item.pointsObtained !== 0){
+            item.pointsObtained=newPoints;
+        }
+
+        if(item.options.length > 0){
+            updatePointsOptions(item.options,item.points,item); 
+        }
+
+        if(item.pointsObtained != 0){
+            updatePointsToOptions(item);
+        }
+
         item.percentage=percentage;
         setChecklistPoint(item.id);
     })
@@ -1415,26 +1487,35 @@ function updatePointsOptions(options,points,element) {
     let typechecklist=element.id_type_checklist;
     let onlyOneChoosePoints=element.only_one_choose_points;
     let onlyOneChoose=element.only_one_choose;
+    let distinctPercentage=element.distinct_percentage;
     
     let numberOptions=options.length;
     let pointsValue=points/numberOptions;
     let percentage= (pointsValue/points)*100;
     
     options.forEach((option)=>{
-        if(typechecklist==="4"){
+        
+        if(typechecklist===4){
             if(option.selected){
-                option.points=pointsValue;
+                option.points=element.points;
             }else{
-                option.points=0;
+                //option.points=0;
             }
         }else{
-            if(!onlyOneChoosePoints && !onlyOneChoose){
+
+            if(!onlyOneChoosePoints && !onlyOneChoose && !distinctPercentage){
                 option.points=pointsValue;
                 option.percentage=percentage;
                 option.correctPercentage=true;
             
             }else if(onlyOneChoosePoints || onlyOneChoose){
                 option.points=points;
+            
+            }else if(distinctPercentage){
+                let newPoints=(option.percentage/100)*points;
+                option.points=newPoints;
+                option.percentage=option.percentage;
+                option.correctPercentage=true;
             }
         }
     })

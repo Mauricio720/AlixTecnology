@@ -37,7 +37,7 @@ textarea:focus, input:focus, select:focus {
     font-size: 14px;
 }
 
-.btnSeeMore{
+.btnSeeMore,.btnPrint{
     font-size: 19px;
     font-weight: bold;
     background-color: black;
