@@ -83,7 +83,9 @@
             </div>
 
             <input type="hidden" id="checklistArray1" value="{{$checklist1}}">
+            <input type="hidden" id="idChecklist1" value="{{$idChecklist1}}">
             <input type="hidden" id="checklistArray2" value="{{$checklist2}}">
+            <input type="hidden" id="idChecklist2" value="{{$idChecklist2}}">
 
             <div class="card" id="card_base">
                 <div class="card-header">

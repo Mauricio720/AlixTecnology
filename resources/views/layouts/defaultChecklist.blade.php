@@ -64,7 +64,8 @@
                 <option value="4">Dupla Escolha (Ex: Sim ou Não)</option>
                 <option value="5">Numerica</option>
                 <option value="6">Data</option>
-                <option value="8">Maior que/Menor que</option>
+                <option value="8">Maior/Igual Que</option>
+                <option value="9">Menor/Igual Que</option>
             </select>
         </div>
         

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddDistinctToChecklistsTable extends Migration
+class AddNameToChecklistsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddDistinctToChecklistsTable extends Migration
     public function up()
     {
         Schema::table('checklists', function (Blueprint $table) {
-            $table->boolean('distinct_percentage')->nullable();
+            $table->string('name',150);
         });
     }
 
@@ -26,7 +26,7 @@ class AddDistinctToChecklistsTable extends Migration
     public function down()
     {
         Schema::table('checklists', function (Blueprint $table) {
-            $table->dropColumn('distinct_percentage');
+            $table->dropColumn('name');
         });
     }
 }

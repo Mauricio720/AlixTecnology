@@ -606,6 +606,7 @@ class ComposerStaticInit43fae358cdbe6ac0a47c929ba4171da6
         'AddDuplicateToChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_03_103343_add_duplicate_to_checklists_table.php',
         'AddDuplicateToDefaultChecklistTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_03_102700_add_duplicate_to_default_checklist_table.php',
         'AddLastIdIncrementToDefaultChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_04_163444_add_last_id_increment__to_default_checklists_table.php',
+        'AddNameToChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_04_11_181425_add_name_to_checklists_table.php',
         'AddOnlyOneChoosePointsToDefaultChecklistsTable' => __DIR__ . '/../..' . '/database/migrations/2022_02_03_111906_add_only_one_choose_points_to_default_checklists_table.php',
         'AddPermissionTableUsers' => __DIR__ . '/../..' . '/database/migrations/2021_10_23_171712_add_permission_table_users.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',

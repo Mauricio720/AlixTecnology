@@ -1,11 +1,12 @@
 var checklist=ONE_ELEMENT('.checklistExibition');
 var checklistArray=JSON.parse(ONE_ELEMENT('#checklistArray').value);
 var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha','Numerica'
-,'Data','Agrupamento (dupla escolha)'];
+,'Data','Agrupamento (dupla escolha)','Maior/Igual Que', 'Menor/Igual Que'];
 var optionsChecklist=ONE_ELEMENT('.optionsChecklistExibition');
 var downloadChecklistItem=ONE_ELEMENT('.download__item');
 var formChecklist=ONE_ELEMENT('#formChecklistExibition');
 var carrousel=ONE_ELEMENT('#carousel');
+var idDefaultChecklist=parseInt(ONE_ELEMENT('#defaultChecklistId').value);
 
 showChecklist(checklistArray.subchecklist); 
 
@@ -49,10 +50,14 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
             checklistClone.querySelector('.valueChecklist').classList.remove('d-none');
             checklistClone.querySelector('.valueChecklist').innerHTML='Nenhum arquivo inserido';
         }
-       
     }else{
         if(item.id_type_checklist !== 0 && item.id_type_checklist!==3 && item.id_type_checklist!==4 && item.id_type_checklist!==7){
-            checklistClone.querySelector('.valueChecklist').innerHTML=item.value;
+            checklistClone.querySelector('.valueChecklist').classList.remove('d-none');
+            let value='Nenhum Valor Inserido';
+            if(item.value !== ''){
+                value=item.value;
+            }
+            checklistClone.querySelector('.valueChecklist').innerHTML=value;
         }else{
             if(item.value === ''){
                 let slotValueDiv=checklistClone.querySelector('.checklist__slot--value');
@@ -71,9 +76,7 @@ function fillInputsAndAttributeChecklist(checklistClone,item) {
         'Nenhuma observação':item.observation;
     checklistClone.querySelector('.observation').setAttribute('title',item.observation);
     
-    if(item.id_type_checklist===7){
-        renameChecklist(item);
-    }
+    
 }
 
 function fillPicturesAndDocumentsModal(checklistClone,files){
@@ -161,15 +164,7 @@ function verifyImgs(file){
     }
 }
 
-function renameChecklist(checklist) {
-    if(checklist.subchecklist){
-        checklist.subchecklist.forEach((checklistItem,index)=>{
-            if(checklistItem.id_type_checklist===7){
-                checklistItem.name=`${checklistItem.name} - ${index+1}`;
-            }
-        })
-    }
-}
+
 
 function appendOptions(item,checklistClone) {
     if(item.options.length > 0){
@@ -306,13 +301,20 @@ function showSubchecklistContainer(elementChecklist){
     let checklist=filterChecklist(checklistArray.subchecklist,id,{});
     
     if(!elementChecklist.classList.contains('active')){
-        let totalDefaultChecklist=elementChecklist.querySelectorAll('.checklistContent .checklistExibition').length;
-        let margin=45*totalDefaultChecklist;
+        let totalDefaultChecklist=elementChecklist.querySelector('.checklist__container').children.length;
+        let margin=30*totalDefaultChecklist;
         let heightTotal=100+getTotalHeight(elementChecklist)+margin;
-            
+        
         elementChecklist.style.height=`${heightTotal}px`;
         elementChecklist.classList.add('active');
         checklist.active=true;
+
+        if(checklist.idChecklist != null && checklist.idChecklist !== idDefaultChecklist){
+            let checklistFather=filterChecklist(checklistArray.subchecklist,checklist.idChecklist,{}); 
+            let checklistElementFather=getElementChecklist(checklistFather.id);
+            checklistElementFather.style.height='auto';
+        }
+
     }else{
         elementChecklist.style.height="100px";
         elementChecklist.classList.remove('active');
@@ -320,14 +322,28 @@ function showSubchecklistContainer(elementChecklist){
     }
 }
 
+function getElementChecklist(idChecklist){
+    let allChecklistExibition=ONE_ELEMENT('.card-body').querySelectorAll('.checklistExibition');
+    let checklistElement='';
+    
+    [...allChecklistExibition].forEach((checkExibition)=>{
+        let idElement=parseInt(checkExibition.getAttribute('idelement'));
+        if(idChecklist===idElement){
+            checklistElement=checkExibition;
+        }
+    });
+
+    return checklistElement;
+}
+
 function getTotalHeight(elementChecklist){
     let totalHeight=0;
-
-    elementChecklist.querySelectorAll('.checklistContent .checklistExibition').forEach((checklist)=>{
+    let checklistElements=[...elementChecklist.querySelector('.checklist__container').children];
+    checklistElements.forEach((checklist)=>{
         let height=checklist.offsetHeight;
         totalHeight+=height;
     })
-
+    
     return totalHeight;
 }
 

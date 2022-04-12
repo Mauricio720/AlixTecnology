@@ -8,6 +8,7 @@
         <div class="card-header bg-dark text-white">
             <div class="row">
                 <div class="col-6">
+                    <input type="hidden" id="defaultChecklistId" value="{{$checklist->id}}">
                     <h5>Checklist: {{$defaultChecklist->name}}</h5>
                     <h5>Pontuação Total: {{$checklist->points}}</h5>
                     <h5>Observação: {{$checklist->observation==""?'Não informado':$checklist->observation}}</h5>

@@ -8,7 +8,6 @@ var checklistSave=false;
 var typechecklistModal=""
 
 eventCloneDefaultChecklist();
-
 verifyInProgressDefaultChecklist();
 
 function verifyInProgressDefaultChecklist(){
@@ -249,6 +248,7 @@ function allEventsInAddChecklist(inProgress=false){
         
         eventAddChecklist(addBtnElement,id,inProgress);
         eventsBtnAddOptions();
+        eventsBtnSeeMore();
 
         uniqueEventInputChecklistName(elementChecklist,defaultChecklist); 
         uniqueEventInputPointingPercentage(elementChecklist,defaultChecklist); 
@@ -333,7 +333,6 @@ function changeValuesDefaultChecklist(defaultChecklist){
         let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklist.id}`);
         let points=defaultChecklist.points> 0 ? defaultChecklist.points.toFixed(2):0;
         let percentage=defaultChecklist.percentage;
-
         defaultChecklistElement.querySelectorAll('input')[2].value=percentage;
         defaultChecklistElement.querySelectorAll('input')[3].value=points;
         
@@ -389,7 +388,11 @@ function calcPointAgrouping(value,defaultChecklist){
     let defaultChecklistFather=filterDefaultChecklist(defaultChecklistArray,defaultChecklist.idDefaultChecklist,{});
     let totalPoints=defaultChecklistFather.points;
     
-    let percentage=(valuePoints*100)/totalPoints;
+    let percentage=0;
+
+    if(totalPoints !== 0 && totalPoints !== 0){
+        percentage=(valuePoints*100)/totalPoints;
+    }
     
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklist.id}`);
     defaultChecklistElement.querySelectorAll('input')[2].value=percentage>0?percentage.toFixed(2):0;
@@ -425,7 +428,7 @@ function getSubchecklistValues(defaultChecklist){
     let numberChecklist=0;
     
     defaultChecklist.subchecklists.forEach((item)=>{
-        if(item.percentage >0){
+        if(item.percentage > 0){
             numberChecklist++;
         }
     })
@@ -531,7 +534,7 @@ function verifyTypeChecklist(valueSelect,selectElement,defaultChecklist){
         changeLayoutBtnsVisibleInEventsAddOptions(false,selectElement);
     }
 
-    if(valueSelect==='8'){
+    if(valueSelect==='8' || valueSelect==='9'){
         selectElement.closest('.defaultChecklist').querySelectorAll('.defaultChecklist__slot')[1].style.display='flex';
     }else{
         selectElement.closest('.defaultChecklist').querySelectorAll('.defaultChecklist__slot')[1].style.display='none';
@@ -660,14 +663,32 @@ function setChecklistPoint(id) {
     let points=checklist.points;
     let allDefaultChecklist=filterDefaultChecklistToPoints(defaultChecklistArray,id,[]);
     let totalNumberDefaultChecklists=allDefaultChecklist.length;
-    let pointsValue=points/totalNumberDefaultChecklists;
-    let percentage= (pointsValue/points)*100;
+    let pointsValue=0;
+    let percentage= 0;
     
+    if(totalNumberDefaultChecklists > 0){
+        pointsValue=points/totalNumberDefaultChecklists;
+        if(pointsValue !== 0 && totalNumberDefaultChecklists !==0){
+            percentage=(pointsValue/points)*100;
+        }
+    }
+
     allDefaultChecklist.forEach(element => {
-        element.points=pointsValue;
-        element.percentage=percentage;
-        element.correctPercentage=true;
-        
+        if(element.points !== 0){
+            element.points=pointsValue;
+            element.percentage=percentage;
+            element.correctPercentage=true;
+        }else{
+            totalNumberDefaultChecklists=totalNumberDefaultChecklists-1;
+            pointsValue=points/totalNumberDefaultChecklists;
+            if(pointsValue !== 0 && totalNumberDefaultChecklists !==0){ 
+                percentage= (pointsValue/points)*100;
+            }
+            element.points=0;
+            element.percentage=0;
+            element.correctPercentage=true;
+        }
+
         if(element.options.length > 0){
             updatePointsOptions(element.options,element.points,element); 
         }
@@ -678,6 +699,7 @@ function updatePointsOptions(options,points,element) {
     let typechecklist=element.typechecklist;
     let onlyOneChoosePoints=element.onlyOneChoosePoints;
     let onlyOneChoose=element.onlyOneChoose;
+    let onlyDistinctPercentage=element.onlyDistinctPercentage;
 
     options.forEach((option)=>{
         let numberOptions=options.length;
@@ -692,7 +714,7 @@ function updatePointsOptions(options,points,element) {
             }
         }else{
             if(onlyOneChoosePoints===false && onlyOneChoose===false){
-                if(onlyOneDistinctPercentage){
+                if(onlyDistinctPercentage){
                     let newPoints=(option.percentage/100)*points;
                     option.pointsValue=newPoints;
                     option.percentage=option.percentage;
@@ -842,7 +864,7 @@ function newDefaultChecklistObject(id,idDefaultChecklist){
         name:"",
         biggerSmaller:'',
         typechecklist:"",
-        percentage:"",
+        percentage:0,
         active:false,
         correctPercentage:true,
         points:"",
@@ -1595,7 +1617,10 @@ function setValueInOption(newPoints,optionsDefaultChecklist){
 function calcPercentageEquals() {
     let numberOptions=allOptions.length;
     let pointsValue=pointsModal/numberOptions;
-    let percentage= (pointsValue/pointsModal)*100;
+    let percentage=0;
+    if(pointsValue !== 0){
+        percentage=(pointsValue/pointsModal)*100;
+    } 
     
     return [pointsValue,percentage];
 }

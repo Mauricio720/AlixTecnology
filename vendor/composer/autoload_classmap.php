@@ -14,6 +14,7 @@ return array(
     'AddDuplicateToChecklistsTable' => $baseDir . '/database/migrations/2022_02_03_103343_add_duplicate_to_checklists_table.php',
     'AddDuplicateToDefaultChecklistTable' => $baseDir . '/database/migrations/2022_02_03_102700_add_duplicate_to_default_checklist_table.php',
     'AddLastIdIncrementToDefaultChecklistsTable' => $baseDir . '/database/migrations/2022_02_04_163444_add_last_id_increment__to_default_checklists_table.php',
+    'AddNameToChecklistsTable' => $baseDir . '/database/migrations/2022_04_11_181425_add_name_to_checklists_table.php',
     'AddOnlyOneChoosePointsToDefaultChecklistsTable' => $baseDir . '/database/migrations/2022_02_03_111906_add_only_one_choose_points_to_default_checklists_table.php',
     'AddPermissionTableUsers' => $baseDir . '/database/migrations/2021_10_23_171712_add_permission_table_users.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',

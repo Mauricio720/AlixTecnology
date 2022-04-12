@@ -38,7 +38,8 @@
         <div class="checklist__slot">
             <input class="form-control inputText" type="text"  placeholder="Digite o conteúdo da checklist">
             <input class="form-control inputDate" type="date">
-            <input class="form-control inputNumber" type="number" placeholder="Digite o valor da checklist">
+            <input class="form-control inputNumber" type="number" step="0,01"
+                placeholder="Digite o valor da checklist">
             <input class="inputFile" type="file" multiple>
         </div>
         <div class="checklist__slot checklistTypeChecklist" title=""></div>

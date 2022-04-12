@@ -30,7 +30,7 @@ class DefaultCheckListOrganization {
             }
         }
         
-        if($defaultChecklist->typechecklist=="8"){
+        if($defaultChecklist->typechecklist=="8" || $defaultChecklist->typechecklist=="9"){
            $defaultChecklistModel->big_smaller=$defaultChecklist->biggerSmaller;
         }
 

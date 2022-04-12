@@ -19,6 +19,7 @@ class CheckListOrganization {
 
     public function addChecklist($checklist,$idChecklist=null){
         $checklistModel=new Checklist();
+        $checklistModel->name=$checklist->name;
         $checklistModel->id_default_checklist=$checklist->idDefaultChecklistReference;
         $checklistModel->id_checklist=$idChecklist;
         $checklistModel->points=$checklist->points;
@@ -119,7 +120,8 @@ class CheckListOrganization {
         $defaultChecklist=DefaultCheckList::where('id',$checklist->id_default_checklist)->first();
 
         $newArray['id']=$checklist->id;
-        $newArray['name']=$defaultChecklist->name;
+        $newArray['name']=$checklist->name===''?$defaultChecklist->name:$checklist->name;
+        $newArray['idChecklist']=$checklist->id_checklist;
         $newArray['idDefaultChecklist']=$defaultChecklist->id;
         $newArray['idDefaultChecklistReference']=$defaultChecklist->id;
         $newArray['id_type_checklist']=$defaultChecklist->id_type_checklist;

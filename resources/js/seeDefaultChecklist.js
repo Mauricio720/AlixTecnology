@@ -1,7 +1,7 @@
 var defaultChecklist=ONE_ELEMENT('.defaultChecklistExibition');
 var defaultChecklistArray=JSON.parse(ONE_ELEMENT('#defaultChecklistArray').value);
 var typeChecklistArray=['Agrupamento','Texto','Upload','Multiplas Escolhas','Dupla Escolha'
-    ,'Numerica','Data','Agrupamento (dupla escolha)','Maior que/Menor que'];
+    ,'Numerica','Data','Agrupamento (dupla escolha)','Maior/Igual Que', 'Menor/Igual Que'];
 var optionsDefaultChecklist=ONE_ELEMENT('.optionsDefaultChecklistExibition');
 var formChecklist=ONE_ELEMENT('#formChecklist');
 

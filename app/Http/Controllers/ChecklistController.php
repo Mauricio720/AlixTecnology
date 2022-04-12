@@ -333,6 +333,9 @@ class ChecklistController extends Controller
         $data['checklist2']=json_encode($checklistOrganization->getChecklistById($checklist2->id));
        
         $data['client']=Client::where('id',$checklist1->id_client)->first();
+
+        $data['idChecklist1']=$idChecklist1;
+        $data['idChecklist2']=$idChecklist2;
         
         return view('dashboard.checklist.compareChecklist',$data);    
 
