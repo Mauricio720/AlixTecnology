@@ -475,6 +475,7 @@ function uniqueEventBiggerSmaller(elementChecklist,defaultChecklist){
 function uniqueEventFocusInputDanger(elementChecklist) {
     eventFocusInputsDangerValidation(0,elementChecklist);
     eventFocusInputsDangerValidation(1,elementChecklist);
+    eventFocusInputsDangerValidation(2,elementChecklist);
     eventFocusInputsDangerValidation(3,elementChecklist);
     eventFocusInputsDangerValidation(4,elementChecklist);
 }
@@ -675,9 +676,16 @@ function setChecklistPoint(id) {
 
     allDefaultChecklist.forEach(element => {
         if(element.points !== 0){
-            element.points=pointsValue;
-            element.percentage=percentage;
-            element.correctPercentage=true;
+            if(element.idDefaultChecklist !== defaultChecklistArray[0].id){
+                element.points=pointsValue;
+                element.percentage=percentage;
+                element.correctPercentage=true;
+            }else{
+                if(element.percentage===0){
+                    element.points=0;
+                }
+            }
+            
         }else{
             totalNumberDefaultChecklists=totalNumberDefaultChecklists-1;
             pointsValue=points/totalNumberDefaultChecklists;
@@ -1734,13 +1742,15 @@ function allValidations(defaultChecklistArray) {
         verifyAgroupingDefaultChecklistWithouChildreenInValidation(item,errorNumber);
         verifyEmptyAndPercentageOptionsInValidation(item,errorNumber);
         verifyDoubleOptionWithoutTwoOptions(item,errorNumber);
-
+        
         isOk=verifyIfThereErrors(thereIsErrors,errorNumber);
+        
         if(isOk===false){
             itemError=item;
         }
-        setLayoutValidationIfThereErrors(errorNumber,item,itemError);
-       
+        
+        errorNumber=setLayoutValidationIfThereErrors(errorNumber,item,itemError);
+        
         if(isOk){
             if(item.subchecklists.length>0){
                 isOk=allValidations(item.subchecklists);
@@ -1768,110 +1778,81 @@ function verifyIfThereErrors(thereIsErrors,errorNumber){
 }
 
 function setLayoutValidationIfThereErrors(errorNumber,item,itemError){
-    if(errorNumber != [] && itemError.id===item.id){
+    if(errorNumber.length > 0 && itemError.id===item.id){
         errorNumber.forEach((error)=>{
             allValidationsLayout(item,error);
         });
         
         errorNumber=[];
     }
+
+    return errorNumber;
 }
 
 function verifyEmptyInputsInValidation(item,errorNumber){
-    let isOk=true;
-    
     if(item.name==="" || item.percentage==="" ||  item.points===""){
         errorNumber.push(ERROR_EMPTY_INPUTS);
-        isOk=false;
     }
 
     if(item.typechecklist==="8"){
         if(item.biggerSmaller===''){
             errorNumber.push(ERROR_EMPTY_INPUTS);
-            isOk=false;
         }
     }
-
-    return isOk;
 }
 
 function verifyTypeChecklistInValidation(item,errorNumber){
-    let isOk=true;
-
     if(item.typechecklist === "" && item.idDefaultChecklist !== null){
         errorNumber.push(ERROR_SELECT_VALUE);
-        isOk=false;
     }
-
-    return isOk;
 }
 
 function verifyCorrectPercentageInValidation(item,errorNumber){
-    let isOk=true;
-
     if(item.correctPercentage===false){
         errorNumber.push(ERROR_PERCENTAGE);
-        isOk=false;
     }
-
-    return isOk;
 }
 
 function verifyAgroupingDefaultChecklistWithouChildreenInValidation(item,errorNumber){
-    let isOk=true;
-
     if(item.idDefaultChecklist === null){
         if(item.subchecklists.length===0){
             errorNumber.push(ERROR_SUBCHECKLIST_FATHER);
-            isOk=false;
         }
     }
 
     if(item.typechecklist==="0" || item.typechecklist==="7"){
         if(item.subchecklists.length===0){
             errorNumber.push(ERROR_GROUPING);
-            isOk=false;
         }
     }
-
-    return isOk;
 }
 
 
 function verifyEmptyAndPercentageOptionsInValidation(item,errorNumber){
-    let isOk=true;
 
     if(item.typechecklist==="3"){
         let numberOptions=item.options.length;
         if(numberOptions < 1){
             errorNumber.push(ERROR_EMPTY_OPTIONS);
-            isOk=false;
         }
 
         item.options.forEach((option)=>{
             if(option.correctPercentage===false){
                 errorNumber.push(ERROR_OPTIONS_PERCETAGE);
-                isOk=false;
             }
         })
     }
 
-    return isOk;
 }
 
 //Em teoria, só irá parar nessa validação se alguem baguçar o front pelo inspecionar
 function verifyDoubleOptionWithoutTwoOptions(item,errorNumber){
-    let isOk=true;
-
     if(item.typechecklist==="4"){
         let numberOptions=item.options.length;
         if(numberOptions !=2){
             errorNumber.push(ERROR_EMPTY_DOUBLE_OPTIONS);
-            isOk=false;
         }
     }
-
-    return isOk;
 }
 
 const ERROR_EMPTY_INPUTS=1;
@@ -1913,6 +1894,12 @@ function allValidationsLayout(item,errorNumber) {
 function verifyErrorAndAddDanger(errorNumber,defaultChecklistElement,item){
     if(errorNumber === ERROR_EMPTY_INPUTS){
         verifyInpusWithEmptyValue(defaultChecklistElement,item);
+    }
+
+    if(errorNumber === ERROR_PERCENTAGE){
+        let inputs=defaultChecklistElement.querySelectorAll('input');
+        inputs[2].classList.add('input-danger');
+        inputs[3].classList.add('input-danger');
     }
 
     if(errorNumber===ERROR_SELECT_VALUE){
