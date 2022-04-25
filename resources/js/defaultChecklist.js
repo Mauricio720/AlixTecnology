@@ -1684,11 +1684,11 @@ function layoutCorrectPercentageOptions(){
 
 var namesChecklists=[];
 ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
-    if(allValidations(defaultChecklistArray)){
+    //if(allValidations(defaultChecklistArray)){
         setChecklistNamesSave();
         setInfoInInputsFormsSave();
         ONE_ELEMENT('#formChecklistsJson').submit();
-    };
+    //};
 });
 
 function setChecklistNamesSave(){
