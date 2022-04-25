@@ -1684,11 +1684,15 @@ function layoutCorrectPercentageOptions(){
 
 var namesChecklists=[];
 ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
-    //if(allValidations(defaultChecklistArray)){
+    if(defaultChecklistArray[0].name!==''){
         setChecklistNamesSave();
         setInfoInInputsFormsSave();
         ONE_ELEMENT('#formChecklistsJson').submit();
-    //};
+    }else{
+        let alertHeader=ONE_ELEMENT('.alert-header');
+        alertHeader.classList.remove('d-none');
+        alertHeader.querySelector('.alert').innerHTML="Coloque pelo menos o nome da checklist principal.";
+    }
 });
 
 function setChecklistNamesSave(){
