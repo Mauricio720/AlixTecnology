@@ -439,6 +439,7 @@ function getSubchecklistValues(defaultChecklist){
 function updatedSubchecklistPoints(id,pointsSubchecklist) {
     let defaultChecklistSubchecklist=filterDefaultChecklist(defaultChecklistArray,id,{});
     let defaultChecklistElement=ONE_ELEMENT(`#defaultCheck${defaultChecklistSubchecklist.id}`);
+    defaultChecklistSubchecklist.points=pointsSubchecklist;
     defaultChecklistElement.querySelectorAll('input')[3].value=parseFloat(pointsSubchecklist).toFixed(2);
 
     if(defaultChecklistSubchecklist.subchecklists.length > 0){
@@ -658,7 +659,6 @@ function clearSelected(allOptions) {
         option.pointsValue=0;
     })
 }
-
 function setChecklistPoint(id) {
     let checklist=filterDefaultChecklist(defaultChecklistArray,id,{});
     let points=checklist.points;
@@ -687,8 +687,12 @@ function setChecklistPoint(id) {
             }
             
         }else{
+            console.log(pointsValue);
+
             totalNumberDefaultChecklists=totalNumberDefaultChecklists-1;
             pointsValue=points/totalNumberDefaultChecklists;
+            console.log(pointsValue);
+
             if(pointsValue !== 0 && totalNumberDefaultChecklists !==0){ 
                 percentage= (pointsValue/points)*100;
             }
@@ -1684,6 +1688,7 @@ function layoutCorrectPercentageOptions(){
 
 var namesChecklists=[];
 ONE_ELEMENT('#btnSave').addEventListener('click',()=>{
+    
     if(defaultChecklistArray[0].name!==''){
         setChecklistNamesSave();
         setInfoInInputsFormsSave();
