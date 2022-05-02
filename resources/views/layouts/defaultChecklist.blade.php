@@ -70,9 +70,8 @@
         </div>
         
         <div class="defaultChecklist__slot">
-            <input class="form-control w-50 mr-1" type="number" placeholder="pontos %" disabled min="1">
-
-            <input class="form-control w-50" type="number" placeholder="Pontuação" min="1">
+            <input class="form-control w-50 mr-1" type="number" step="any" placeholder="pontos %" disabled >
+            <input class="form-control w-50" type="number" step="any" placeholder="Pontuação" >
         </div>
         <div class="defaultChecklist__slot">
             <input class="form-control" type="text" placeholder="Observação">

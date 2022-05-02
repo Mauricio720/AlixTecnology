@@ -35,6 +35,7 @@ textarea:focus, input:focus, select:focus {
     width: 28px !important;
     height: 28px !important;
     font-size: 14px;
+    box-shadow: #ccc 2px 3px 3px;
 }
 
 .btnSeeMore,.btnPrint{
@@ -50,7 +51,6 @@ textarea:focus, input:focus, select:focus {
     color: black;
     background-color: white;
 }
-
 
 .btnAdd{
     font-size: 19px;
@@ -158,4 +158,14 @@ textarea:focus, input:focus, select:focus {
 	animation-duration:4s;
 	animation-delay:1s;
 	animation-iteration-count:infinite;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
