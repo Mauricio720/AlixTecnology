@@ -66,8 +66,8 @@ return [
         'alix_mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => '127.0.0.1',
-            'port' => '3307',
+            'host' => '10.100.1.210',
+            'port' => '3306',
             'database' => 'softdesk',
             'username' => 'checklist',
             'password' => '0v463UeyF',

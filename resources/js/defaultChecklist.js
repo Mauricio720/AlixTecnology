@@ -740,7 +740,6 @@ function setChecklistPoint(id) {
     let checklist=filterDefaultChecklist(defaultChecklistArray,id,{});
     let points=checklist.points;
     let allDefaultChecklist=filterDefaultChecklistToPoints(defaultChecklistArray,id,[]);
-    console.log(getNumberChecklitWithZero(allDefaultChecklist));
     let totalNumberDefaultChecklists=allDefaultChecklist.length-getNumberChecklitWithZero(allDefaultChecklist);
 
     let pointsValue=0;
