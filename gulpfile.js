@@ -13,6 +13,7 @@ function javascript(){
 
 function css(){
     return src('resources/css/*.css')
+        .pipe(concat('style.css'))
         .pipe(uglifycss(
             {
                 'max-length':80,
