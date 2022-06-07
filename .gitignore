@@ -3,6 +3,7 @@
 /database/database.sqlite
 /vendor
 /public/storage
+/storage/app/public/checklist_files/*
 .env
 .phpunit.result.cache
 Homestead.json
